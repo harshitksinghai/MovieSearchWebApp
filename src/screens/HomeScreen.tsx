@@ -112,7 +112,7 @@ const HomeScreen: React.FC = () => {
     return (
         <Container>
             <Typography variant="h4" align="center" gutterBottom>
-                🎬 Movie Search App
+                WikiMovies
             </Typography>
             <SearchBar 
                 onSearch={handleSearch}

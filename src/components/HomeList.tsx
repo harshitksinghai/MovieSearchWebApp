@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import FavListFilter from './FavListFilter'
-import './HomeList.css'
+import styles from './HomeList.module.css'
 import { getMovieList, MovieItem } from '../utils/localStorage.ts';
 import { useTranslation } from 'react-i18next';
 import ShowFavList from './ShowFavList.tsx';
@@ -58,8 +58,8 @@ const HomeList = () => {
   };
 
   return (
-    <div className='home-list-container'>
-      <p className='myList'>{t('fav.myList')}</p>
+    <div className={styles['home-list-container']}>
+      <p className={styles.myList}>{t('fav.myList')}</p>
       <FavListFilter onFilterChange={handleFilterChange} />
       <ShowFavList filteredList={filteredMovieList} refreshList={refreshLists} />
     </div>

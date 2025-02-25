@@ -50,9 +50,12 @@
         "director": "Director",
         "cast": "Cast",
         "language": "Languages",
-        "ratings": "Ratings"
+        "ratings": "Rating"
     },
     "footer":{
         "message": "All Rights Reserved"
+    },
+    "common":{
+        "loading": "Loading..."
     }
 }

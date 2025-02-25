@@ -2,9 +2,10 @@ import { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchMoviesByImdbId } from '../api/api';
 import { useTranslation } from 'react-i18next';
-import './MovieDetails.css';
-import MovieDetailsNavbar from './SubNavBar';
+import styles from './MovieDetails.module.css';
+import SubNavbar from './SubNavBar';
 import { ThemeContext } from '../theme/ThemeContext';
+import clsx from 'clsx';
 
 interface MovieData {
   Title: string;
@@ -64,8 +65,8 @@ const MovieDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={`loading-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-        <div className="loading-spinner"></div>
+      <div className={clsx(styles["loading-container"], darkMode ? styles['dark-mode'] : styles['light-mode'])}>
+        <div className={styles["loading-spinner"]}></div>
         <p>{t('common.loading')}</p>
       </div>
     );
@@ -73,7 +74,7 @@ const MovieDetails: React.FC = () => {
 
   if (!movieResponse || movieResponse.error || !movieResponse.movie) {
     return (
-      <div className={`error-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={clsx(styles["error-container"], darkMode ? styles['dark-mode'] : styles['light-mode'])}>
         <h2>{t('error.movieNotFound')}</h2>
         <p>{movieResponse?.error || t('error.unknownError')}</p>
       </div>
@@ -84,70 +85,71 @@ const MovieDetails: React.FC = () => {
   console.log("movie details imdbid: " + movie.imdbID) 
   return (
     <>
-      <MovieDetailsNavbar />
-      <div className={`movie-details-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <SubNavbar />
+      <div className={clsx(styles["movie-details-container"], darkMode ? styles['dark-mode'] : styles['light-mode'])}>
 
 
-        <div className="movie-content">
-          <div className="movie-details-poster-container">
+        <div className={styles["movie-content"]}>
+          <div className={styles["movie-details-poster-container"]}>
             <img
               src={movie.Poster !== 'N/A' ? movie.Poster : '/placeholder-poster.jpg'}
               alt={movie.Title}
-              className="movie-details-poster"
+              className={styles["movie-details-poster"]}
             />
           </div>
 
-          <div className="movie-info">
-            <h1 className="movie-title">
+          <div className={styles["movie-info"]}>
+            <h1 className={styles["movie-title"]}>
               {movie.Title}
-              <span className="movie-year">({movie.Year})</span>
+              <span className={styles["movie-year"]}>({movie.Year})</span>
             </h1>
 
-            <div className="movie-meta">
-              <span className="movie-runtime">{movie.Runtime}</span>
-              <span className="divider">•</span>
-              <span className="movie-release">{movie.Released}</span>
+            <div className={styles["movie-meta"]}>
+              <span className={styles["movie-runtime"]}>{movie.Runtime}</span>
+              <span className={styles["divider"]}>•</span>
+              <span className={styles["movie-release"]}>{movie.Released}</span>
             </div>
 
-            <div className="movie-genres">
+            <div className={styles["movie-genres"]}>
+            <button className={styles.imdb} onClick={() => window.open(`https://www.imdb.com/title/${movie.imdbID}`, "_blank")}>IMDB</button>
+            <div className={styles["vertical-separator"]}></div>
+
               {movie.Genre.split(', ').map((genre, index) => (
-                <span key={index} className="genre-tag">{genre}</span>
+                <span key={index} className={styles["genre-tag"]}>{genre}</span>
               ))}
-              <div className="vertical-separator"></div>
-              <button className='imdb' onClick={() => window.open(`https://www.imdb.com/title/${movie.imdbID}`, "_blank")}>IMDB</button>
 
             </div>
 
-            <div className="movie-section">
+            <div className={styles["movie-section"]}>
               <h3>{t('movie.plot')}</h3>
-              <p className="movie-plot">{movie.Plot}</p>
+              <p className={styles["movie-plot"]}>{movie.Plot}</p>
             </div>
 
-            <div className="movie-details-grid">
-              <div className="detail-item">
+            <div className={styles["movie-details-grid"]}>
+              <div className={styles["detail-item"]}>
                 <h3>{t('movie.director')}</h3>
                 <p>{movie.Director}</p>
               </div>
 
-              <div className="detail-item">
+              <div className={styles["detail-item"]}>
                 <h3>{t('movie.cast')}</h3>
                 <p>{movie.Actors}</p>
               </div>
 
-              <div className="detail-item">
+              <div className={styles["detail-item"]}>
                 <h3>{t('movie.language')}</h3>
                 <p>{movie.Language}</p>
               </div>
             </div>
 
             {movie.Ratings && movie.Ratings.length > 0 && (
-              <div className="movie-ratings-section">
-                <h3 className='ratingsh3'>{t('movie.ratings')}</h3>
-                <div className="ratings-container">
+              <div className={styles["movie-ratings-section"]}>
+                <h3 className={styles.ratingsh3}>{t('movie.ratings')}</h3>
+                <div className={styles["ratings-container"]}>
                   {movie.Ratings.map((rating, index) => (
-                    <div key={index} className="rating-item">
-                      <span className="rating-source">{rating.Source}</span>
-                      <span className="rating-value">{rating.Value}</span>
+                    <div key={index} className={styles["rating-item"]}>
+                      <span className={styles["rating-source"]}>{rating.Source}</span>
+                      <span className={styles["rating-value"]}>{rating.Value}</span>
                     </div>
                   ))}
                 </div>

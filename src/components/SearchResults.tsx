@@ -1,5 +1,5 @@
 import React from 'react'
-import './SearchResults.css'
+import styles from './SearchResults.module.css'
 import MovieCard from './MovieCard';
 import { Box, Skeleton, Pagination } from "@mui/material";
 
@@ -20,9 +20,9 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
   onPageChange
 }) => {
   return (
-    <div className="search-container">
+    <div className={styles["search-container"]}>
       {loading ? (
-        <div className="skeleton-grid">
+        <div className={styles["skeleton-grid"]}>
           {[...Array(10)].map((_, index) => (
             <Skeleton
               key={index}
@@ -38,8 +38,8 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
         </div>
       ) : (
 
-        <div className="search-results-container">
-          <div className="movies-grid">
+        <div className={styles["search-results-container"]}>
+          <div className={styles["movies-grid"]}>
             {movies.map((movie) => (
               <MovieCard key={movie.imdbID} movie={movie} />
             ))}

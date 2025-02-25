@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MovieItem } from '../utils/localStorage';
 import MovieCard from './MovieCard';
-import './ShowFavList.css'
+import styles from './ShowFavList.module.css'
 import { fetchMoviesByImdbId } from '../api/api';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from "@mui/material";
@@ -80,18 +80,18 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
   // }
 
   if (error) {
-    return <div className="error">{error}</div>;
+    return <div className={styles.error}>{error}</div>;
   }
 
   if (filteredList.length === 0) {
-    return <div className="empty-list">{t('fav.empty')}</div>;
+    return <div className={styles["empty-list"]}>{t('fav.empty')}</div>;
   }
 
   return (
     <div>
       
     {loading ? (
-      <div className="skeleton-grid">
+      <div className={styles["skeleton-grid"]}>
         {[...Array(10)].map((_, index) => (
           <Skeleton
             key={index}
@@ -106,9 +106,9 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
         ))}
       </div>
     ) : (
-    <div className="search-container">
-      <div className="search-results-container">
-        <div className="movies-grid">
+    <div className={styles["search-container"]}>
+      <div className={styles["search-results-container"]}>
+        <div className={styles["movies-grid"]}>
           {filteredMovies.map((movie) => (
             <MovieCard key={movie.imdbID} movie={movie} onListChange={refreshList}/>
           ))}

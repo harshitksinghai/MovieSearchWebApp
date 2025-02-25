@@ -98,7 +98,7 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
-    justify-content: end;
+    justify-content: start;
   }
   
   .genre-tag {
@@ -172,6 +172,7 @@
   
   .detail-item p {
     line-height: 1.5;
+    font-size: 0.9rem;
   }
   
   .dark-mode .detail-item p {
@@ -212,8 +213,9 @@
   
   .rating-source {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     margin-bottom: 0.2rem;
+    justify-content: end;
   }
   
   .dark-mode .rating-source {
@@ -224,11 +226,11 @@
     color: #666;
   }
   .dark-mode .ratingsh3 {
-    color: #bbb;
+    color: #ff9800;
   }
 
   .imdb{
-    height: 32px;
+    height: 30px;
     min-width: 40px;
     padding: 0 10px;
     border-radius: 8px;
@@ -244,7 +246,8 @@
     color: #222;
   }
   .light-mode .imdb{
-    background-color: #222222;
+    background-color: #222;
+    color: #fff;
   }
   .light-mode .vertical-separator{
     background-color: #222;

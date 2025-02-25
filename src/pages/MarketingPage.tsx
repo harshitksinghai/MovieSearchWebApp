@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './MarketingPage.css'; // External CSS file
+import styles from './MarketingPage.module.css'; // External CSS file
 import SubNavBar from '../components/SubNavBar';
 import { ThemeContext } from '../theme/ThemeContext';
 import { useTranslation } from 'react-i18next';
-
+import clsx from 'clsx';
 
 const MarketingPage = () => {
   const navigate = useNavigate();
@@ -17,13 +17,13 @@ const MarketingPage = () => {
   }
   
   return (
-    <div className='main-c'>
+    <div className={styles['main-c']}>
     <SubNavBar />
-    <div className={`marketing-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-      <div className="hero-section">
-        <div className="content">
-          <h1 className="title">{t('market.appName')}</h1>
-          <button className="cta-button" onClick={handleClick}>
+    <div className={clsx(styles["marketing-container"], darkMode ? styles["dark-mode"] : styles["light-mode"])}>
+      <div className={styles["hero-section"]}>
+        <div className={styles.content}>
+          <h1 className={styles.title}>{t('market.appName')}</h1>
+          <button className={styles["cta-button"]} onClick={handleClick}>
             {t('market.getStarted')}
           </button>
         </div>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import './MovieCard.css';
+import styles from './MovieCard.module.css';
 import placeholder from "../assets/placeholder1.jpg";
 import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart, FaPlus, FaCheck } from "react-icons/fa6";
 import { removeFromList, addToList, updateRating, getMovieList } from '../utils/localStorage';
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 
 interface MovieCardProps {
   movie: any;
@@ -72,69 +73,69 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
   }
 
   return (
-    <div className="movie-card">
-      <Link to={`/movie/${movie.imdbID}`} className="movie-link">
+    <div className={styles["movie-card"]}>
+      <Link to={`/movie/${movie.imdbID}`} className={styles["movie-link"]}>
       <img
         src={movie.Poster !== "N/A" ? movie.Poster : placeholder}
         alt={movie.Title}
-        className="movie-poster"
+        className={styles["movie-poster"]}
       />
       </Link>
-      <div className="card-overlay">
-        <div className="rating-container">
+      <div className={styles["card-overlay"]}>
+        <div className={styles["rating-container"]}>
           <button
-            className={`action-button ${(ratingState !== 'none') ? 'active' : ''}`}
+            className={clsx(styles["action-button"], (ratingState !== 'none') && styles.active)}
           >
             {ratingIcon}
           </button>
 
-          <div className="rating-options">
+          <div className={styles["rating-options"]}>
             <button
-              className={`action-button ${ratingState === 'dislike' ? 'active' : ''}`}
+              className={clsx(styles["action-button"], ratingState === 'dislike' && styles.active)}
               onClick={() => handleRating('dislike')}
             >
               {ratingState === 'dislike' ? 
               <FaThumbsDown size={14} /> : 
               <FaRegThumbsDown size={14} color="white" />
             }
-              <span className="tooltip">{t('card.dislikeTooltip')}</span>
+              <span className={styles.tooltip}>{t('card.dislikeTooltip')}</span>
             </button>
             <button
-            className={`action-button ${ratingState === 'like' ? 'active' : ''}`}
+            className={clsx(styles["action-button"], ratingState === 'like' && styles.active)}
             onClick={() => handleRating('like')}
           >
             {ratingState === 'like' ? 
               <FaThumbsUp size={14} /> : 
               <FaRegThumbsUp size={14} color="white" />
             }
-            <span className="tooltip">{t('card.likeTooltip')}</span>
+            <span className={styles.tooltip}>{t('card.likeTooltip')}</span>
           </button>
             <button
-              className={`action-button ${ratingState === 'love' ? 'active' : ''}`}
+              className={clsx(styles["action-button"], ratingState === 'love' && styles.active)}
               onClick={() => handleRating('love')}
             >
               {ratingState === 'love' ? 
               <FaHeart size={14} /> : 
               <FaRegHeart size={14} color="white" />
             }
-              <span className="tooltip">{t('card.loveTooltip')}</span>
+              <span className={styles.tooltip}>{t('card.loveTooltip')}</span>
             </button>
           </div>
         </div>
 
         <button
-          className={`action-button ${isAddedToList ? 'active' : ''}`}
+          className={clsx(styles["action-button"], isAddedToList && styles.active)}
           onClick={handleAddToList}
         >
           {isAddedToList ? 
             <FaCheck size={14} /> : 
             <FaPlus size={14} color="white" />
           }
-          <span className="tooltip">{isAddedToList ? t('card.removeListTooltip') : t('card.addListTooltip')}</span>
+          <span className={styles.tooltip}>{isAddedToList ? t('card.removeListTooltip') : t('card.addListTooltip')}</span>
         </button>
 
 
-        <div className="movie-info">
+        <div className={styles["movie-info"]}>
           <p>{movie.Type.toUpperCase()}</p>
           <p>{movie.Year}</p>
         </div>

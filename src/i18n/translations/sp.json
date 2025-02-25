@@ -46,13 +46,16 @@
         "getStarted": "Comenzar"
     },
     "movie": {
-        "plot": "Argumento",
+        "plot": "Trama",
         "director": "Director",
         "cast": "Reparto",
         "language": "Idiomas",
-        "ratings": "Valoraciones"
+        "ratings": "Calificación"
     },
     "footer": {
         "message": "Todos los derechos reservados"
+    },
+    "common": {
+        "loading": "Cargando..."
     }
 }

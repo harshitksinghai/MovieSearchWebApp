@@ -78,7 +78,7 @@
   background-color: #424242;
 }
 .select-button {
-  height: 36px;
+  height: 38px;
   background-color: #222222;
   color: white;
   padding: 0 16px;
@@ -92,7 +92,7 @@
 }
 .search-button{
   background-color: #222222;
-  height: 36px;
+  height: 38px;
   min-width: 40px;
   padding: 0 10px;
   border-radius: 8px;

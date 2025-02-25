@@ -20,7 +20,7 @@ const LanguageSelector: React.FC = () => {
           backgroundColor: '#222',
           color: 'white',
           borderRadius: '8px',
-          height: '36px',
+          height: '38px',
           marginTop: '2px'
         }}
       >

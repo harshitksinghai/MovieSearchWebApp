@@ -1,0 +1,49 @@
+.empty-list{
+    text-align: center;
+    position: relative;
+    top: 200px;
+}
+
+.search-container{
+    margin: 0;
+  }
+  .search-results-container {
+    padding: 20px 48px;
+    margin-top: 16px;
+  }
+  
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    row-gap: 48px;
+  }
+  
+  .skeleton-grid {
+    padding: 20px 48px;
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    row-gap: 48px;
+  }
+  
+  /* Custom styles for pagination */
+  .MuiPagination-root .MuiPaginationItem-root {
+    color: #222;
+  }
+  
+  .MuiPagination-root .MuiPaginationItem-root.Mui-selected {
+    background-color: #222;
+    color: #fff;
+  }
+  
+  .MuiPagination-root .MuiPaginationItem-root:hover {
+    background-color: #444;
+    color: #fff;
+  }
+  .MuiPagination-root .MuiPaginationItem-root.Mui-selected:hover {
+      background-color: #222;
+      color: #fff;
+    }
+  

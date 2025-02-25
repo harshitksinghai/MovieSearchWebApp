@@ -1,8 +1,9 @@
 // SearchBar.tsx
 import React, { useState } from 'react';
-import './SearchBar.css';
+import styles from './SearchBar.module.css';
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material/styles';
+import clsx from 'clsx';
 
 
 interface SearchBarProps {
@@ -53,35 +54,35 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
     return (
         <div>
 
-            <div className='search-container' >
-                <div className={`search-box ${(err || error) ? 'search-box-err' : ''} `} style={{ color: theme.palette.text.secondary }}>
+            <div className={styles['search-container']} >
+                <div className={clsx(styles["search-box"], (err || error) && styles['search-box-err'])} style={{ color: theme.palette.text.secondary }}>
                         <input
                             type="text"
                             placeholder={t('navbar.searchPlaceholder')}
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="search-title"
+                            className={styles["search-title"]}
                         />
 
-                    <div className='select-container'>
-                        <div className="select-dropdown search-type">
+                    <div className={styles['select-container']}>
+                        <div className={clsx(styles["select-dropdown"], styles["search-type"])}>
                             <button
                                 onClick={() => setIsTypeOpen(!isTypeOpen)}
                                 onBlur={() => setIsTypeOpen(false)}
-                                className="select-button"
+                                className={styles["select-button"]}
                             >
                                 {typeOption}
-                                <span className={`arrow ${isTypeOpen ? 'arrow-up' : ''}`}>
+                                <span className={clsx(styles.arrow, isTypeOpen && styles['arrow-up'])}>
                                     ▼
                                 </span>
                             </button>
 
                             {isTypeOpen && (
-                                <div className="dropdown-menu">
+                                <div className={styles["dropdown-menu"]}>
                                     {[t('navbar.typeAll'), t('navbar.typeMovies'), t('navbar.typeSeries'), t('navbar.typeGames')].map((option) => (
                                         <button
                                             key={option}
-                                            className="dropdown-item"
+                                            className={styles["dropdown-item"]}
                                             onMouseDown={() => {
                                                 if(option === t('navbar.typeMovies')){
                                                     setType('movie');
@@ -104,22 +105,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
                                 </div>
                             )}
                         </div>
-                        <div className="select-dropdown">
+                        <div className={styles["select-dropdown"]}>
                             <button
                                 onClick={() => setIsYearOpen(!isYearOpen)}
                                 onBlur={() => setIsYearOpen(false)}
-                                className="select-button"
+                                className={styles["select-button"]}
                             >
                                 {year ? year : t('navbar.Year')}
-                                <span className={`arrow ${isYearOpen ? 'arrow-up' : ''}`}>
+                                <span className={clsx(styles.arrow, isYearOpen && styles['arrow-up'])}>
                                     ▼
                                 </span>
                             </button>
 
                             {isYearOpen && (
-                                <div className="dropdown-menu">
+                                <div className={styles["dropdown-menu"]}>
                                     <button
-                                        className="dropdown-item"
+                                        className={styles["dropdown-item"]}
                                         onMouseDown={() => {
                                             setYear('');
                                             setIsYearOpen(false);
@@ -128,7 +129,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
                                     {years.map((option) => (
                                         <button
                                             key={option}
-                                            className="dropdown-item"
+                                            className={styles["dropdown-item"]}
                                             onMouseDown={() => {
                                                 setYear(option.toString());
                                                 setIsYearOpen(false);
@@ -143,7 +144,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
 
                         <button
                             onClick={handleSearch}
-                            className="search-button"
+                            className={styles["search-button"]}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +164,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
                         </button>
                     </div>
                 </div>
-                <p className='search-err'>{err || error}</p>
+                <p className={styles['search-err']}>{err || error}</p>
             </div>
         </div>
     );

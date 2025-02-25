@@ -43,6 +43,12 @@
     background-color: #222;
     margin: 0 10px;
   }
+  .light-mode .vertical-separator{
+    background-color: #222;
+  }
+  .dark-mode .vertical-separator{
+    background-color: #fff;
+  }
   .filter-button-span{
     padding-left: 8px;
   }

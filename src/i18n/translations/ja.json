@@ -53,6 +53,9 @@
         "ratings": "評価"
     },
     "footer": {
-        "message": "全著作権所有"
+        "message": "すべての権利を保有"
+    },
+    "common": {
+        "loading": "読み込み中..."
     }
 }

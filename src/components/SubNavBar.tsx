@@ -1,17 +1,17 @@
 import Logo from './UI/Logo';
-import './Navbar.css';
+import styles from './Navbar.module.css';
 import LanguageSelector from './LanguageSelector'
 import { Link } from 'react-router-dom';
 import DarkModeToggle from './DarkModeToggle';
 
-const MovieDetailsNavbar: React.FC = () => {
+const SubNavbar: React.FC = () => {
   return (
     <div>
-      <div className="nav-container">
+      <div className={styles["nav-container"]}>
         <Link to={"/"}>
           <Logo />
         </Link>
-        <div className="notLogo">
+        <div className={styles["notLogo"]}>
         <LanguageSelector />
         <DarkModeToggle />
         </div>
@@ -21,4 +21,4 @@ const MovieDetailsNavbar: React.FC = () => {
   )
 }
 
-export default MovieDetailsNavbar
+export default SubNavbar

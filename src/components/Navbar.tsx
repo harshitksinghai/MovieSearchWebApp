@@ -1,5 +1,5 @@
 import Logo from './UI/Logo';
-import './Navbar.css';
+import styles from './Navbar.module.css';
 import SearchBar from './SearchBar';
 import LanguageSelector from '../components/LanguageSelector'
 import { Link } from 'react-router-dom';
@@ -12,11 +12,11 @@ interface NavBarProps {
 const Navbar: React.FC<NavBarProps> = ({onSearch, error}) => {
   return (
     <div>
-      <div className="nav-container">
+      <div className={styles["nav-container"]}>
         <Link to={"/"}>
           <Logo />
         </Link>
-        <div className="notLogo">
+        <div className={styles.notLogo}>
         <SearchBar onSearch={onSearch} error={error}/>
         <LanguageSelector />
         <DarkModeToggle />

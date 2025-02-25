@@ -1,0 +1,58 @@
+{
+    "navbar":{
+        "appName": "WikiMovies",
+        "searchPlaceholder": "Search Title...",
+        "typeAll": "All",
+        "typeMovies": "Movies",
+        "typeSeries": "Series",
+        "typeGames": "Games",
+        "Year": "Year",
+        "none": "None",
+        "lightTooltip": "Switch to light mode",
+        "darkTooltip": "Switch to dark mode"
+    },
+    "error":{
+        "titleError": "Title must be at least 3 characters long.",
+        "NoMoviesFound": "No results found!",
+        "fetchFailed": "Failed to load movies. Please try again later.",
+        "fillSearch": "Enter a title, year or type to search",
+        "somethingWentWrong": "Something went wrong"
+    },
+    "card":{
+        "dislikeTooltip": "Not for me",
+        "likeTooltip": "I like this",
+        "loveTooltip": "Love this!",
+        "addListTooltip": "Add to My List",
+        "removeListTooltip": "Remove from My List"
+    },
+    "fav":{
+        "myList": "MY LIST",
+        "loading": "Loading your favorites...",
+        "empty": "No items found in your list.",
+        "filter":{
+            "typeAll": "All",
+            "typeMovies": "Movies",
+            "typeSeries": "Series",
+            "typeGames": "Games",
+            "Year": "Year",
+            "none": "None",
+            "love": "Love",
+            "like": "Like",
+            "meh": "Dislike"
+        }
+    },
+    "market":{
+        "appName": "WikiMovies",
+        "getStarted": "Get Started"
+    },
+    "movie":{
+        "plot": "Plot",
+        "director": "Director",
+        "cast": "Cast",
+        "language": "Languages",
+        "ratings": "Ratings"
+    },
+    "footer":{
+        "message": "All Rights Reserved"
+    }
+}

@@ -1,0 +1,52 @@
+.fav-list-filter-container{
+  position: relative;
+  top: 0px;
+
+}
+.fav-filter{
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+}
+.filter-button {
+    background-color: #fff;
+    color: #222;
+    border-style: solid;
+    border-color: #444;
+    border-width: 2px;
+    width: fit-content;
+    min-width: 45px;
+    min-height: 40px;
+    display: flex;
+    padding: 0 8px;
+    align-items: center;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .filter-button:hover{
+    background-color: #444;
+    color: #fff;
+  }
+  .active{
+    background-color: #222222;
+    color: #fff;
+  }
+  .all{
+    display: inline;
+  }
+  .vertical-separator{
+    width: 1px;
+    height: 30px;
+    background-color: #222;
+    margin: 0 10px;
+  }
+  .filter-button-span{
+    padding-left: 8px;
+  }
+  .thumbsUp {
+    padding-bottom: 3px;
+  }
+

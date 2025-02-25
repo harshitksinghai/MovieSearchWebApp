@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Container, Typography } from "@mui/material";
-import SearchBar from "../components/SearchBar";
-import ShowMovies from "../components/ShowMovies";
-import { fetchMovies } from "../api/api";
-import HomeMovieList from "../components/HomeMovieList";
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar"
 
-const HomeScreen: React.FC = () => {
+import SearchResults from "../components/SearchResults";
+import HomeList from "../components/HomeList";
+import { fetchMovies } from "../api/api";
+import {useTranslation} from 'react-i18next';
+
+
+const HomePage = () => {
+
     const [movies, setMovies] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -14,13 +17,16 @@ const HomeScreen: React.FC = () => {
     const [searchParams, setSearchParams] = useState<any>({ query: "", year: "", type: "" });
     const [searchState, setSearchState] = useState<boolean>(false);
 
+    const {t} = useTranslation();
+
+
     useEffect(() => {
         fetchHomeMovieList();
     }, []);
 
     useEffect(() => {
-        if (searchParams.query.trim() === "" && 
-            searchParams.year.trim() === "" && 
+        if (searchParams.query.trim() === "" &&
+            searchParams.year.trim() === "" &&
             searchParams.type === "") {
             setSearchState(false);
         }
@@ -29,19 +35,19 @@ const HomeScreen: React.FC = () => {
     const fetchHomeMovieList = async () => {
         setLoading(true);
         try {
-            const moviesResult = await fetchMovies("", "", "movie");
-            const seriesResult = await fetchMovies("", "", "series");
-    
+            const moviesResult = await fetchMovies(t, "", "", "movie");
+            const seriesResult = await fetchMovies(t, "", "", "series");
+
             const combinedMovies = [
                 ...(moviesResult.movies || []),
                 ...(seriesResult.movies || [])
             ];
-    
+
             setMovies(combinedMovies);
             setError(null);
         } catch (err) {
             console.error('Error fetching home movie list:', err);
-            setError("Failed to fetch home movie list.");
+            setError(t('error.fetchFailed'));
             setMovies([]);
         } finally {
             setLoading(false);
@@ -50,7 +56,7 @@ const HomeScreen: React.FC = () => {
 
     const fetchMovieResults = async (query: string, year: string, type: string, currentPage: number = 1) => {
         if (!query && !year && !type) {
-            setError("Enter a title, year or type to search");
+            setError(t('error.fillSearch'));
             setMovies([]);
             setSearchState(false);
             return;
@@ -60,13 +66,13 @@ const HomeScreen: React.FC = () => {
         setError(null);
 
         try {
-            const result = await fetchMovies(query, year, type, currentPage);
+            const result = await fetchMovies(t, query, year, type, currentPage);
             setMovies(result.movies || []);
             setTotalPages(result.totalPages);
             setError(result.error);
         } catch (err) {
             console.error('Search Error:', err);
-            setError("Something went wrong");
+            setError(t('error.somethingWentWrong'));
             setMovies([]);
             setTotalPages(1);
         } finally {
@@ -78,28 +84,12 @@ const HomeScreen: React.FC = () => {
         setSearchParams({ query, year, type });
         setSearchState(true);
 
-        if (query.trim().length < 3 && query.trim().length > 0) {
-            setError("Title must have 3 or more characters!");
-            return;
-        }
-
-        if (year.trim()) {
-            const yearNum = parseInt(year);
-            const currentYear = new Date().getFullYear();
-            
-            if (yearNum < 1888 || yearNum > currentYear) {
-                setError(`Year must be between 1888 and ${currentYear}`);
-                return;
-            }
-        }
-
         if (!query.trim() && !year.trim() && !type) {
             setSearchState(false);
             fetchHomeMovieList();
             return;
         }
 
-        
         setPage(1);
         fetchMovieResults(query, year, type, 1);
     };
@@ -110,19 +100,13 @@ const HomeScreen: React.FC = () => {
     };
 
     return (
-        <Container>
-            <Typography variant="h4" align="center" gutterBottom>
-                WikiMovies
-            </Typography>
-            <SearchBar 
-                onSearch={handleSearch}
-                initialValues={searchParams}
-            />
+        <div>
+            <Navbar onSearch={handleSearch} error={error}/>
             {!searchState && (
-                <HomeMovieList movies={movies} loading={loading} />
+                <HomeList />
             )}
             {searchState && (
-                <ShowMovies
+                <SearchResults
                     movies={movies}
                     loading={loading}
                     error={error}
@@ -131,8 +115,9 @@ const HomeScreen: React.FC = () => {
                     onPageChange={handlePageChange}
                 />
             )}
-        </Container>
+        </div>
     );
 };
 
-export default HomeScreen;
+
+export default HomePage;

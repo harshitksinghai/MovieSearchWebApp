@@ -48,4 +48,3 @@ export default tseslint.config({
   },
 })
 ```
-# Movie_Search_FE

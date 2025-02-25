@@ -1,0 +1,101 @@
+/* MarketingPage.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* overflow: hidden; Prevent scrolling */
+  }
+  
+  .main-c {
+    height: 100vh; /* Ensures full viewport height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .marketing-container {
+    flex: 1; /* Takes up full available space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .hero-section {
+    height: 100vh; /* Ensure it covers the full viewport */
+    width: 100%;
+    background-image: url('https://source.unsplash.com/random/1920x1080/?cinema');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+  }
+  
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .content {
+    text-align: center;
+  }
+h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+
+.cta-button {
+  color: #222;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+}
+
+.cta-button:hover {
+  background: #444;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.dark-mode .title {
+    color: #fff;
+  }
+  
+  .light-mode .title {
+    color: #222;
+  }
+
+  .dark-mode .cta-button {
+    color: #222;
+    background-color: #fff;
+  }
+  
+  .light-mode .cta-button {
+    color: #fff;
+    background-color: #222;
+
+  }
+  .dark-mode .cta-button:hover {
+    color: #222;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  .light-mode .cta-button:hover {
+    color: #e9e9e9;
+    background-color: #444;
+    cursor: pointer;
+
+  }

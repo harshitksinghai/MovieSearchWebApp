@@ -1,0 +1,58 @@
+{
+    "navbar": {
+        "appName": "WikiMovies",
+        "searchPlaceholder": "Buscar título...",
+        "typeAll": "Todos",
+        "typeMovies": "Películas",
+        "typeSeries": "Series",
+        "typeGames": "Juegos",
+        "Year": "Año",
+        "none": "Ninguno",
+        "lightTooltip": "Cambiar a modo claro",
+        "darkTooltip": "Cambiar a modo oscuro"
+    },
+    "error": {
+        "titleError": "El título debe tener al menos 3 caracteres.",
+        "NoMoviesFound": "¡No se encontraron resultados!",
+        "fetchFailed": "No se pudieron cargar las películas. Inténtalo de nuevo más tarde.",
+        "fillSearch": "Introduce un título, año o tipo para buscar",
+        "somethingWentWrong": "Algo salió mal"
+    },
+    "card": {
+        "dislikeTooltip": "No me gusta",
+        "likeTooltip": "Me gusta esto",
+        "loveTooltip": "¡Me encanta esto!",
+        "addListTooltip": "Agregar a Mi Lista",
+        "removeListTooltip": "Eliminar de Mi Lista"
+    },
+    "fav": {
+        "myList": "MI LISTA",
+        "loading": "Cargando tus favoritos...",
+        "empty": "No se han encontrado elementos en tu lista.",
+        "filter": {
+            "typeAll": "Todos",
+            "typeMovies": "Películas",
+            "typeSeries": "Series",
+            "typeGames": "Juegos",
+            "Year": "Año",
+            "none": "Ninguno",
+            "love": "Me encanta",
+            "like": "Me gusta",
+            "meh": "No me gusta"
+        }
+    },
+    "market": {
+        "appName": "WikiMovies",
+        "getStarted": "Comenzar"
+    },
+    "movie": {
+        "plot": "Argumento",
+        "director": "Director",
+        "cast": "Reparto",
+        "language": "Idiomas",
+        "ratings": "Valoraciones"
+    },
+    "footer": {
+        "message": "Todos los derechos reservados"
+    }
+}

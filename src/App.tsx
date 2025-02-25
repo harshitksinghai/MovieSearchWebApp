@@ -1,12 +1,15 @@
 import { Outlet } from 'react-router-dom'
-import './App.css'
+import './i18n/config.ts'
+import ThemeProviderWrapper from './theme/ThemeContext'
 
 function App() {
 
   return (
-    <main>
-      <Outlet />
-    </main>
+    <ThemeProviderWrapper>
+      <main>
+        <Outlet />
+      </main>
+    </ThemeProviderWrapper>
   )
 }
 

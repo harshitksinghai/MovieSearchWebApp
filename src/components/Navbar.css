@@ -1,0 +1,12 @@
+.nav-container{
+    background-color: #ededed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 74px;
+}
+.notLogo{
+    display: flex;
+    gap: 10px;
+    margin-right: 20px;
+}

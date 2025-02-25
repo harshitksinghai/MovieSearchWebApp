@@ -1,0 +1,133 @@
+.movie-card {
+    position: relative;
+    background-color: #18181b;
+    width: 250px;
+    height: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 10px rgba(26, 26, 26, 0.495);
+  }
+  
+  .movie-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+  
+  .movie-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background-color: #181818;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 9px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    transition: opacity 0.3s ease;
+  }
+  
+  .movie-card:hover .card-overlay {
+    opacity: 1;
+  }
+  
+  .rating-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .rating-options {
+    position: absolute;
+    left: -80px;
+    bottom: 0;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    background-color: rgba(42, 42, 42, 0.9);
+    padding: 8px;
+    border-radius: 20px;
+    z-index: 20;
+  }
+  
+  .rating-container:hover .rating-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(32px, 8px);
+  }
+  
+  .action-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #2f2f2f;
+    border: 2px solid #636363;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+    padding: 0;
+  }
+  
+  .action-button:hover {
+    border-color: #ffffff;
+    transform: scale(1.1);
+  }
+  
+  .action-button.active {
+    border-color: white;
+    background-color: white;
+  }
+  
+  .action-button.active svg {
+    color: #181818;
+  }
+  
+  .tooltip {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #181818;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+  }
+  
+  .action-button:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .movie-info {
+    margin-left: auto;
+    color: white;
+    text-align: right;
+  }
+  
+  .movie-info p {
+    margin: 3px 0;
+    font-size: 13px;
+    font-weight: 500;
+  }

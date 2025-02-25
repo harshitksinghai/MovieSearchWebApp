@@ -37,13 +37,13 @@
   }
   
   /* Poster Styling */
-  .movie-poster-container {
+  .movie-details-poster-container {
     position: relative;
     margin-bottom: 2rem;
     align-self: center;
   }
   
-  .movie-poster {
+  .movie-details-poster {
     width: 100%;
     max-width: 300px;
     height: auto;
@@ -309,7 +309,7 @@
       margin-top: 2rem;
     }
     
-    .movie-poster-container {
+    .movie-details-poster-container {
       flex: 0 0 300px;
       margin-bottom: 0;
     }

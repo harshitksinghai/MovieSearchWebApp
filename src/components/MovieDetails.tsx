@@ -89,11 +89,11 @@ const MovieDetails: React.FC = () => {
 
 
         <div className="movie-content">
-          <div className="movie-poster-container">
+          <div className="movie-details-poster-container">
             <img
               src={movie.Poster !== 'N/A' ? movie.Poster : '/placeholder-poster.jpg'}
               alt={movie.Title}
-              className="movie-poster"
+              className="movie-details-poster"
             />
           </div>
 

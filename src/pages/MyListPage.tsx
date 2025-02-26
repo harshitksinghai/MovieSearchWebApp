@@ -1,20 +1,20 @@
 
 import Navbar from "../components/Navbar";
 import SearchResults from "../components/SearchResults";
-import MovieCarousel from "../components/MovieCarousel.tsx";
+import HomeList from "../components/HomeList";
 import { useSearch } from '../context/SearchContext';
 import { useEffect } from "react";
 
-const HomePage = () => {
-    const { 
-        movies, 
-        loading, 
-        error, 
-        page, 
-        totalPages, 
-        searchState, 
+const MyListPage = () => {
+    const {
+        movies,
+        loading,
+        error,
+        page,
+        totalPages,
+        searchState,
         handleSearchState,
-        handlePageChange 
+        handlePageChange
     } = useSearch();
 
     useEffect(() => {
@@ -23,11 +23,12 @@ const HomePage = () => {
             handleSearchState(false);
         // }
     }, []);
+
     return (
         <div>
             <Navbar />
             {!searchState && (
-                <MovieCarousel />
+                <HomeList />
             )}
             {searchState && (
                 <SearchResults
@@ -43,4 +44,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default MyListPage;

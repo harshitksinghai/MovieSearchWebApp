@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import enTranslations from './translations/en.json';
 import spTranslations from './translations/sp.json';
-import jaTranslations from './translations/ja.json';
+import frTranslations from './translations/fr.json';
 
 i18n
   .use(initReactI18next)
@@ -10,7 +10,7 @@ i18n
     resources: {
       en: { translation: enTranslations },
       sp: { translation: spTranslations },
-      ja: { translation: jaTranslations }
+      fr: { translation: frTranslations }
     },
     lng: 'en', 
     fallbackLng: 'en',

@@ -9,7 +9,7 @@ import clsx from 'clsx';
 
 interface MovieCardProps {
   movie: any;
-  onListChange?: () => void; // Optional callback prop
+  onListChange?: () => void;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
@@ -29,12 +29,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
     }
   }, [movie.imdbID]);
 
-  // Notify parent components about changes
   const notifyChange = () => {
-    // Dispatch custom event
     window.dispatchEvent(new CustomEvent('movieListChanged'));
     
-    // Call callback if provided
     if (onListChange) {
       onListChange();
     }
@@ -46,7 +43,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
     
     if (isAddedToList) {
       updateRating(movie.imdbID, newRating);
-      // notifyChange(); // Notify about rating change
+      notifyChange();
     }
   };
 
@@ -58,7 +55,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
     }
     setIsAddedToList(!isAddedToList);
     
-    notifyChange(); // Notify about list change
+    notifyChange();
   };
 
   let ratingIcon;

@@ -1,0 +1,72 @@
+{
+    "navbar": {
+        "appName": "WikiMovies",
+        "searchPlaceholder": "Rechercher un titre...",
+        "typeAll": "Tous",
+        "typeMovies": "Films",
+        "typeSeries": "Séries",
+        "typeGames": "Jeux",
+        "Year": "Année",
+        "none": "Aucun",
+        "lightTooltip": "Passer en mode clair",
+        "darkTooltip": "Passer en mode sombre",
+        "mylist": "Ma Liste"
+    },
+    "error": {
+        "titleError": "Le titre doit contenir au moins 3 caractères.",
+        "NoMoviesFound": "Aucun résultat trouvé !",
+        "fetchFailed": "Échec du chargement des films. Veuillez réessayer plus tard.",
+        "fillSearch": "Entrez un titre, une année ou un type pour rechercher",
+        "somethingWentWrong": "Une erreur s'est produite"
+    },
+    "card": {
+        "dislikeTooltip": "Pas pour moi",
+        "likeTooltip": "J'aime ça",
+        "loveTooltip": "J'adore !",
+        "addListTooltip": "Ajouter à Ma Liste",
+        "removeListTooltip": "Retirer de Ma Liste"
+    },
+    "fav": {
+        "myList": "MA LISTE",
+        "loading": "Chargement de vos favoris...",
+        "empty": "Aucun élément trouvé dans votre liste.",
+        "filter": {
+            "typeAll": "Tous",
+            "typeMovies": "Films",
+            "typeSeries": "Séries",
+            "typeGames": "Jeux",
+            "Year": "Année",
+            "none": "Aucun",
+            "love": "Adoré",
+            "like": "Aimé",
+            "meh": "Bof"
+        }
+    },
+    "market": {
+        "appName": "WikiMovies",
+        "getStarted": "Commencer"
+    },
+    "movie": {
+        "plot": "Synopsis",
+        "director": "Réalisateur",
+        "cast": "Casting",
+        "language": "Langues",
+        "ratings": "Note"
+    },
+    "footer": {
+        "message": " Tous droits réservés"
+    },
+    "common": {
+        "loading": "Chargement..."
+    },
+    "search": {
+        "noResults": "Aucun film trouvé.",
+        "tryAgain": "Essayez une recherche plus spécifique ou allez à",
+        "goHome": "Accueil",
+        "or": "ou",
+        "goMyList": "Ma Liste"
+    },
+    "carousel": {
+        "soon": "Carrousel de films bientôt disponible !!!"
+    }
+}

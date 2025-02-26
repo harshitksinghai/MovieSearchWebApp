@@ -5,8 +5,19 @@
     align-items: center;
     height: 74px;
 }
+.nav-links{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
 .notLogo{
     display: flex;
     gap: 10px;
     margin-right: 20px;
+}
+.myListLink{
+    margin-top: 3px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #222;
 }

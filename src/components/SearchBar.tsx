@@ -1,39 +1,37 @@
 // SearchBar.tsx
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './SearchBar.module.css';
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
+import { useSearch } from '../context/SearchContext';
 
 
-interface SearchBarProps {
-    onSearch: (title: string, year: string, type: string) => void;
-    error: any;
-}
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
+
+const SearchBar = () => {
+    const {handleSearch, error, handleError, title, handleTitle} = useSearch();
     const {t} = useTranslation()
     const theme = useTheme();
-
-    const [title, setTitle] = useState('');
     const [type, setType] = useState('');
     const [year, setYear] = useState('');
-    const [err, setError] = useState(error);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [isYearOpen, setIsYearOpen] = useState(false);
 
-
+    useEffect(() => {
+        handleTitle('');
+    },[])
 
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: currentYear - 1887 }, (_, i) => currentYear - i);
 
-    const handleSearch = () => {
+    const handleSearchButton = () => {
         if (title.trim().length < 3) {
-            setError(t('error.titleError'));
+            handleError(t('error.titleError'));
             return;
         }
-        setError('');
-        onSearch(title, year, type);
+        handleError('');
+        handleSearch(title, year, type);
     };
 
     let typeOption: string;
@@ -55,12 +53,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
         <div>
 
             <div className={styles['search-container']} >
-                <div className={clsx(styles["search-box"], (err || error) && styles['search-box-err'])} style={{ color: theme.palette.text.secondary }}>
+                <div className={clsx(styles["search-box"], (error) && styles['search-box-err'])} style={{ color: theme.palette.text.secondary }}>
                         <input
                             type="text"
                             placeholder={t('navbar.searchPlaceholder')}
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => {
+                                if(e.target.value === ''){
+                                    handleError(null);
+                                }
+                                handleTitle(e.target.value);
+                            }}
                             className={styles["search-title"]}
                         />
 
@@ -143,7 +146,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
                         </div>
 
                         <button
-                            onClick={handleSearch}
+                            onClick={handleSearchButton}
                             className={styles["search-button"]}
                         >
                             <svg
@@ -164,7 +167,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, error }) => {
                         </button>
                     </div>
                 </div>
-                <p className={styles['search-err']}>{err || error}</p>
+                <p className={styles['search-err']}>{error}</p>
             </div>
         </div>
     );

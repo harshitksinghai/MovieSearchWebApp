@@ -2,6 +2,9 @@ import React from 'react'
 import styles from './SearchResults.module.css'
 import MovieCard from './MovieCard';
 import { Box, Skeleton, Pagination } from "@mui/material";
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useSearch } from '../context/SearchContext';
 
 interface ShowMoviesProps {
   movies: any[];
@@ -19,6 +22,15 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
   totalPages,
   onPageChange
 }) => {
+
+  const { handleSearchState, handleError, handleTitle } = useSearch();
+  const { t } = useTranslation();
+  const handleNavLinkClick = () => {
+    handleSearchState(false);
+    handleError(null);
+    handleTitle('');
+  };
+
   return (
     <div className={styles["search-container"]}>
       {loading ? (
@@ -36,8 +48,7 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
             />
           ))}
         </div>
-      ) : (
-
+      ) : movies.length > 0 ? (
         <div className={styles["search-results-container"]}>
           <div className={styles["movies-grid"]}>
             {movies.map((movie) => (
@@ -45,9 +56,17 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
             ))}
           </div>
         </div>
+      ) : (
+        <div className={styles["no-results"]}>
+          <p>
+            {t('search.tryAgain')}{" "}
+            <Link to="/home" className={styles["nav-link"]} onClick={handleNavLinkClick}>{t('search.goHome')}</Link> {t('search.or')}{" "}
+            <Link to="/mylist" className={styles["nav-link"]} onClick={handleNavLinkClick}>{t('search.goMyList')}</Link>.
+          </p>
+        </div>
       )}
 
-      {totalPages > 1 && (
+      {totalPages > 1 && movies.length > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3 }}>
           <Pagination
             variant="outlined"
@@ -58,9 +77,8 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
           />
         </Box>
       )}
-
     </div>
-  )
-}
+  );
+};
 
 export default SearchResults;

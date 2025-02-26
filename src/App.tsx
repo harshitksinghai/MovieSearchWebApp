@@ -2,10 +2,12 @@ import { Outlet } from 'react-router-dom'
 import './i18n/config.ts'
 import ThemeProviderWrapper from './theme/ThemeContext'
 import Footer from './components/Footer.tsx'
+import { SearchProvider } from './context/SearchContext';
 
 function App() {
 
   return (
+    <SearchProvider>
     <ThemeProviderWrapper>
       <div style={{ 
         display: 'flex', 
@@ -18,6 +20,7 @@ function App() {
         <Footer />
       </div>
     </ThemeProviderWrapper>
+    </SearchProvider>
   )
 }
 

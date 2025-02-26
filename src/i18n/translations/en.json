@@ -9,7 +9,8 @@
         "Year": "Year",
         "none": "None",
         "lightTooltip": "Switch to light mode",
-        "darkTooltip": "Switch to dark mode"
+        "darkTooltip": "Switch to dark mode",
+        "mylist": "My List"
     },
     "error":{
         "titleError": "Title must be at least 3 characters long.",
@@ -57,5 +58,15 @@
     },
     "common":{
         "loading": "Loading..."
+    },
+    "search":{
+        "noResults": "No movies found.",
+        "tryAgain": "Try a more specific search or go to",
+        "goHome": "Home",
+        "or": "or",
+        "goMyList": "My List"
+    },
+    "carousel":{
+        "soon": "Movie Carousel implementing soon!!!"
     }
 }

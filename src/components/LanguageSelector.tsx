@@ -7,7 +7,7 @@ const LanguageSelector: React.FC = () => {
   const languages = [
     { code: 'en', name: 'English' },
     { code: 'sp', name: 'Español' },
-    { code: 'ja', name: '日本語' }
+    { code: 'fr', name: 'Français' }
   ];
 
   return (
@@ -32,14 +32,18 @@ const LanguageSelector: React.FC = () => {
           PaperProps: {
             sx: {
               backgroundColor: '#222',
+              '& .MuiList-root': {
+                backgroundColor: '#222',
+                padding: 0,
+              },
             },
           },
         }}
       >
         {languages.map((lang) => (
-          <MenuItem 
-            key={lang.code} 
-            value={lang.code} 
+          <MenuItem
+            key={lang.code}
+            value={lang.code}
             sx={{
               backgroundColor: '#222',
               color: 'white',

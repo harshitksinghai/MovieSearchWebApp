@@ -9,7 +9,9 @@
         "Year": "Año",
         "none": "Ninguno",
         "lightTooltip": "Cambiar a modo claro",
-        "darkTooltip": "Cambiar a modo oscuro"
+        "darkTooltip": "Cambiar a modo oscuro",
+        "mylist": "Mi Lista"
+
     },
     "error": {
         "titleError": "El título debe tener al menos 3 caracteres.",
@@ -57,5 +59,15 @@
     },
     "common": {
         "loading": "Cargando..."
+    },
+    "search": {
+        "noResults": "No se encontraron películas.",
+        "tryAgain": "Prueba una búsqueda más específica o ve a",
+        "goHome": "Inicio",
+        "or": "o",
+        "goMyList": "Mi Lista"
+    },
+    "carousel": {
+        "soon": "¡Carrusel de películas próximamente!"
     }
 }

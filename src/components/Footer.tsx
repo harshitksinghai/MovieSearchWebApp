@@ -1,29 +1,21 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-// import LanguageSelector from './LanguageSelector';
+import { useTheme } from '@mui/material/styles';
 
 const Footer: React.FC = () => {
   const {t} = useTranslation();
-  const location = useLocation();
-
-  // Don't render footer on home page
-  if (location.pathname === '/') {
-    return null;
-  }
+  const theme = useTheme();
 
   return (
     <Box
       sx={{
-        backgroundColor: '#333',
-        color: '#fff',
+        backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#ededed',
+        color: theme.palette.mode === 'dark' ? '#fff' : '#222',
         padding: '10px 0',
         textAlign: 'center',
-        position: 'fixed',
-        bottom: 0,
         width: '100%',
-        zIndex: 1100,
+        marginTop: 'auto',
       }}
     >
       <Typography variant="body2">

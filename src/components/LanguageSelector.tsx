@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { FormControl, Select, MenuItem } from '@mui/material';
-// import { useLanguagePreference } from '../hooks/useLanguagePrefernce'
 
 const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
@@ -12,7 +11,7 @@ const LanguageSelector: React.FC = () => {
   ];
 
   return (
-    <FormControl size="small" >
+    <FormControl size="small">
       <Select
         value={i18n.language}
         onChange={(e) => i18n.changeLanguage(e.target.value)}
@@ -21,14 +20,40 @@ const LanguageSelector: React.FC = () => {
           color: 'white',
           borderRadius: '8px',
           height: '38px',
-          marginTop: '2px'
+          marginTop: '2px',
+          '& .MuiSvgIcon-root': {
+            color: 'white !important',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(255, 255, 255, 0.5)',
+          },
+        }}
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              backgroundColor: '#222',
+            },
+          },
         }}
       >
         {languages.map((lang) => (
-          <MenuItem key={lang.code} value={lang.code} sx={{
-            backgroundColor: '#222',
-            color: 'white',
-          }}>
+          <MenuItem 
+            key={lang.code} 
+            value={lang.code} 
+            sx={{
+              backgroundColor: '#222',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#333',
+              },
+              '&.Mui-selected': {
+                backgroundColor: '#444',
+                '&:hover': {
+                  backgroundColor: '#555',
+                },
+              },
+            }}
+          >
             {lang.name}
           </MenuItem>
         ))}

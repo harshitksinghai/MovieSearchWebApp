@@ -13,8 +13,12 @@ const DarkModeToggle: React.FC = () => {
 
   return (
     <Tooltip title={mode === 'dark' ? t('navbar.lightTooltip') : t('navbar.darkTooltip')}>
-      <IconButton onClick={toggleTheme} color="inherit">
-        {mode === 'dark' ? <Brightness7Icon style={{color: "black"}} /> : <Brightness4Icon />}
+      <IconButton onClick={toggleTheme} color="inherit" sx={{
+          '&:hover': {
+            backgroundColor: '#d6d6d6',
+          },
+        }}>
+        {mode === 'dark' ? <Brightness7Icon sx={{color: "black"}} /> : <Brightness4Icon sx={{color: "black"}}/>}
       </IconButton>
     </Tooltip>
   );

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { MovieItem } from '../utils/localStorage';
 import MovieCard from './MovieCard';
-import styles from './ShowFavList.module.css'
 import { fetchMoviesByImdbId } from '../api/api';
 import { useTranslation } from 'react-i18next';
-import { Skeleton } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 
 interface SimplifiedMovie {
   Type: string;
@@ -80,43 +79,77 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
   // }
 
   if (error) {
-    return <div className={styles.error}>{error}</div>;
+    return (
+      <Typography 
+        color="error" 
+        sx={{ 
+          textAlign: 'center' 
+        }}
+      >
+        {error}
+      </Typography>
+    );
   }
 
   if (filteredList.length === 0) {
-    return <div className={styles["empty-list"]}>{t('fav.empty')}</div>;
+    return (
+      <Typography 
+        sx={{ 
+          textAlign: 'center', 
+          position: 'relative', 
+          top: '200px' 
+        }}
+      >
+        {t('fav.empty')}
+      </Typography>
+    );
   }
 
   return (
-    <div>
-      
-    {loading ? (
-      <div className={styles["skeleton-grid"]}>
-        {[...Array(10)].map((_, index) => (
-          <Skeleton
-            key={index}
-            variant="rectangular"
-            width={250}
-            height={300}
-            sx={{
-              bgcolor: 'grey.700',
-              borderRadius: '8px'
-            }}
-          />
-        ))}
-      </div>
-    ) : (
-    <div className={styles["search-container"]}>
-      <div className={styles["search-results-container"]}>
-        <div className={styles["movies-grid"]}>
-          {filteredMovies.map((movie) => (
-            <MovieCard key={movie.imdbID} movie={movie} onListChange={refreshList}/>
+    <Box sx={{ margin: 0 }}>
+      {loading ? (
+        <Box sx={{ 
+          padding: '20px 48px', 
+          marginTop: '16px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '15px',
+          rowGap: '48px'
+        }}>
+          {[...Array(10)].map((_, index) => (
+            <Skeleton
+              key={index}
+              variant="rectangular"
+              width="100%"
+              height={300}
+              sx={{
+                bgcolor: 'grey.700',
+                borderRadius: '8px'
+              }}
+            />
           ))}
-        </div>
-      </div>
-    </div>
-        )}
-        </div>
+        </Box>
+      ) : (
+        <Box sx={{ 
+          padding: '20px 48px', 
+          marginTop: '16px'
+        }}>
+          <Box sx={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: '15px',
+            rowGap: '48px',
+
+          }}>
+            {filteredMovies.map((movie) => (
+              <Box key={movie.imdbID}>
+                <MovieCard movie={movie} onListChange={refreshList} />
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
 };
 

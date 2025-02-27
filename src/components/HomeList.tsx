@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import FavListFilter from './FavListFilter'
-import styles from './HomeList.module.css'
 import { getMovieList, MovieItem } from '../utils/localStorage.ts';
 import { useTranslation } from 'react-i18next';
 import ShowFavList from './ShowFavList.tsx';
+import { Box, Typography } from '@mui/material';
 
 const HomeList = () => {
   const {t} = useTranslation();
@@ -58,11 +58,21 @@ const HomeList = () => {
   };
 
   return (
-    <div className={styles['home-list-container']}>
-      <p className={styles.myList}>{t('fav.myList')}</p>
+    <Box>
+      <Typography 
+        variant="h2" 
+        sx={{
+          fontWeight: 600,
+          fontSize: '50px',
+          textAlign: 'center',
+          marginTop: '20px'
+        }}
+      >
+        {t('fav.myList')}
+      </Typography>
       <FavListFilter onFilterChange={handleFilterChange} />
       <ShowFavList filteredList={filteredMovieList} refreshList={refreshLists} />
-    </div>
+    </Box>
   )
 }
 

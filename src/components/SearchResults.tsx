@@ -1,7 +1,6 @@
 import React from 'react'
-import styles from './SearchResults.module.css'
 import MovieCard from './MovieCard';
-import { Box, Skeleton, Pagination } from "@mui/material";
+import { Box, Skeleton, Pagination, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '../context/SearchContext';
@@ -32,14 +31,21 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
   };
 
   return (
-    <div className={styles["search-container"]}>
+    <Box sx={{ margin: 0 }}>
       {loading ? (
-        <div className={styles["skeleton-grid"]}>
+        <Box sx={{ 
+          padding: '20px 48px', 
+          marginTop: '16px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '15px',
+          rowGap: '48px'
+        }}>
           {[...Array(10)].map((_, index) => (
             <Skeleton
               key={index}
               variant="rectangular"
-              width={250}
+              width="100%"
               height={300}
               sx={{
                 bgcolor: 'grey.700',
@@ -47,23 +53,58 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
               }}
             />
           ))}
-        </div>
+        </Box>
       ) : movies.length > 0 ? (
-        <div className={styles["search-results-container"]}>
-          <div className={styles["movies-grid"]}>
+        <Box sx={{ 
+          padding: '20px 48px', 
+          marginTop: '16px'
+        }}>
+          <Box sx={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: '15px',
+            rowGap: '48px',
+
+          }}>
             {movies.map((movie) => (
-              <MovieCard key={movie.imdbID} movie={movie} />
+              <Box key={movie.imdbID} sx={{ width: '100%' }}>
+                <MovieCard movie={movie} />
+              </Box>
             ))}
-          </div>
-        </div>
+          </Box>
+        </Box>
       ) : (
-        <div className={styles["no-results"]}>
-          <p>
+        <Box sx={{ 
+          textAlign: 'center', 
+          position: 'relative', 
+          top: '300px' 
+        }}>
+          <Typography>
             {t('search.tryAgain')}{" "}
-            <Link to="/home" className={styles["nav-link"]} onClick={handleNavLinkClick}>{t('search.goHome')}</Link> {t('search.or')}{" "}
-            <Link to="/mylist" className={styles["nav-link"]} onClick={handleNavLinkClick}>{t('search.goMyList')}</Link>.
-          </p>
-        </div>
+            <Link 
+              to="/home" 
+              onClick={handleNavLinkClick}
+              style={{ 
+                fontStyle: 'italic', 
+                fontWeight: 600, 
+                color: 'rgb(5, 205, 5)'
+              }}
+            >
+              {t('search.goHome')}
+            </Link> {t('search.or')}{" "}
+            <Link 
+              to="/mylist" 
+              onClick={handleNavLinkClick}
+              style={{ 
+                fontStyle: 'italic', 
+                fontWeight: 600, 
+                color: 'rgb(5, 205, 5)'
+              }}
+            >
+              {t('search.goMyList')}
+            </Link>.
+          </Typography>
+        </Box>
       )}
 
       {totalPages > 1 && movies.length > 0 && (
@@ -74,10 +115,27 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
             count={totalPages}
             page={page}
             onChange={onPageChange}
+            sx={{
+              '& .MuiPaginationItem-root': {
+                color: '#222',
+              },
+              '& .MuiPaginationItem-root.Mui-selected': {
+                backgroundColor: '#222',
+                color: '#fff',
+                '&:hover': {
+                  backgroundColor: '#222',
+                  color: '#fff',
+                }
+              },
+              '& .MuiPaginationItem-root:hover': {
+                backgroundColor: '#444',
+                color: '#fff',
+              }
+            }}
           />
         </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

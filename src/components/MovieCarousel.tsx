@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import styles from './MovieCarousel.module.css'
+import { Typography } from '@mui/material';
 
 const MovieCarousel = () => {
     const {t} = useTranslation();
     return(
-        <div className={styles["movie-carousel-container"]}>
-            <p className={styles.soon}>{t("carousel.soon")}</p>
+        <div>
+            <Typography sx={{position: 'relative', top: '300px', textAlign: 'center'}}>{t("carousel.soon")}</Typography>
         </div>
     )
 }

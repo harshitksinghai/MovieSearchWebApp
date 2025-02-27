@@ -1,36 +1,87 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './MarketingPage.module.css'; // External CSS file
 import SubNavBar from '../components/SubNavBar';
 import { ThemeContext } from '../theme/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
+import { Box, Typography, Button, Container } from '@mui/material';
 
 const MarketingPage = () => {
   const navigate = useNavigate();
-    const { darkMode } = useContext(ThemeContext);
-    const {t} = useTranslation();
+  const { darkMode } = useContext(ThemeContext);
+  const { t } = useTranslation();
   
   function handleClick() {
-    console.log("click click market -> /home")
+    console.log("click click market -> /home");
     navigate('/home');
   }
   
   return (
-    <div className={styles['main-c']}>
-    <SubNavBar />
-    <div className={clsx(styles["marketing-container"], darkMode ? styles["dark-mode"] : styles["light-mode"])}>
-      <div className={styles["hero-section"]}>
-        <div className={styles.content}>
-          <h1 className={styles.title}>{t('market.appName')}</h1>
-          <button className={styles["cta-button"]} onClick={handleClick}>
-            {t('market.getStarted')}
-          </button>
-        </div>
-      </div>
-    </div>
-    </div>
-
+    <Box sx={{ 
+      height: '100%',
+      width: '100%',
+      margin: 0,
+      padding: 0
+    }}>
+      <SubNavBar />
+      <Box sx={{ 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        bgcolor: darkMode ? 'background.paper' : 'background.default',
+      }}>
+        <Box sx={{
+          width: '100%',
+          height: 'calc(100vh - 120px)',
+          backgroundImage: 'url("https://source.unsplash.com/random/1920x1080/?cinema")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          position: 'relative',
+        }}>
+          <Container sx={{
+            textAlign: 'center',
+          }}>
+            <Typography 
+              variant="h1" 
+              sx={{
+                fontSize: '4rem',
+                fontWeight: 700,
+                marginBottom: '1rem',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
+                letterSpacing: '2px',
+                color: darkMode ? '#fff' : '#222',
+                fontFamily: '"Montserrat", sans-serif',
+              }}
+            >
+              {t('market.appName')}
+            </Typography>
+            <Button 
+              variant="contained"
+              onClick={handleClick}
+              sx={{
+                fontSize: '1.2rem',
+                fontWeight: 600,
+                padding: '1rem 2rem',
+                borderRadius: '8px',
+                color: darkMode ? '#222' : '#fff',
+                backgroundColor: darkMode ? '#fff' : '#222',
+                '&:hover': {
+                  backgroundColor: darkMode ? '#fff' : '#444',
+                  transform: 'scale(1.05)',
+                  color: darkMode ? '#222' : '#e9e9e9',
+                }
+              }}
+            >
+              {t('market.getStarted')}
+            </Button>
+          </Container>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

@@ -1,176 +1,329 @@
-// SearchBar.tsx
 import { useEffect, useState } from 'react';
-import styles from './SearchBar.module.css';
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
-import clsx from 'clsx';
 import { useSearch } from '../context/SearchContext';
-
-
-
+import { 
+  Box, 
+  Button, 
+  MenuItem, 
+  Typography, 
+  Paper,
+  IconButton,
+  InputBase,
+  Popover
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const SearchBar = () => {
-    const {handleSearch, error, handleError, title, handleTitle} = useSearch();
-    const {t} = useTranslation()
-    const theme = useTheme();
-    const [type, setType] = useState('');
-    const [year, setYear] = useState('');
-    const [isTypeOpen, setIsTypeOpen] = useState(false);
-    const [isYearOpen, setIsYearOpen] = useState(false);
+  const { handleSearch, error, handleError, title, handleTitle } = useSearch();
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const [type, setType] = useState('');
+  const [year, setYear] = useState('');
+  
+  // For Material UI Menu
+  const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
+  const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
+  const isTypeOpen = Boolean(typeAnchorEl);
+  const isYearOpen = Boolean(yearAnchorEl);
 
-    useEffect(() => {
-        handleTitle('');
-    },[])
+  useEffect(() => {
+    handleTitle('');
+  }, []);
 
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: currentYear - 1887 }, (_, i) => currentYear - i);
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1887 }, (_, i) => currentYear - i);
 
-    const handleSearchButton = () => {
-        if (title.trim().length < 3) {
-            handleError(t('error.titleError'));
-            return;
-        }
-        handleError('');
-        handleSearch(title, year, type);
-    };
-
-    let typeOption: string;
-    if(type === 'movie'){
-        typeOption = t('navbar.typeMovies');
+  const handleSearchButton = () => {
+    if (title.trim().length < 3) {
+      handleError(t('error.titleError'));
+      return;
     }
-    else if(type === 'series'){
-        typeOption = t('navbar.typeSeries');
+    handleError('');
+    handleSearch(title, year, type);
+  };
+
+  const handleTypeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setTypeAnchorEl(event.currentTarget);
+  };
+
+  const handleYearClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setYearAnchorEl(event.currentTarget);
+  };
+
+  const handleTypeClose = () => {
+    setTypeAnchorEl(null);
+  };
+
+  const handleYearClose = () => {
+    setYearAnchorEl(null);
+  };
+
+  let typeOption: string;
+  if (type === 'movie') {
+    typeOption = t('navbar.typeMovies');
+  } else if (type === 'series') {
+    typeOption = t('navbar.typeSeries');
+  } else if (type === 'game') {
+    typeOption = t('navbar.typeGames');
+  } else {
+    typeOption = t('navbar.typeAll');
+  }
+
+  // Common Popover styles (replacing Menu component)
+  const popoverStyles = {
+    '& .MuiPaper-root': {
+      backgroundColor: '#222222',
+      color: 'white',
+      maxHeight: '320px',
+      overflowY: 'auto',
+      borderRadius: '8px',
+      marginTop: '2px',
+      '&::-webkit-scrollbar': {
+        width: '8px'
+      },
+      '&::-webkit-scrollbar-track': {
+        background: '#2a2a2a',
+        borderRadius: '4px'
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: '#444444',
+        borderRadius: '4px'
+      },
+      '&::-webkit-scrollbar-thumb:hover': {
+        background: '#424242'
+      }
     }
-    else if(type === 'game'){
-        typeOption = t('navbar.typeGames');
+  };
+
+  // Common button styles
+  const buttonStyles = {
+    height: '38px',
+    backgroundColor: '#222222',
+    color: 'white',
+    padding: '0 16px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    '&:hover': {
+      backgroundColor: '#424242',
+
+    },
+    textTransform: 'none',
+    minWidth: '80px'
+  };
+
+  // MenuItem styles
+  const menuItemStyles = {
+    '&:hover': {
+      backgroundColor: '#424242',
+
     }
-    else{
-        typeOption = t('navbar.typeAll')
-    }
+  };
 
+  return (
+    <Box sx={{ position: 'relative', marginRight: '100px' }}>
+      <Paper
+        elevation={0}
+        sx={{
+          width: '550px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          paddingLeft: '6px',
+          gap: '2px',
+          border: error ? '2px solid rgb(247, 87, 87)' : 'none',
+          color: theme.palette.text.secondary
+        }}
+      >
+        {/* Replace deprecated TextField variant="standard" with InputBase */}
+        <InputBase
+          placeholder={t('navbar.searchPlaceholder')}
+          value={title}
+          onChange={(e) => {
+            if (e.target.value === '') {
+              handleError(null);
+            }
+            handleTitle(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearchButton();
+            }
+          }}
+          sx={{
+            width: '100%',
+            height: '90%',
+            pl: 1,
+            '& .MuiInputBase-input': {
+              height: '100%'
+            }
+          }}
+        />
 
-    return (
-        <div>
+        <Box sx={{ 
+          height: '90%', 
+          display: 'flex', 
+          alignItems: 'center',
+          backgroundColor: 'white',
+          gap: '6px', 
+          width: 'fit-content',
+        }}>
+          <Button
+            id="type-button"
+            aria-controls={isTypeOpen ? 'type-popover' : undefined}
+            aria-haspopup="true"
+            aria-expanded={isTypeOpen ? 'true' : undefined}
+            onClick={handleTypeClick}
+            sx={{
+              ...buttonStyles,
+              minWidth: '82px',
+            }}
+            endIcon={isTypeOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          >
+            {typeOption}
+          </Button>
+          
+          {/* Replace Menu with Popover */}
+          <Popover
+            id="type-popover"
+            open={isTypeOpen}
+            anchorEl={typeAnchorEl}
+            onClose={handleTypeClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            sx={popoverStyles}
+          >
+            <Box>
+              {[
+                { label: t('navbar.typeAll'), value: '' },
+                { label: t('navbar.typeMovies'), value: 'movie' },
+                { label: t('navbar.typeSeries'), value: 'series' },
+                { label: t('navbar.typeGames'), value: 'game' }
+              ].map((option) => (
+                <MenuItem 
+                  key={option.label} 
+                  onClick={() => {
+                    setType(option.value);
+                    handleTypeClose();
+                  }}
+                  sx={menuItemStyles}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Box>
+          </Popover>
 
-            <div className={styles['search-container']} >
-                <div className={clsx(styles["search-box"], (error) && styles['search-box-err'])} style={{ color: theme.palette.text.secondary }}>
-                        <input
-                            type="text"
-                            placeholder={t('navbar.searchPlaceholder')}
-                            value={title}
-                            onChange={(e) => {
-                                if(e.target.value === ''){
-                                    handleError(null);
-                                }
-                                handleTitle(e.target.value);
-                            }}
-                            className={styles["search-title"]}
-                        />
+          <Button
+            id="year-button"
+            aria-controls={isYearOpen ? 'year-popover' : undefined}
+            aria-haspopup="true"
+            aria-expanded={isYearOpen ? 'true' : undefined}
+            onClick={handleYearClick}
+            sx={buttonStyles}
+            endIcon={isYearOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          >
+            {year ? year : t('navbar.Year')}
+          </Button>
+          
+          {/* Replace Menu with Popover */}
+          <Popover
+            id="year-popover"
+            open={isYearOpen}
+            anchorEl={yearAnchorEl}
+            onClose={handleYearClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            sx={popoverStyles}
+          >
+            <Box>
+              <MenuItem 
+                onClick={() => {
+                  setYear('');
+                  handleYearClose();
+                }}
+                sx={{
+                  minWidth: '76px',
+                  ...menuItemStyles
+                }}
+              >
+                {t('navbar.none')}
+              </MenuItem>
+              {years.map((yearOption) => (
+                <MenuItem 
+                  key={yearOption} 
+                  onClick={() => {
+                    setYear(yearOption.toString());
+                    handleYearClose();
+                  }}
+                  sx={{
+                    minWidth: '76px',
+                    ...menuItemStyles
+                  }}
+                >
+                  {yearOption}
+                </MenuItem>
+              ))}
+            </Box>
+          </Popover>
 
-                    <div className={styles['select-container']}>
-                        <div className={clsx(styles["select-dropdown"], styles["search-type"])}>
-                            <button
-                                onClick={() => setIsTypeOpen(!isTypeOpen)}
-                                onBlur={() => setIsTypeOpen(false)}
-                                className={styles["select-button"]}
-                            >
-                                {typeOption}
-                                <span className={clsx(styles.arrow, isTypeOpen && styles['arrow-up'])}>
-                                    ▼
-                                </span>
-                            </button>
-
-                            {isTypeOpen && (
-                                <div className={styles["dropdown-menu"]}>
-                                    {[t('navbar.typeAll'), t('navbar.typeMovies'), t('navbar.typeSeries'), t('navbar.typeGames')].map((option) => (
-                                        <button
-                                            key={option}
-                                            className={styles["dropdown-item"]}
-                                            onMouseDown={() => {
-                                                if(option === t('navbar.typeMovies')){
-                                                    setType('movie');
-                                                }
-                                                else if(option === t('navbar.typeSeries')){
-                                                    setType('series')
-                                                }
-                                                else if(option === t('navbar.typeGames')){
-                                                    setType('game')
-                                                }
-                                                else{
-                                                    setType('')
-                                                }
-                                                setIsTypeOpen(false);
-                                            }}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        <div className={styles["select-dropdown"]}>
-                            <button
-                                onClick={() => setIsYearOpen(!isYearOpen)}
-                                onBlur={() => setIsYearOpen(false)}
-                                className={styles["select-button"]}
-                            >
-                                {year ? year : t('navbar.Year')}
-                                <span className={clsx(styles.arrow, isYearOpen && styles['arrow-up'])}>
-                                    ▼
-                                </span>
-                            </button>
-
-                            {isYearOpen && (
-                                <div className={styles["dropdown-menu"]}>
-                                    <button
-                                        className={styles["dropdown-item"]}
-                                        onMouseDown={() => {
-                                            setYear('');
-                                            setIsYearOpen(false);
-                                        }}
-                                    >{t('navbar.none')}</button>
-                                    {years.map((option) => (
-                                        <button
-                                            key={option}
-                                            className={styles["dropdown-item"]}
-                                            onMouseDown={() => {
-                                                setYear(option.toString());
-                                                setIsYearOpen(false);
-                                            }}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <button
-                            onClick={handleSearchButton}
-                            className={styles["search-button"]}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="25"
-                                height="25"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                color='white'
-                            >
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <p className={styles['search-err']}>{error}</p>
-            </div>
-        </div>
-    );
+          <IconButton
+            onClick={handleSearchButton}
+            sx={{
+              backgroundColor: '#222222',
+              color: 'white',
+              borderRadius: '6px',
+              height: '38px',
+              width: '40px',
+              padding: '0 10px',
+              '&:hover': {
+                backgroundColor: '#424242',
+                cursor: 'pointer'
+              }
+            }}
+          >
+            <SearchIcon />
+          </IconButton>
+        </Box>
+      </Paper>
+      
+      {error && (
+        <Typography 
+          sx={{ 
+            fontSize: '13px',
+            marginLeft: '7px',
+            color: 'red',
+            position: 'absolute',
+            bottom: '-18px',
+            left: 0,
+            width: '100%',
+            textAlign: 'left'
+          }}
+        >
+          {error}
+        </Typography>
+      )}
+    </Box>
+  );
 };
 
 export default SearchBar;

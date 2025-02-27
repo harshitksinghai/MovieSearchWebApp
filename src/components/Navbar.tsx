@@ -1,42 +1,70 @@
 import Logo from './UI/Logo';
-import styles from './Navbar.module.css';
 import SearchBar from './SearchBar';
-import LanguageSelector from '../components/LanguageSelector'
+import LanguageSelector from '../components/LanguageSelector';
 import { Link } from 'react-router-dom';
 import DarkModeToggle from './DarkModeToggle';
 import { useSearch } from '../context/SearchContext';
 import { useTranslation } from 'react-i18next';
+import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 
 const Navbar: React.FC = () => {
   const { handleSearchState, handleError, handleTitle } = useSearch();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
     
-    const handleNavLinkClick = () => {
-        handleSearchState(false);
-        handleError(null);
-        handleTitle('');
-    };
+  const handleNavLinkClick = () => {
+    handleSearchState(false);
+    handleError(null);
+    handleTitle('');
+  };
 
   return (
-    <div>
-      <div className={styles["nav-container"]}>
-        <div className={styles['nav-links']}>
-        <Link to={"/home"} onClick={handleNavLinkClick}>
-          <Logo />
-        </Link>
-        <Link to={"/mylist"} onClick={handleNavLinkClick}>
-        <p className={styles.myListLink}>{t('navbar.mylist')}</p>
-        </Link>
-        </div>
-        <div className={styles.notLogo}>
-        <SearchBar />
-        <LanguageSelector />
-        <DarkModeToggle />
-        </div>
+    <AppBar 
+      position="static"
+      sx={{ 
+        backgroundColor: '#ededed',
+        height: '74px',
+        boxShadow: 0
+      }}
+    >
+      <Toolbar sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between',
+        height: '100%'
+      }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '30px' 
+        }}>
+          <Link to="/home" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+            <Logo />
+          </Link>
+          <Link to="/mylist" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+            <Typography 
+              sx={{ 
+                marginTop: '3px',
+                fontSize: '20px',
+                fontWeight: 500,
+                color: '#222'
+              }}
+            >
+              {t('navbar.mylist')}
+            </Typography>
+          </Link>
+        </Box>
         
-      </div>
-    </div>
-  )
-}
+        <Box sx={{ 
+          display: 'flex', 
+          gap: '10px',
+          marginRight: '20px'
+        }}>
+          <SearchBar />
+          <LanguageSelector />
+          <DarkModeToggle />
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
+};
 
-export default Navbar
+export default Navbar;

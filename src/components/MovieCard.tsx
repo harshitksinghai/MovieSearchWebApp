@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Card, CardMedia, Typography, IconButton, Tooltip, Stack } from '@mui/material';
 import placeholder from "../assets/placeholder1.jpg";
 import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart, FaPlus, FaCheck } from "react-icons/fa6";
-import { removeFromList, addToList, updateRating, getMovieList } from '../utils/localStorage';
+import { updateRating, getMovieList, removeFromWatchedList, removeFromWatchLaterList, addToWatchLaterList } from '../utils/localStorage';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -14,18 +14,21 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
   const { t } = useTranslation();
   const [ratingState, setRatingState] = useState<'none' | 'dislike' | 'like' | 'love'>('none');
-  const [isAddedToList, setIsAddedToList] = useState(false);
+  const [isAddedtoWatchLaterList, setIsAddedToWatchLaterList] = useState(false);
 
   useEffect(() => {
     const movieList = getMovieList();
     const storedMovie = movieList.find((m) => m.imdbID === movie.imdbID);
-    if (storedMovie) {
-      setIsAddedToList(true);
-      setRatingState(storedMovie.ratingState);
-    } else {
-      setIsAddedToList(false);
+
+    if(!storedMovie){
+      setIsAddedToWatchLaterList(false);
       setRatingState('none');
+      return;
     }
+    if(storedMovie.addToWatchLaterList !== ''){
+      setIsAddedToWatchLaterList(true);
+    }
+    setRatingState(storedMovie.ratingState);
   }, [movie.imdbID]);
 
   const notifyChange = () => {
@@ -39,20 +42,22 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
   const handleRating = (rating: 'dislike' | 'like' | 'love') => {
     const newRating = rating === ratingState ? 'none' : rating;
     setRatingState(newRating);
-    
-    if (isAddedToList) {
-      updateRating(movie.imdbID, newRating);
-      notifyChange();
-    }
+
+    if(newRating === 'none'){
+      removeFromWatchedList(movie.imdbID);
+      return;
+    } 
+    updateRating(movie.imdbID, newRating, movie.Type)
+    notifyChange();
   };
 
-  const handleAddToList = () => {
-    if (isAddedToList) {
-      removeFromList(movie.imdbID);
+  const handleAddToWatchLaterList = () => {
+    if (isAddedtoWatchLaterList) {
+      removeFromWatchLaterList(movie.imdbID);
     } else {
-      addToList(movie.imdbID, ratingState, movie.Type);
+      addToWatchLaterList(movie.imdbID, ratingState, movie.Type);
     }
-    setIsAddedToList(!isAddedToList);
+    setIsAddedToWatchLaterList(!isAddedtoWatchLaterList);
     
     notifyChange();
   };
@@ -315,13 +320,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
         </Box>
 
         <Tooltip
-          title={isAddedToList ? t('card.removeListTooltip') : t('card.addListTooltip')}
+          title={isAddedtoWatchLaterList ? t('card.removeListTooltip') : t('card.addListTooltip')}
           placement="top"
           arrow
           >
           <IconButton
-            className={`action-button ${isAddedToList ? 'active' : ''}`}
-            onClick={handleAddToList}
+            className={`action-button ${isAddedtoWatchLaterList ? 'active' : ''}`}
+            onClick={handleAddToWatchLaterList}
             sx={{
               width: 32,
               height: 32,
@@ -333,7 +338,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                 borderColor: '#ffffff',
                 transform: 'scale(1.1)',
               },
-              ...(isAddedToList && {
+              ...(isAddedtoWatchLaterList && {
                 bgcolor: 'white',
                 border: '2px solid white',
                 '& svg': {
@@ -348,7 +353,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
               padding: 0,
             }}
           >
-            {isAddedToList ? 
+            {isAddedtoWatchLaterList ? 
               <FaCheck size={14} /> : 
               <FaPlus size={14} color="white" />
             }

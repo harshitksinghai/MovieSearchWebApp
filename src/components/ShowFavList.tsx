@@ -106,7 +106,7 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
   }
 
   return (
-    <Box sx={{ margin: 0 }}>
+    <Box sx={{ margin: 0, mb: '42px' }}>
       {loading ? (
         <Box sx={{ 
           padding: '20px 48px', 
@@ -114,7 +114,8 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',
           gap: '15px',
-          rowGap: '48px'
+          rowGap: '48px',
+
         }}>
           {[...Array(10)].map((_, index) => (
             <Skeleton
@@ -132,7 +133,7 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
       ) : (
         <Box sx={{ 
           padding: '20px 48px', 
-          marginTop: '16px'
+          marginTop: '16px',
         }}>
           <Box sx={{ 
             display: 'grid',

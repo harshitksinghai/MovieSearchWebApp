@@ -31,7 +31,7 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
   };
 
   return (
-    <Box sx={{ margin: 0 }}>
+    <Box sx={{ margin: 0, mb: '54px' }}>
       {loading ? (
         <Box sx={{ 
           padding: '20px 48px', 

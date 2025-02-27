@@ -8,8 +8,12 @@ const Footer: React.FC = () => {
   const theme = useTheme();
 
   return (
+    
     <Box
       sx={{
+        position: 'fixed',
+        bottom: '0',
+        zIndex: '10',
         backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#ededed',
         color: theme.palette.mode === 'dark' ? '#fff' : '#222',
         padding: '10px 0',
@@ -23,6 +27,7 @@ const Footer: React.FC = () => {
         {t('footer.message')}
       </Typography>
     </Box>
+    
   );
 };
 

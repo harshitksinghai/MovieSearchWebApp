@@ -172,7 +172,7 @@ const SearchBar = () => {
           display: 'flex', 
           alignItems: 'center',
           backgroundColor: 'white',
-          gap: '6px', 
+          gap: '2px', 
           width: 'fit-content',
         }}>
           <Button

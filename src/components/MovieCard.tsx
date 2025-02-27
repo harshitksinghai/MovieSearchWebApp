@@ -127,8 +127,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
           alignItems: 'center',
           padding: '0 20px',
           gap: '9px',
-          borderBottomLeftRadius: 2,
-          borderBottomRightRadius: 2,
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
           transition: 'opacity 0.3s ease',
         }}
       >

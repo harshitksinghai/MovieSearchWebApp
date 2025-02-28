@@ -23,7 +23,6 @@ const SearchBar = () => {
   const [type, setType] = useState('');
   const [year, setYear] = useState('');
   
-  // For Material UI Menu
   const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
   const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
   const isTypeOpen = Boolean(typeAnchorEl);
@@ -72,7 +71,6 @@ const SearchBar = () => {
     typeOption = t('navbar.typeAll');
   }
 
-  // Common Popover styles (replacing Menu component)
   const popoverStyles = {
     '& .MuiPaper-root': {
       backgroundColor: '#222222',
@@ -98,7 +96,6 @@ const SearchBar = () => {
     }
   };
 
-  // Common button styles
   const buttonStyles = {
     height: '38px',
     backgroundColor: '#222222',
@@ -116,7 +113,6 @@ const SearchBar = () => {
     minWidth: '80px'
   };
 
-  // MenuItem styles
   const menuItemStyles = {
     '&:hover': {
       backgroundColor: '#424242',
@@ -142,7 +138,6 @@ const SearchBar = () => {
           color: theme.palette.text.secondary
         }}
       >
-        {/* Replace deprecated TextField variant="standard" with InputBase */}
         <InputBase
           placeholder={t('navbar.searchPlaceholder')}
           value={title}
@@ -190,7 +185,6 @@ const SearchBar = () => {
             {typeOption}
           </Button>
           
-          {/* Replace Menu with Popover */}
           <Popover
             id="type-popover"
             open={isTypeOpen}
@@ -239,7 +233,6 @@ const SearchBar = () => {
             {year ? year : t('navbar.Year')}
           </Button>
           
-          {/* Replace Menu with Popover */}
           <Popover
             id="year-popover"
             open={isYearOpen}

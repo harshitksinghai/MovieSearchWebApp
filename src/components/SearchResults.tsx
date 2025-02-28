@@ -91,18 +91,7 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
               }}
             >
               {t('search.goHome')}
-            </Link> {t('search.or')}{" "}
-            <Link 
-              to="/mylist" 
-              onClick={handleNavLinkClick}
-              style={{ 
-                fontStyle: 'italic', 
-                fontWeight: 600, 
-                color: 'rgb(5, 205, 5)'
-              }}
-            >
-              {t('search.goMyList')}
-            </Link>.
+            </Link>
           </Typography>
         </Box>
       )}

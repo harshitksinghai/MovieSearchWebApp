@@ -24,8 +24,8 @@
         "dislikeTooltip": "No me gusta",
         "likeTooltip": "Me gusta esto",
         "loveTooltip": "¡Me encanta esto!",
-        "addListTooltip": "Agregar a Mi Lista",
-        "removeListTooltip": "Eliminar de Mi Lista"
+        "addWatchLaterTooltip": "Add to Watch Later",
+        "removeWatchLaterTooltip": "Remove from Watch Later"
     },
     "fav": {
         "myList": "MI LISTA",

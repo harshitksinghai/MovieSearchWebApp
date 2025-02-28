@@ -1,11 +1,12 @@
 
-import Navbar from "../components/Navbar";
+
 import SearchResults from "../components/SearchResults";
-import HomeList from "../components/HomeList";
+import Favourites from "../components/Favourites.tsx";
 import { useSearch } from '../context/SearchContext';
 import { useEffect } from "react";
+import Navbar from "../components/Navbar.tsx";
 
-const MyListPage = () => {
+const FavouritesPage = () => {
     const {
         movies,
         loading,
@@ -18,17 +19,14 @@ const MyListPage = () => {
     } = useSearch();
 
     useEffect(() => {
-        // Reset search state only if we're coming from a different page, not from a search
-        // if (!window.location.search) {
             handleSearchState(false);
-        // }
     }, []);
 
     return (
         <div>
-            <Navbar />
+            <Navbar isSearchBar={true}/>
             {!searchState && (
-                <HomeList />
+                <Favourites />
             )}
             {searchState && (
                 <SearchResults
@@ -44,4 +42,4 @@ const MyListPage = () => {
     );
 };
 
-export default MyListPage;
+export default FavouritesPage;

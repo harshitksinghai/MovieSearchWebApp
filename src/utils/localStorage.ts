@@ -2,7 +2,7 @@
 export interface MovieItem{
     imdbID: string;
     addToWatchedList: string; // ISO date string
-    addToWatchLaterList: string; // ISO date string
+    addToWatchLater: string; // ISO date string
     ratingState: "none" | "dislike" | "like" | "love";
     Type: "All" | "Movies" | "Series" | "Games";
 }
@@ -11,13 +11,13 @@ const STORAGE_KEYS = {
     MOVIE_LIST: "movieList",
 }
 
-export const addToList = (imdbID: string, ratingState: "none" | "dislike" | "like" | "love", Type: "All" | "Movies" | "Series" | "Games", isAddToWatchedList: boolean, isAddToWatchLaterList: boolean) => {
+export const addToList = (imdbID: string, ratingState: "none" | "dislike" | "like" | "love", Type: "All" | "Movies" | "Series" | "Games", isAddToWatchedList: boolean, isAddToWatchLater: boolean) => {
     const movieList = getMovieList();
 
     const newMovie: MovieItem = {
         imdbID: imdbID,
         addToWatchedList: (isAddToWatchedList) ? new Date().toISOString() : '',
-        addToWatchLaterList: (isAddToWatchLaterList) ? new Date().toISOString() : '',
+        addToWatchLater: (isAddToWatchLater) ? new Date().toISOString() : '',
         ratingState: ratingState,
         Type: Type
     }
@@ -33,7 +33,7 @@ export const removeFromWatchedList = (imdbID: string) => {
     if(!movieToRemove){
         return;
     }
-    if(movieToRemove && movieToRemove.addToWatchLaterList === ''){
+    if(movieToRemove && movieToRemove.addToWatchLater === ''){
         const updatedList = movieList.filter((movie) => movie.imdbID !== imdbID);
         localStorage.setItem(STORAGE_KEYS.MOVIE_LIST, JSON.stringify(updatedList));
     }
@@ -52,7 +52,7 @@ export const removeFromWatchedList = (imdbID: string) => {
     }
 }
 
-export const removeFromWatchLaterList = (imdbID: string) => {
+export const removeFromWatchLater = (imdbID: string) => {
     const movieList = getMovieList();
 
     const movieToRemove = movieList.find((movie) => movie.imdbID === imdbID);
@@ -65,7 +65,7 @@ export const removeFromWatchLaterList = (imdbID: string) => {
     }
     else{
         const updatedList = movieList.map((movie) =>
-            movie.imdbID === imdbID ? { ...movie, addToWatchLaterList: ''} : movie
+            movie.imdbID === imdbID ? { ...movie, addToWatchLater: ''} : movie
         );
         localStorage.setItem(STORAGE_KEYS.MOVIE_LIST, JSON.stringify(updatedList));
     }
@@ -86,6 +86,7 @@ export const updateRating = (imdbID: string, ratingState: "none" | "dislike" | "
                 ...movie,
                 ratingState: ratingState,
                 addToWatchedList: movie.addToWatchedList || new Date().toISOString(),
+                addToWatchLater: ''
             };
         }
         return movie;
@@ -94,7 +95,7 @@ export const updateRating = (imdbID: string, ratingState: "none" | "dislike" | "
     localStorage.setItem(STORAGE_KEYS.MOVIE_LIST, JSON.stringify(updatedList));
 }
 
-export const addToWatchLaterList = (imdbID: string, ratingState: "none" | "dislike" | "like" | "love", Type: "All" | "Movies" | "Series" | "Games") => {
+export const addToWatchLater = (imdbID: string, ratingState: "none" | "dislike" | "like" | "love", Type: "All" | "Movies" | "Series" | "Games") => {
     const movieList = getMovieList();
     const storedMovie = movieList.find((m) => m.imdbID === imdbID);
 
@@ -107,7 +108,7 @@ export const addToWatchLaterList = (imdbID: string, ratingState: "none" | "disli
         if (movie.imdbID === imdbID) {
             return {
                 ...movie,
-                addToWatchLaterList: movie.addToWatchLaterList || new Date().toISOString(),
+                addToWatchLater: movie.addToWatchLater || new Date().toISOString(),
             };
         }
         return movie;

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Box, Card, CardMedia, Typography, IconButton, Tooltip, Stack } from '@mui/material';
 import placeholder from "../assets/placeholder1.jpg";
-import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart, FaPlus, FaCheck } from "react-icons/fa6";
-import { updateRating, getMovieList, removeFromWatchedList, removeFromWatchLaterList, addToWatchLaterList } from '../utils/localStorage';
+import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart } from "react-icons/fa6";
+import { MdOutlineWatchLater, MdWatchLater } from "react-icons/md";
+import { updateRating, getMovieList, removeFromWatchedList, removeFromWatchLater, addToWatchLater } from '../utils/localStorage';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -14,19 +15,19 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
   const { t } = useTranslation();
   const [ratingState, setRatingState] = useState<'none' | 'dislike' | 'like' | 'love'>('none');
-  const [isAddedtoWatchLaterList, setIsAddedToWatchLaterList] = useState(false);
+  const [isAddedtoWatchLater, setIsAddedToWatchLater] = useState(false);
 
   useEffect(() => {
     const movieList = getMovieList();
     const storedMovie = movieList.find((m) => m.imdbID === movie.imdbID);
 
     if(!storedMovie){
-      setIsAddedToWatchLaterList(false);
+      setIsAddedToWatchLater(false);
       setRatingState('none');
       return;
     }
-    if(storedMovie.addToWatchLaterList !== ''){
-      setIsAddedToWatchLaterList(true);
+    if(storedMovie.addToWatchLater !== ''){
+      setIsAddedToWatchLater(true);
     }
     setRatingState(storedMovie.ratingState);
   }, [movie.imdbID]);
@@ -42,22 +43,23 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
   const handleRating = (rating: 'dislike' | 'like' | 'love') => {
     const newRating = rating === ratingState ? 'none' : rating;
     setRatingState(newRating);
-
+    setIsAddedToWatchLater(false);
     if(newRating === 'none'){
       removeFromWatchedList(movie.imdbID);
-      return;
-    } 
-    updateRating(movie.imdbID, newRating, movie.Type)
+    }
+    else{
+      updateRating(movie.imdbID, newRating, movie.Type);
+    }
     notifyChange();
   };
 
-  const handleAddToWatchLaterList = () => {
-    if (isAddedtoWatchLaterList) {
-      removeFromWatchLaterList(movie.imdbID);
+  const handleAddToWatchLater = () => {
+    if (isAddedtoWatchLater) {
+      removeFromWatchLater(movie.imdbID);
     } else {
-      addToWatchLaterList(movie.imdbID, ratingState, movie.Type);
+      addToWatchLater(movie.imdbID, ratingState, movie.Type);
     }
-    setIsAddedToWatchLaterList(!isAddedtoWatchLaterList);
+    setIsAddedToWatchLater(!isAddedtoWatchLater);
     
     notifyChange();
   };
@@ -222,7 +224,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                       color: '#181818',
                     },
                     '&:hover': {
-                      bgcolor: 'white', // Keep the background white on hover when active
+                      bgcolor: 'white',
                       borderColor: '#ffffff',
                       transform: 'scale(1.1)',
                     },
@@ -262,7 +264,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                       color: '#181818',
                     },
                     '&:hover': {
-                      bgcolor: 'white', // Keep the background white on hover when active
+                      bgcolor: 'white',
                       borderColor: '#ffffff',
                       transform: 'scale(1.1)',
                     },
@@ -302,7 +304,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                       color: '#181818',
                     },
                     '&:hover': {
-                      bgcolor: 'white', // Keep the background white on hover when active
+                      bgcolor: 'white', 
                       borderColor: '#ffffff',
                       transform: 'scale(1.1)',
                     },
@@ -320,13 +322,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
         </Box>
 
         <Tooltip
-          title={isAddedtoWatchLaterList ? t('card.removeListTooltip') : t('card.addListTooltip')}
+          title={isAddedtoWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
           placement="top"
           arrow
           >
           <IconButton
-            className={`action-button ${isAddedtoWatchLaterList ? 'active' : ''}`}
-            onClick={handleAddToWatchLaterList}
+            className={`action-button ${isAddedtoWatchLater ? 'active' : ''}`}
+            onClick={handleAddToWatchLater}
             sx={{
               width: 32,
               height: 32,
@@ -338,14 +340,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                 borderColor: '#ffffff',
                 transform: 'scale(1.1)',
               },
-              ...(isAddedtoWatchLaterList && {
+              ...(isAddedtoWatchLater && {
                 bgcolor: 'white',
                 border: '2px solid white',
                 '& svg': {
                   color: '#181818',
                 },
                 '&:hover': {
-                  bgcolor: 'white', // Keep the background white on hover when active
+                  bgcolor: 'white',
                   borderColor: '#ffffff',
                   transform: 'scale(1.1)',
                 },
@@ -353,9 +355,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
               padding: 0,
             }}
           >
-            {isAddedtoWatchLaterList ? 
-              <FaCheck size={14} /> : 
-              <FaPlus size={14} color="white" />
+            {isAddedtoWatchLater ? 
+              <MdWatchLater size={18} /> : 
+              <MdOutlineWatchLater size={18} color='#ededed'/>
             }
           </IconButton>
         </Tooltip>

@@ -1,23 +1,21 @@
 import { useEffect, useState } from 'react';
-import FavListFilter from './FavListFilter'
+import FavListFilter from './FavListFilter.tsx'
 import { getMovieList, MovieItem } from '../utils/localStorage.ts';
 import { useTranslation } from 'react-i18next';
-import ShowFavList from './ShowFavList.tsx';
+import ShowSavedList from './ShowSavedList.tsx'
 import { Box, Typography } from '@mui/material';
 
-const HomeList = () => {
+const Favourites = () => {
   const {t} = useTranslation();
   const [filteredMovieList, setFilteredMovieList] = useState<MovieItem[]>([]);
   const [activeType, setActiveType] = useState<string>("All");
   const [activeRating, setActiveRating] = useState<string>("");
-  const [refreshKey, setRefreshKey] = useState(0); // Add refresh key state
 
-  // Function to refresh movie lists
+
   const refreshLists = () => {
     const list = getMovieList();
     
-    // Re-apply current filters
-    let filtered = list;
+    let filtered = list.filter(movie => movie.addToWatchedList !== '');
     
     if (activeType !== "All") {
       filtered = filtered.filter(movie => movie.Type === activeType);
@@ -30,26 +28,13 @@ const HomeList = () => {
     setFilteredMovieList(filtered);
   };
 
-  // Initial load
   useEffect(() => {
     refreshLists();
-  }, [refreshKey]); // Add refreshKey as dependency
-
-  // Listen for list changes
-  useEffect(() => {
-    const handleListChange = () => {
-      setRefreshKey(prevKey => prevKey + 1); // Increment refresh key to trigger reload
-    };
-
+    const handleListChange = () => refreshLists();
     window.addEventListener('movieListChanged', handleListChange);
     return () => {
       window.removeEventListener('movieListChanged', handleListChange);
     };
-  }, [activeType, activeRating]); // Include these dependencies
-
-  // When filters change, reapply them
-  useEffect(() => {
-    refreshLists();
   }, [activeType, activeRating]);
 
   const handleFilterChange = (ratingState: string, type: string) => {
@@ -68,12 +53,14 @@ const HomeList = () => {
           marginTop: '20px'
         }}
       >
-        {t('fav.myList')}
+        {t('fav.fav')}
       </Typography>
-      <FavListFilter onFilterChange={handleFilterChange} />
-      <ShowFavList filteredList={filteredMovieList} refreshList={refreshLists} />
+      <Box sx={{mt: '10px'}}>
+        <FavListFilter onFilterChange={handleFilterChange} />
+      </Box>
+      <ShowSavedList filteredList={filteredMovieList} refreshList={refreshLists} />
     </Box>
   )
 }
 
-export default HomeList
+export default Favourites

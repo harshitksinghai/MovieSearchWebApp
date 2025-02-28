@@ -10,24 +10,25 @@
         "none": "None",
         "lightTooltip": "Switch to light mode",
         "darkTooltip": "Switch to dark mode",
-        "mylist": "My List"
+        "fav": "Favourites",
+        "watchLater": "Watch Later"
     },
     "error":{
         "titleError": "Title must be at least 3 characters long.",
         "NoMoviesFound": "No results found!",
         "fetchFailed": "Failed to load movies. Please try again later.",
         "fillSearch": "Enter a title, year or type to search",
-        "somethingWentWrong": "Something went wrong"
+        "somethingWentWrong": "Something went wrong."
     },
     "card":{
         "dislikeTooltip": "Not for me",
         "likeTooltip": "I like this",
         "loveTooltip": "Love this!",
-        "addListTooltip": "Add to My List",
-        "removeListTooltip": "Remove from My List"
+        "addWatchLaterTooltip": "Add to Watch Later",
+        "removeWatchLaterTooltip": "Remove from Watch Later"
     },
     "fav":{
-        "myList": "MY LIST",
+        "fav": "FAVOURITES",
         "loading": "Loading your favorites...",
         "empty": "No items found in your list.",
         "filter":{
@@ -41,6 +42,9 @@
             "like": "Like",
             "meh": "Dislike"
         }
+    },
+    "watchLater":{
+        "watchLater": "WATCH LATER"
     },
     "market":{
         "appName": "WikiMovies",
@@ -62,9 +66,7 @@
     "search":{
         "noResults": "No movies found.",
         "tryAgain": "Try a more specific search or go to",
-        "goHome": "Home",
-        "or": "or",
-        "goMyList": "My List"
+        "goHome": "Home"
     },
     "carousel":{
         "soon": "Movie Carousel implementing soon!!!"

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material/styles';
-import styles from './Logo.module.css'
+import { Typography } from '@mui/material';
 
 const Logo = () => {
 const {t} = useTranslation();
@@ -8,7 +8,7 @@ const theme = useTheme();
 
   return (
     <div>
-      <p className={styles.logo} style={{ color: theme.palette.text.secondary }}>{t('navbar.appName')}</p>
+      <Typography sx={{fontSize: '35px', fontWeight: '600', ml: '20px', color: theme.palette.text.secondary}}>{t('navbar.appName')}</Typography>
     </div>
   )
 }

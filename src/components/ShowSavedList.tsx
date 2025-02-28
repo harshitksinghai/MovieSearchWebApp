@@ -14,12 +14,12 @@ interface SimplifiedMovie {
   ratingState: string;
 }
 
-interface ShowFavListProps {
+interface ShowSavedListProps {
   filteredList: MovieItem[];
   refreshList: () => void;
 }
 
-const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) => {
+const ShowSavedList: React.FC<ShowSavedListProps> = ({filteredList, refreshList}) => {
   const {t} = useTranslation();
   const [filteredMovies, setFilteredMovies] = useState<SimplifiedMovie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,7 +40,7 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
             const result = await fetchMoviesByImdbId(t, movie.imdbID);
             console.log(`This is by IMDBID result: ${result}`)
             if (result && result.movie.Response === "True") {
-              // Extract only the fields we need
+
               const simplifiedMovie: SimplifiedMovie = {
                 Type: result.movie.Type,
                 imdbID: result.movie.imdbID || movie.imdbID,
@@ -72,11 +72,7 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
       setFilteredMovies([]);
       setLoading(false);
     }
-  }, [filteredList, t]); // Re-run when filteredList or t changes
-
-  // if (loading) {
-  //   return <div className="loading">{t('fav.loading')}</div>;
-  // }
+  }, [filteredList, t]);
 
   if (error) {
     return (
@@ -154,4 +150,4 @@ const ShowFavList: React.FC<ShowFavListProps> = ({filteredList, refreshList}) =>
   );
 };
 
-export default ShowFavList;
+export default ShowSavedList;

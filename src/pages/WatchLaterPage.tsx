@@ -1,31 +1,31 @@
 
-
+import Navbar from "../components/Navbar"
 import SearchResults from "../components/SearchResults";
-import MovieCarousel from "../components/MovieCarousel.tsx";
+import WatchLater from "../components/WatchLater.tsx";
 import { useSearch } from '../context/SearchContext';
 import { useEffect } from "react";
-import Navbar from "../components/Navbar.tsx";
 
-const HomePage = () => {
-    const { 
-        movies, 
-        loading, 
-        error, 
-        page, 
-        totalPages, 
-        searchState, 
+const WatchLaterPage = () => {
+    const {
+        movies,
+        loading,
+        error,
+        page,
+        totalPages,
+        searchState,
         handleSearchState,
-        handlePageChange 
+        handlePageChange
     } = useSearch();
 
     useEffect(() => {
-        handleSearchState(false);
+            handleSearchState(false);
     }, []);
+
     return (
         <div>
             <Navbar isSearchBar={true}/>
             {!searchState && (
-                <MovieCarousel />
+                <WatchLater />
             )}
             {searchState && (
                 <SearchResults
@@ -41,4 +41,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default WatchLaterPage;

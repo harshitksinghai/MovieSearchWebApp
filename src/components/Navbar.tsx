@@ -7,7 +7,10 @@ import { useSearch } from '../context/SearchContext';
 import { useTranslation } from 'react-i18next';
 import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 
-const Navbar: React.FC = () => {
+interface NavBarProps{
+  isSearchBar: boolean;
+}
+const Navbar: React.FC<NavBarProps> = (props: {isSearchBar: boolean}) => {
   const { handleSearchState, handleError, handleTitle } = useSearch();
   const { t } = useTranslation();
     
@@ -48,7 +51,19 @@ const Navbar: React.FC = () => {
                 color: '#222'
               }}
             >
-              {t('navbar.mylist')}
+              {t('navbar.fav')}
+            </Typography>
+          </Link>
+          <Link to="/WatchLater" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+            <Typography 
+              sx={{ 
+                marginTop: '3px',
+                fontSize: '20px',
+                fontWeight: 500,
+                color: '#222'
+              }}
+            >
+              {t('navbar.watchLater')}
             </Typography>
           </Link>
         </Box>
@@ -58,7 +73,9 @@ const Navbar: React.FC = () => {
           gap: '10px',
           marginRight: '20px'
         }}>
-          <SearchBar />
+          {props.isSearchBar && (
+            <SearchBar />
+          )}
           <LanguageSelector />
           <DarkModeToggle />
         </Box>

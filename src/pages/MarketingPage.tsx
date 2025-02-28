@@ -1,9 +1,11 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SubNavBar from '../components/SubNavBar';
+
 import { ThemeContext } from '../theme/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Button, Container } from '@mui/material';
+import Navbar from "../components/Navbar"
+
 
 const MarketingPage = () => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const MarketingPage = () => {
       margin: 0,
       padding: 0
     }}>
-      <SubNavBar />
+      <Navbar isSearchBar={false}/>
       <Box sx={{ 
         display: 'flex',
         alignItems: 'center',

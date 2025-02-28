@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { fetchMoviesByImdbId } from '../api/api';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../theme/ThemeContext';
-import SubNavbar from './SubNavBar';
 import LaunchIcon from '@mui/icons-material/Launch';
 import {
   Box,
@@ -49,11 +48,9 @@ const MovieDetails: React.FC = () => {
     if (id) {
       fetchMoviesByImdbId(t, id)
         .then((response) => {
-          // Handle the case where response might be undefined
           if (response) {
             setMovieResponse(response);
           } else {
-            // Create a default error response if undefined is returned
             setMovieResponse({
               movie: null,
               error: t('error.unknownError')
@@ -121,7 +118,6 @@ const MovieDetails: React.FC = () => {
 
   return (
     <>
-      <SubNavbar />
       <Container
         id="main-container"
         sx={{
@@ -273,7 +269,7 @@ const MovieDetails: React.FC = () => {
               </Typography>
             </Box>
 
-            {/* Details Section - using Stack + Box instead of Grid */}
+            {/* Details Section */}
             <Stack 
               direction={{ xs: 'column', sm: 'row' }}
               spacing={2}

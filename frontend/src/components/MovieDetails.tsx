@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { fetchMoviesByImdbId } from '../api/api';
 import { useTranslation } from 'react-i18next';
 import LaunchIcon from '@mui/icons-material/Launch';
+import BackButton from './BackButton';
 import {
   Box,
   Typography,
@@ -130,6 +131,7 @@ const MovieDetails: React.FC = () => {
           maxWidth: {md: 'fit-content'}
         }}
       >
+        <BackButton />
         <Box
           sx={{
             position: 'relative',

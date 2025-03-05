@@ -10,24 +10,25 @@
         "none": "Aucun",
         "lightTooltip": "Passer en mode clair",
         "darkTooltip": "Passer en mode sombre",
-        "mylist": "Ma Liste"
+        "fav": "Favoris",
+        "watchLater": "Regarder plus tard"
     },
     "error": {
         "titleError": "Le titre doit contenir au moins 3 caractères.",
         "NoMoviesFound": "Aucun résultat trouvé !",
         "fetchFailed": "Échec du chargement des films. Veuillez réessayer plus tard.",
-        "fillSearch": "Entrez un titre, une année ou un type pour rechercher",
-        "somethingWentWrong": "Une erreur s'est produite"
+        "fillSearch": "Saisissez un titre, une année ou un type pour rechercher",
+        "somethingWentWrong": "Une erreur s'est produite."
     },
     "card": {
         "dislikeTooltip": "Pas pour moi",
-        "likeTooltip": "J'aime ça",
+        "likeTooltip": "J'aime",
         "loveTooltip": "J'adore !",
-        "addWatchLaterTooltip": "Add to Watch Later",
-        "removeWatchLaterTooltip": "Remove from Watch Later"
+        "addWatchLaterTooltip": "Ajouter à Regarder plus tard",
+        "removeWatchLaterTooltip": "Retirer de Regarder plus tard"
     },
     "fav": {
-        "myList": "MA LISTE",
+        "fav": "FAVORIS",
         "loading": "Chargement de vos favoris...",
         "empty": "Aucun élément trouvé dans votre liste.",
         "filter": {
@@ -37,10 +38,13 @@
             "typeGames": "Jeux",
             "Year": "Année",
             "none": "Aucun",
-            "love": "Adoré",
-            "like": "Aimé",
-            "meh": "Bof"
+            "love": "J'adore",
+            "like": "J'aime",
+            "meh": "Je n'aime pas"
         }
+    },
+    "watchLater": {
+        "watchLater": "REGARDER PLUS TARD"
     },
     "market": {
         "appName": "WikiMovies",
@@ -49,24 +53,23 @@
     "movie": {
         "plot": "Synopsis",
         "director": "Réalisateur",
-        "cast": "Casting",
+        "cast": "Distribution",
         "language": "Langues",
         "ratings": "Note"
     },
     "footer": {
-        "message": " Tous droits réservés"
+        "message": "Tous droits réservés"
     },
     "common": {
         "loading": "Chargement..."
     },
     "search": {
         "noResults": "Aucun film trouvé.",
-        "tryAgain": "Essayez une recherche plus spécifique ou allez à",
-        "goHome": "Accueil",
-        "or": "ou",
-        "goMyList": "Ma Liste"
+        "tryAgain": "Essayez une recherche plus spécifique ou retournez à",
+        "goHome": "Accueil"
     },
     "carousel": {
         "soon": "Carrousel de films bientôt disponible !!!"
-    }
+    },
+    "backToolTip": "Retour"
 }

@@ -70,5 +70,6 @@
     },
     "carousel":{
         "soon": "Movie Carousel implementing soon!!!"
-    }
+    },
+    "backToolTip": "Go Back"
 }

@@ -55,7 +55,7 @@ const Navbar: React.FC<NavBarProps> = (props: {isSearchBar: boolean}) => {
               {t('navbar.fav')}
             </Typography>
           </Link>
-          <Link to="/WatchLater" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+          <Link to="/watchlater" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
             <Typography 
               sx={{ 
                 marginTop: '3px',

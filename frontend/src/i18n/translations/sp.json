@@ -10,27 +10,27 @@
         "none": "Ninguno",
         "lightTooltip": "Cambiar a modo claro",
         "darkTooltip": "Cambiar a modo oscuro",
-        "mylist": "Mi Lista"
-
+        "fav": "Favoritos",
+        "watchLater": "Ver más tarde"
     },
     "error": {
         "titleError": "El título debe tener al menos 3 caracteres.",
         "NoMoviesFound": "¡No se encontraron resultados!",
         "fetchFailed": "No se pudieron cargar las películas. Inténtalo de nuevo más tarde.",
         "fillSearch": "Introduce un título, año o tipo para buscar",
-        "somethingWentWrong": "Algo salió mal"
+        "somethingWentWrong": "Algo salió mal."
     },
     "card": {
-        "dislikeTooltip": "No me gusta",
-        "likeTooltip": "Me gusta esto",
-        "loveTooltip": "¡Me encanta esto!",
-        "addWatchLaterTooltip": "Add to Watch Later",
-        "removeWatchLaterTooltip": "Remove from Watch Later"
+        "dislikeTooltip": "No es para mí",
+        "likeTooltip": "Me gusta",
+        "loveTooltip": "¡Me encanta!",
+        "addWatchLaterTooltip": "Agregar a Ver más tarde",
+        "removeWatchLaterTooltip": "Eliminar de Ver más tarde"
     },
     "fav": {
-        "myList": "MI LISTA",
+        "fav": "FAVORITOS",
         "loading": "Cargando tus favoritos...",
-        "empty": "No se han encontrado elementos en tu lista.",
+        "empty": "No hay elementos en tu lista.",
         "filter": {
             "typeAll": "Todos",
             "typeMovies": "Películas",
@@ -43,9 +43,12 @@
             "meh": "No me gusta"
         }
     },
+    "watchLater": {
+        "watchLater": "VER MÁS TARDE"
+    },
     "market": {
         "appName": "WikiMovies",
-        "getStarted": "Comenzar"
+        "getStarted": "Empezar"
     },
     "movie": {
         "plot": "Trama",
@@ -55,7 +58,7 @@
         "ratings": "Calificación"
     },
     "footer": {
-        "message": " Todos los derechos reservados"
+        "message": "Todos los derechos reservados"
     },
     "common": {
         "loading": "Cargando..."
@@ -63,11 +66,10 @@
     "search": {
         "noResults": "No se encontraron películas.",
         "tryAgain": "Prueba una búsqueda más específica o ve a",
-        "goHome": "Inicio",
-        "or": "o",
-        "goMyList": "Mi Lista"
+        "goHome": "Inicio"
     },
     "carousel": {
         "soon": "¡Carrusel de películas próximamente!"
-    }
+    },
+    "backToolTip": "Volver"
 }

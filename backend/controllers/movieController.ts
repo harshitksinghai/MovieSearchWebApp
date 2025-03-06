@@ -82,7 +82,7 @@ export const searchMovies = asyncHandler(async (req: Request, res: Response) => 
   }
 
   try {
-    let url = `${API_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&page=${page}`;
+    let url = `${API_URL}/?apikey=${API_KEY}&s=${encodeURIComponent(query)}&page=${page}`;
     if (year) url += `&y=${encodeURIComponent(year)}`;
     if (type) url += `&type=${encodeURIComponent(type)}`;
 

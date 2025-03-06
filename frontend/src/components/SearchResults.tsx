@@ -35,8 +35,8 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
   return (
     <Box sx={{ margin: 0, mb: '54px' }}>
       {loading ? (
-        <Box sx={{ 
-          padding: '20px 48px', 
+        <Box sx={{
+          padding: '20px 48px',
           marginTop: '16px',
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',
@@ -57,11 +57,11 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
           ))}
         </Box>
       ) : movies.length > 0 ? (
-        <Box sx={{ 
-          padding: '20px 48px', 
+        <Box sx={{
+          padding: '20px 48px',
           marginTop: '16px'
         }}>
-          <Box sx={{ 
+          <Box sx={{
             display: 'grid',
             gridTemplateColumns: 'repeat(5, 1fr)',
             gap: '15px',
@@ -76,19 +76,20 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
           </Box>
         </Box>
       ) : (
-        <Box sx={{ 
-          textAlign: 'center', 
-          position: 'relative', 
-          top: '300px' 
+        <Box sx={{
+          textAlign: 'center',
+          position: 'relative',
+          top: '300px'
         }}>
-          <Typography>
+          <Typography sx={{ position: 'relative', top: 0, textAlign: 'center', color: theme.palette.text.flow }}>
             {t('search.tryAgain')}{" "}
-            <Link 
-              to="/home" 
+
+            <Link
+              to="/home"
               onClick={handleNavLinkClick}
-              style={{ 
-                fontStyle: 'italic', 
-                fontWeight: 600, 
+              style={{
+                fontStyle: 'italic',
+                fontWeight: 600,
                 color: 'rgb(5, 205, 5)'
               }}
             >

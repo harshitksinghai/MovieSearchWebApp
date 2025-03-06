@@ -41,7 +41,7 @@ exports.searchMovies = (0, express_async_handler_1.default)((req, res) => __awai
         return;
     }
     try {
-        let url = `${API_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&page=${page}`;
+        let url = `${API_URL}/?apikey=${API_KEY}&s=${encodeURIComponent(query)}&page=${page}`;
         if (year)
             url += `&y=${encodeURIComponent(year)}`;
         if (type)

@@ -20,7 +20,7 @@ const MODE = import.meta.env.MODE || "development";
 const BACKEND_URL =
   MODE === "production"
     ? import.meta.env.VITE_BACKEND_URL_PROD
-    : import.meta.env.VITE_BACKEND_URL_LOCAL;
+    : import.meta.env.VITE_BACKEND_URL_DEV;
 
 // Search and fetch functions
 export const fetchMovies = async (t: (key: string) => string, query?: string, year?: string, type?: string, page: number = 1) => {

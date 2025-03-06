@@ -15,16 +15,32 @@ export interface MovieItemResponse {
   type: "All" | "Movies" | "Series" | "Games";
 }
 
-
-const MODE = import.meta.env.MODE || "development"; 
+const MODE = import.meta.env.MODE || "development";
 const BACKEND_URL =
   MODE === "production"
     ? import.meta.env.VITE_BACKEND_URL_PROD
     : import.meta.env.VITE_BACKEND_URL_DEV;
 
+export const getUserID = function (): string {
+  let userID = localStorage.getItem("userId");
+  console.log('get from storage:', userID)
+  if (!userID) {
+    userID = crypto.randomUUID();
+    localStorage.setItem("userId", userID);
+  }
+
+  return userID;
+};
+
 // Search and fetch functions
-export const fetchMovies = async (t: (key: string) => string, query?: string, year?: string, type?: string, page: number = 1) => {
-  console.log('Fetching with params:', { query, year, type, page });
+export const fetchMovies = async (
+  t: (key: string) => string,
+  query?: string,
+  year?: string,
+  type?: string,
+  page: number = 1
+) => {
+  console.log("Fetching with params:", { query, year, type, page });
 
   if (query) {
     try {
@@ -34,136 +50,141 @@ export const fetchMovies = async (t: (key: string) => string, query?: string, ye
         query,
         year,
         type,
-        page
+        page,
       };
 
-      console.log('Request URL:', url);
-      console.log('Request Body:', requestBody);
-      
+      console.log("Request URL:", url);
+      console.log("Request Body:", requestBody);
+
       const response = await axios.post(url, requestBody);
-      console.log('API Response:', response);
+      console.log("API Response:", response);
 
       if (response.data.success) {
         return {
           movies: response.data.movies,
           totalPages: response.data.totalPages,
-          error: null
+          error: null,
         };
       }
-      
-      return { 
-        movies: [], 
-        totalPages: 1, 
-        error: t('error.NoMoviesFound')
+
+      return {
+        movies: [],
+        totalPages: 1,
+        error: t("error.NoMoviesFound"),
       };
     } catch (error: any) {
-      console.error('API Error:', error);
-      return { 
-        movies: [], 
-        totalPages: 1, 
-        error: t('error.NoMoviesFound')
+      console.error("API Error:", error);
+      return {
+        movies: [],
+        totalPages: 1,
+        error: t("error.NoMoviesFound"),
       };
     }
-  }
-  
-  else {
+  } else {
     try {
       // Fetch popular movies/series from the backend using POST
       const url = `${BACKEND_URL}/api/movies/popular`;
       const requestBody = { type };
-      
+
       const response = await axios.post(url, requestBody);
-      console.log('API Popular Results:', response);
+      console.log("API Popular Results:", response);
 
       if (response.data.success) {
         return {
           movies: response.data.movies,
           totalPages: 1,
-          error: null
+          error: null,
         };
       }
-      
+
       return {
         movies: [],
         totalPages: 1,
-        error: t('error.fetchFailed')
+        error: t("error.fetchFailed"),
       };
     } catch (error: any) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       return {
         movies: [],
         totalPages: 1,
-        error: t('error.fetchFailed')
+        error: t("error.fetchFailed"),
       };
     }
   }
 };
 
-export const fetchMoviesByImdbId = async (t: (key: string) => string, imdbID: string) => {
-  if(imdbID){
+export const fetchMoviesByImdbId = async (
+  t: (key: string) => string,
+  imdbID: string
+) => {
+  if (imdbID) {
     try {
       // Use backend API endpoint with POST request
       const url = `${BACKEND_URL}/api/movies/imdbid`;
       const requestBody = { imdbID };
 
-      console.log('imdbid Request URL:', url);
-      console.log('imdbid Request Body:', requestBody);
-      
+      console.log("imdbid Request URL:", url);
+      console.log("imdbid Request Body:", requestBody);
+
       const response = await axios.post(url, requestBody);
-      console.log('imdbid API Response:', response);
+      console.log("imdbid API Response:", response);
 
       if (response.data.success) {
         return {
           movie: response.data.movie,
-          error: null
+          error: null,
         };
       }
-      
-      return { 
-        movie: null, 
-        error: t('error.NoMoviesFound')
+
+      return {
+        movie: null,
+        error: t("error.NoMoviesFound"),
       };
     } catch (error: any) {
-      console.error('API Error:', error);
-      return { 
-        movie: null, 
-        error: t('error.fetchFailed')
+      console.error("API Error:", error);
+      return {
+        movie: null,
+        error: t("error.fetchFailed"),
       };
     }
   }
-  
+
   return {
     movie: null,
-    error: t('error.InvalidImdbId')
+    error: t("error.InvalidImdbId"),
   };
 };
 
 // Movie list management functions
 export const getMovieList = async () => {
+  const userId = getUserID();
+
   try {
     const url = `${BACKEND_URL}/api/movies/getlist`;
-    console.log('getMovieList Request URL:', url);
+    console.log("getMovieList Request URL:", url);
 
-    const response = await axios.post(url);
-    console.log('getMovieList API Response:', response);
+    const response = await axios.post(url, { userId });
+    console.log("getMovieList API Response:", response);
 
     if (response.data.success) {
       return response.data.movieList;
     }
     return [];
   } catch (error) {
-    console.error('Error fetching movie list:', error);
+    console.error("Error fetching movie list:", error);
     return [];
   }
 };
 
 export const addToList = async (
-  imdbID: string, 
-  ratingState: "none" | "dislike" | "like" | "love", 
+  imdbID: string,
+  ratingState: "none" | "dislike" | "like" | "love",
   Type: "movie" | "series" | "game",
-  isAddToWatchedList: boolean, 
+  isAddToWatchedList: boolean,
   isAddToWatchLater: boolean
 ) => {
+  const userId = getUserID();
+
   try {
     const url = `${BACKEND_URL}/api/movies/addtolist`;
     const requestBody = {
@@ -171,86 +192,103 @@ export const addToList = async (
       ratingState,
       Type,
       isAddToWatchedList,
-      isAddToWatchLater
+      isAddToWatchLater,
+      userId, // Added userId
     };
 
     const response = await axios.post(url, requestBody);
-    console.log('addToList API Response:', response);
+    console.log("addToList API Response:", response);
     return response.data.success;
   } catch (error) {
-    console.error('Error adding to list:', error);
+    console.error("Error adding to list:", error);
     return false;
   }
 };
 
 export const removeFromWatchedList = async (imdbID: string) => {
+  const userId = getUserID();
+
   try {
     const url = `${BACKEND_URL}/api/movies/removefromwatched`;
-    const requestBody = { imdbID };
+    const requestBody = {
+      imdbID,
+      userId, // Added userId
+    };
 
     const response = await axios.post(url, requestBody);
-    console.log('removeFromWatchedList API Response:', response);
+    console.log("removeFromWatchedList API Response:", response);
     return response.data.success;
   } catch (error) {
-    console.error('Error removing from watched list:', error);
+    console.error("Error removing from watched list:", error);
     return false;
   }
 };
 
 export const removeFromWatchLater = async (imdbID: string) => {
+  const userId = getUserID();
+
   try {
     const url = `${BACKEND_URL}/api/movies/removefromwatchlater`;
-    const requestBody = { imdbID };
+    const requestBody = {
+      imdbID,
+      userId, // Added userId
+    };
 
     const response = await axios.post(url, requestBody);
-    console.log('removeFromWatchLater API Response:', response);
+    console.log("removeFromWatchLater API Response:", response);
     return response.data.success;
   } catch (error) {
-    console.error('Error removing from watch later list:', error);
+    console.error("Error removing from watch later list:", error);
     return false;
   }
 };
 
 export const updateRating = async (
-  imdbID: string, 
-  ratingState: "none" | "dislike" | "like" | "love", 
+  imdbID: string,
+  ratingState: "none" | "dislike" | "like" | "love",
   Type: "movie" | "series" | "game"
 ) => {
+  const userId = getUserID();
+
   try {
     const url = `${BACKEND_URL}/api/movies/updaterating`;
     const requestBody = {
       imdbID,
       ratingState,
-      Type
+      Type,
+      userId, // Added userId
     };
 
     const response = await axios.post(url, requestBody);
-    console.log('updateRating API Response:', response);
+    console.log("updateRating API Response:", response);
     return response.data.success;
   } catch (error) {
-    console.error('Error updating rating:', error);
+    console.error("Error updating rating:", error);
     return false;
   }
 };
 
 export const addToWatchLater = async (
-  imdbID: string, 
-  ratingState: "none" | "dislike" | "like" | "love", 
+  imdbID: string,
+  ratingState: "none" | "dislike" | "like" | "love",
   Type: "movie" | "series" | "game"
 ) => {
+  const userId = getUserID();
+
   try {
     const url = `${BACKEND_URL}/api/movies/addtowatchlater`;
     const requestBody = {
       imdbID,
       ratingState,
-      Type
+      Type,
+      userId, // Added userId
     };
 
     const response = await axios.post(url, requestBody);
-    console.log('addToWatchLater API Response:', response);
+    console.log("addToWatchLater API Response:", response);
     return response.data.success;
   } catch (error) {
-    console.error('Error adding to watch later:', error);
+    console.error("Error adding to watch later:", error);
     return false;
   }
 };

@@ -176,10 +176,23 @@ export const fetchMoviesByImdbId = asyncHandler(async (req: Request, res: Respon
   }
 });
 
-// Movie List Management with PostgreSQL
 export const getMovieList = asyncHandler(async (req: Request, res: Response) => {
+  console.log(req.body);
+  const userId = req.body.userId as string;
+  
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      error: "User ID is required"
+    });
+    return;
+  }
+  
   try {
-    const result = await pool.query('SELECT "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type" FROM "movieList_YN100"');
+    const result = await pool.query(
+      'SELECT "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type" FROM "movieList_YN100" WHERE "userId" = $1',
+      [userId]
+    );
     res.json({
       success: true,
       movieList: result.rows
@@ -194,7 +207,7 @@ export const getMovieList = asyncHandler(async (req: Request, res: Response) => 
 });
 
 export const addToList = asyncHandler(async (req: Request, res: Response) => {
-  const { imdbID, ratingState, Type, isAddToWatchedList, isAddToWatchLater } = req.body;
+  const { imdbID, ratingState, Type, isAddToWatchedList, isAddToWatchLater, userId } = req.body;
   
   if (!imdbID) {
     res.status(400).json({
@@ -204,14 +217,28 @@ export const addToList = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
   
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      error: "User ID is required"
+    });
+    return;
+  }
+  
   try {
+    // First ensure the user exists in the users table
+    await pool.query(
+      'INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING',
+      [userId]
+    );
+    
     const watchedDate = isAddToWatchedList ? new Date().toISOString() : '';
     const watchLaterDate = isAddToWatchLater ? new Date().toISOString() : '';
     
     const query = `
-      INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type") 
-      VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT ("imdbID") 
+      INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
+      VALUES ($1, $2, $3, $4, $5, $6)
+      ON CONFLICT ("userId", "imdbID") 
       DO UPDATE SET 
         "addToWatchedList" = $2,
         "addToWatchLater" = $3,
@@ -220,7 +247,7 @@ export const addToList = asyncHandler(async (req: Request, res: Response) => {
       RETURNING *
     `;
     
-    const result = await pool.query(query, [imdbID, watchedDate, watchLaterDate, ratingState, Type]);
+    const result = await pool.query(query, [imdbID, watchedDate, watchLaterDate, ratingState, Type, userId]);
     
     res.json({
       success: true,
@@ -236,7 +263,7 @@ export const addToList = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const removeFromWatchedList = asyncHandler(async (req: Request, res: Response) => {
-  const { imdbID } = req.body;
+  const { imdbID, userId } = req.body;
   
   if (!imdbID) {
     res.status(400).json({
@@ -246,9 +273,20 @@ export const removeFromWatchedList = asyncHandler(async (req: Request, res: Resp
     return;
   }
   
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      error: "User ID is required"
+    });
+    return;
+  }
+  
   try {
-    // First check if this movie exists in the database
-    const checkResult = await pool.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1', [imdbID]);
+    // First check if this movie exists in the database for this user
+    const checkResult = await pool.query(
+      'SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', 
+      [imdbID, userId]
+    );
     
     if (checkResult.rows.length === 0) {
       res.status(404).json({
@@ -262,12 +300,15 @@ export const removeFromWatchedList = asyncHandler(async (req: Request, res: Resp
     
     // If watchLater is empty, remove the movie completely
     if (!movie.addToWatchLater) {
-      await pool.query('DELETE FROM "movieList_YN100" WHERE "imdbID" = $1', [imdbID]);
+      await pool.query(
+        'DELETE FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', 
+        [imdbID, userId]
+      );
     } else {
       // Otherwise just update the watched status
       await pool.query(
-        'UPDATE "movieList_YN100" SET "addToWatchedList" = $1, "ratingState" = $2 WHERE "imdbID" = $3',
-        ['', 'none', imdbID]
+        'UPDATE "movieList_YN100" SET "addToWatchedList" = $1, "ratingState" = $2 WHERE "imdbID" = $3 AND "userId" = $4',
+        ['', 'none', imdbID, userId]
       );
     }
     
@@ -285,7 +326,7 @@ export const removeFromWatchedList = asyncHandler(async (req: Request, res: Resp
 });
 
 export const removeFromWatchLater = asyncHandler(async (req: Request, res: Response) => {
-  const { imdbID } = req.body;
+  const { imdbID, userId } = req.body;
   
   if (!imdbID) {
     res.status(400).json({
@@ -295,9 +336,20 @@ export const removeFromWatchLater = asyncHandler(async (req: Request, res: Respo
     return;
   }
   
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      error: "User ID is required"
+    });
+    return;
+  }
+  
   try {
-    // First check if this movie exists in the database
-    const checkResult = await pool.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1', [imdbID]);
+    // First check if this movie exists in the database for this user
+    const checkResult = await pool.query(
+      'SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', 
+      [imdbID, userId]
+    );
     
     if (checkResult.rows.length === 0) {
       res.status(404).json({
@@ -311,12 +363,15 @@ export const removeFromWatchLater = asyncHandler(async (req: Request, res: Respo
     
     // If watchedList is empty, remove the movie completely
     if (!movie.addToWatchedList) {
-      await pool.query('DELETE FROM "movieList_YN100" WHERE "imdbID" = $1', [imdbID]);
+      await pool.query(
+        'DELETE FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', 
+        [imdbID, userId]
+      );
     } else {
       // Otherwise just update the watchLater status
       await pool.query(
-        'UPDATE "movieList_YN100" SET "addToWatchLater" = $1 WHERE "imdbID" = $2',
-        ['', imdbID]
+        'UPDATE "movieList_YN100" SET "addToWatchLater" = $1 WHERE "imdbID" = $2 AND "userId" = $3',
+        ['', imdbID, userId]
       );
     }
     
@@ -334,7 +389,7 @@ export const removeFromWatchLater = asyncHandler(async (req: Request, res: Respo
 });
 
 export const updateRating = asyncHandler(async (req: Request, res: Response) => {
-  const { imdbID, ratingState, Type } = req.body;
+  const { imdbID, ratingState, Type, userId } = req.body;
   
   if (!imdbID) {
     res.status(400).json({
@@ -344,15 +399,32 @@ export const updateRating = asyncHandler(async (req: Request, res: Response) => 
     return;
   }
   
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      error: "User ID is required"
+    });
+    return;
+  }
+  
   try {
+    // Ensure user exists
+    await pool.query(
+      'INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING',
+      [userId]
+    );
+    
     // Check if the movie exists in the database
-    const checkResult = await pool.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1', [imdbID]);
+    const checkResult = await pool.query(
+      'SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', 
+      [imdbID, userId]
+    );
     
     if (checkResult.rows.length === 0) {
       // Movie doesn't exist, add it
       const query = `
-        INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type") 
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
       `;
       
@@ -361,7 +433,8 @@ export const updateRating = asyncHandler(async (req: Request, res: Response) => 
         new Date().toISOString(),  // Add to watched list
         '',                         // Not in watch later
         ratingState,
-        Type
+        Type,
+        userId
       ]);
       
       res.json({
@@ -375,14 +448,15 @@ export const updateRating = asyncHandler(async (req: Request, res: Response) => 
         SET "ratingState" = $1, 
             "addToWatchedList" = COALESCE(NULLIF("addToWatchedList", ''), $2),
             "addToWatchLater" = ''
-        WHERE "imdbID" = $3
+        WHERE "imdbID" = $3 AND "userId" = $4
         RETURNING *
       `;
       
       const result = await pool.query(query, [
         ratingState,
         new Date().toISOString(),
-        imdbID
+        imdbID,
+        userId
       ]);
       
       res.json({
@@ -400,7 +474,7 @@ export const updateRating = asyncHandler(async (req: Request, res: Response) => 
 });
 
 export const addToWatchLater = asyncHandler(async (req: Request, res: Response) => {
-  const { imdbID, ratingState, Type } = req.body;
+  const { imdbID, ratingState, Type, userId } = req.body;
   
   if (!imdbID) {
     res.status(400).json({
@@ -410,15 +484,32 @@ export const addToWatchLater = asyncHandler(async (req: Request, res: Response) 
     return;
   }
   
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      error: "User ID is required"
+    });
+    return;
+  }
+  
   try {
+    // Ensure user exists
+    await pool.query(
+      'INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING',
+      [userId]
+    );
+    
     // Check if the movie exists in the database
-    const checkResult = await pool.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1', [imdbID]);
+    const checkResult = await pool.query(
+      'SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', 
+      [imdbID, userId]
+    );
     
     if (checkResult.rows.length === 0) {
       // Movie doesn't exist, add it
       const query = `
-        INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type") 
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
       `;
       
@@ -427,7 +518,8 @@ export const addToWatchLater = asyncHandler(async (req: Request, res: Response) 
         '',                        // Not in watched list
         new Date().toISOString(),  // Add to watch later
         ratingState,
-        Type
+        Type,
+        userId
       ]);
       
       res.json({
@@ -439,13 +531,14 @@ export const addToWatchLater = asyncHandler(async (req: Request, res: Response) 
       const query = `
         UPDATE "movieList_YN100" 
         SET "addToWatchLater" = COALESCE(NULLIF("addToWatchLater", ''), $1)
-        WHERE "imdbID" = $2
+        WHERE "imdbID" = $2 AND "userId" = $3
         RETURNING *
       `;
       
       const result = await pool.query(query, [
         new Date().toISOString(),
-        imdbID
+        imdbID,
+        userId
       ]);
       
       res.json({

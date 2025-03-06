@@ -3,10 +3,12 @@ import './i18n/config.ts'
 import ThemeProviderWrapper from './theme/ThemeProviderWrapper.tsx'
 import Footer from './components/Footer.tsx'
 import { SearchProvider } from './context/SearchContext';
+import {AuthProvider} from './context/AuthContext.tsx';
 
 function App() {
 
   return (
+    <AuthProvider>
     <SearchProvider>
     <ThemeProviderWrapper>
       <div style={{ 
@@ -21,6 +23,7 @@ function App() {
       </div>
     </ThemeProviderWrapper>
     </SearchProvider>
+    </AuthProvider>
   )
 }
 

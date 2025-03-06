@@ -5,9 +5,11 @@ import dotenv from 'dotenv';
 import pool from "../config/db";
 
 dotenv.config();
-
+const MODE = process.env.MODE;
 const API_KEY = process.env.OMDB_API_KEY;
-const API_URL = process.env.OMDB_API_URL;
+const API_URL = MODE === "production"
+? process.env.OMDB_API_URL_PROD
+: process.env.OMDB_API_URL_DEV;
 
 export interface MovieItem {
   imdbID: string;

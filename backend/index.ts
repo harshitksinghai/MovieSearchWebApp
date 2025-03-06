@@ -10,9 +10,15 @@ dotenv.config();
 const app: Express = express();
 const server: Server = http.createServer(app);
 
+const MODE = process.env.MODE || "development";
+const CLIENT_URL =
+  MODE === "production"
+    ? process.env.CLIENT_URL_PROD
+    : process.env.CLIENT_URL_DEV;
+
 // Allow requests from client URL
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: CLIENT_URL,
   optionsSuccessStatus: 200,
   credentials: true
 };
@@ -36,7 +42,7 @@ app.use(cookieParser());
 app.use('/api/movies', movieRoutes);
 
 // initDatabase().then(() => {
-  const PORT = process.env.PORT || 8002;
+  const PORT = process.env.PORT;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

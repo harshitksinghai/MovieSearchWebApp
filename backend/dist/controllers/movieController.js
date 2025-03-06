@@ -18,8 +18,11 @@ const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = __importDefault(require("../config/db"));
 dotenv_1.default.config();
+const MODE = process.env.MODE;
 const API_KEY = process.env.OMDB_API_KEY;
-const API_URL = process.env.OMDB_API_URL;
+const API_URL = MODE === "production"
+    ? process.env.OMDB_API_URL_PROD
+    : process.env.OMDB_API_URL_DEV;
 const POPULAR_MOVIES = [
     "Avatar", "Inception", "Interstellar", "The Dark Knight",
     "Spider-Man", "Iron Man", "Black Panther", "Wonder Woman"

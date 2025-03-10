@@ -134,6 +134,7 @@ const searchSlice = createSlice({
     reducers: {
         setSearchState: (state, action: PayloadAction<boolean>) => {
             state.searchState = action.payload;
+            state.page = 1;
         },
         setError: (state, action: PayloadAction<string | null>) => {
             state.error = action.payload;

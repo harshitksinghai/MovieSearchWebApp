@@ -201,6 +201,8 @@ const selectMyList = (state: RootState) => state.movie.myListState;
 export const enrichedSearchResults = createSelector(
     [selectSearchResults, selectMyList],
     (searchList: SearchApiItem[], myList: MovieDetailsItem[]) => {
+    console.log("myListState: ", myList);
+
         return searchList.map((searchMovie) => {
             const myMovie = myList.find((m) => m.imdbID === searchMovie.imdbID);
             if(myMovie){

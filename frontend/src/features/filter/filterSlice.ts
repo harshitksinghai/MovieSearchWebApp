@@ -57,9 +57,9 @@ const selectFavActiveRating = (state: RootState) => state.filter.fav_activeRatin
 export const filterFavourites = createSelector(
   [selectMyList, selectFavActiveType, selectFavActiveRating],
   (list: MovieDetailsItem[], activeType: string, activeRating: string) => {
+    console.log("myListState: ", list);
+
     let filtered = list.filter((movie) => movie.addToWatchedList !== null);
-    console.log("list: ", list);
-    console.log("filtered: ", filtered);
     if (activeType !== "") {
       filtered = filtered.filter((movie) => movie.Type === activeType);
     }
@@ -81,6 +81,8 @@ export const filterFavourites = createSelector(
 export const filterWatchLater = createSelector(
     [selectMyList],
     (list: MovieDetailsItem[]) => {
+      console.log("myListState: ", list);
+
         let filtered = list.filter((movie) => movie.addToWatchLater !== null);
 
         filtered.sort((a, b) => {

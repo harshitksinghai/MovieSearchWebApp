@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage.tsx';
 import FavouritesPage from './pages/FavouritesPage.tsx';
 import WatchLaterPage from './pages/WatchLaterPage.tsx';
 import MovieDetailsPage from './pages/MovieDetailsPage.tsx';
+import { Provider } from 'react-redux';
+import { store } from './app/store.ts';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,7 +24,9 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
+  <Provider store={store}>
+  {/* // <StrictMode> */}
     <RouterProvider router={router} />
-  // </StrictMode>
+  {/* // </StrictMode> */}
+  </Provider>
 )

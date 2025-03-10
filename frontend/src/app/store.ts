@@ -13,19 +13,12 @@ const authPersistConfig = {
     storage,
     whitelist: ['userId']
 };
-  
-const moviePersistConfig = {
-    key: 'movie',
-    storage,
-    whitelist: ['myListState']
-};
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-const persistedMovieReducer = persistReducer(moviePersistConfig, movieReducer);
 
 const rootReducer = combineSlices({
     auth: persistedAuthReducer,
-    movie: persistedMovieReducer,
+    movie: movieReducer,
     filter: filterReducer,
     search: searchReducer,
 });

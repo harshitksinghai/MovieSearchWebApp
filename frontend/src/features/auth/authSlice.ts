@@ -4,7 +4,6 @@ interface AuthState {
   userId: string;
 }
 
-// Initialize state from localStorage
 const initialState: AuthState = {
   userId: crypto.randomUUID(),
 };

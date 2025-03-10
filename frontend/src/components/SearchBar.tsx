@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
-import { useSearch } from '../context/SearchContext';
 import { 
   Box, 
   Button, 
@@ -15,33 +14,32 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { fetchSearchResults, setError, setSearchParams } from '../features/search/searchSlice';
 
 const SearchBar = () => {
-  const { handleSearch, error, handleError, title, handleTitle } = useSearch();
   const { t } = useTranslation();
   const theme = useTheme();
-  const [type, setType] = useState('');
-  const [year, setYear] = useState('');
+  const dispatch = useAppDispatch();
+
+  const {query, year, type} = useAppSelector((state) => state.search.searchParams)
+  const {error} = useAppSelector((state) => state.search);
   
   const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
   const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
   const isTypeOpen = Boolean(typeAnchorEl);
   const isYearOpen = Boolean(yearAnchorEl);
 
-  useEffect(() => {
-    handleTitle('');
-  }, []);
-
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1887 }, (_, i) => currentYear - i);
 
   const handleSearchButton = () => {
-    if (title.trim().length < 3) {
-      handleError(t('error.titleError'));
+    if (query.trim().length < 3) {
+      dispatch(setError('titleError'));
       return;
     }
-    handleError('');
-    handleSearch(title, year, type);
+    dispatch(setError(null));
+    dispatch(fetchSearchResults({query, year, type}));
   };
 
   const handleTypeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -140,12 +138,12 @@ const SearchBar = () => {
       >
         <InputBase
           placeholder={t('navbar.searchPlaceholder')}
-          value={title}
+          value={query}
           onChange={(e) => {
             if (e.target.value === '') {
-              handleError(null);
+              dispatch(setError(null))
             }
-            handleTitle(e.target.value);
+            dispatch(setSearchParams({query: e.target.value, year, type}))
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -210,7 +208,7 @@ const SearchBar = () => {
                 <MenuItem 
                   key={option.label} 
                   onClick={() => {
-                    setType(option.value);
+                    dispatch(setSearchParams({query, year, type: option.value}));
                     handleTypeClose();
                   }}
                   sx={menuItemStyles}
@@ -251,7 +249,7 @@ const SearchBar = () => {
             <Box>
               <MenuItem 
                 onClick={() => {
-                  setYear('');
+                  dispatch(setSearchParams({query, year: '', type}));
                   handleYearClose();
                 }}
                 sx={{
@@ -265,7 +263,7 @@ const SearchBar = () => {
                 <MenuItem 
                   key={yearOption} 
                   onClick={() => {
-                    setYear(yearOption.toString());
+                    dispatch(setSearchParams({query, year: yearOption.toString(), type}));
                     handleYearClose();
                   }}
                   sx={{
@@ -312,7 +310,7 @@ const SearchBar = () => {
             textAlign: 'left'
           }}
         >
-          {error}
+          {t(`error.${error}`)}
         </Typography>
       )}
     </Box>

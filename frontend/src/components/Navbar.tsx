@@ -3,22 +3,24 @@ import SearchBar from './SearchBar';
 import LanguageSelector from '../components/LanguageSelector';
 import { Link } from 'react-router-dom';
 import DarkModeToggle from './DarkModeToggle';
-import { useSearch } from '../context/SearchContext';
 import { useTranslation } from 'react-i18next';
 import { AppBar, Toolbar, Typography, Box, useTheme } from '@mui/material';
+import { useAppDispatch } from '../app/hooks';
+import { setSearchState, setError, resetSearchBox } from '../features/search/searchSlice';
 
 interface NavBarProps{
   isSearchBar: boolean;
 }
 const Navbar: React.FC<NavBarProps> = (props: {isSearchBar: boolean}) => {
-  const { handleSearchState, handleError, handleTitle } = useSearch();
   const { t } = useTranslation();
   const theme = useTheme();
-    
+
+  const dispatch = useAppDispatch();
+
   const handleNavLinkClick = () => {
-    handleSearchState(false);
-    handleError(null);
-    handleTitle('');
+    dispatch(setSearchState(false));
+    dispatch(setError(null));
+    dispatch(resetSearchBox());
   };
 
   return (

@@ -18,7 +18,8 @@
         "NoMoviesFound": "Aucun résultat trouvé !",
         "fetchFailed": "Échec du chargement des films. Veuillez réessayer plus tard.",
         "fillSearch": "Saisissez un titre, une année ou un type pour rechercher",
-        "somethingWentWrong": "Une erreur s'est produite."
+        "somethingWentWrong": "Une erreur s'est produite.",
+        "movieNotFound": "Film non trouvé !"
     },
     "card": {
         "dislikeTooltip": "Pas pour moi",

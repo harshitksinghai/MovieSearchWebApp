@@ -131,8 +131,7 @@ exports.getMovieList = (0, express_async_handler_1.default)((req, res) => __awai
     const userId = req.body.userId;
     if (!userId) {
         res.status(400).json({
-            success: false,
-            error: "User ID is required"
+            success: false
         });
         return;
     }
@@ -146,8 +145,7 @@ exports.getMovieList = (0, express_async_handler_1.default)((req, res) => __awai
     catch (error) {
         console.error('Error fetching list:', error);
         res.status(500).json({
-            success: false,
-            error: 'Internal server error'
+            success: false
         });
     }
 }));
@@ -168,10 +166,9 @@ exports.addToList = (0, express_async_handler_1.default)((req, res) => __awaiter
         return;
     }
     try {
-        // First ensure the user exists in the users table
         yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [userId]);
-        const watchedDate = isAddToWatchedList ? new Date().toISOString() : '';
-        const watchLaterDate = isAddToWatchLater ? new Date().toISOString() : '';
+        const watchedDate = isAddToWatchedList ? new Date().toISOString() : null;
+        const watchLaterDate = isAddToWatchLater ? new Date().toISOString() : null;
         const query = `
       INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
       VALUES ($1, $2, $3, $4, $5, $6)
@@ -181,7 +178,7 @@ exports.addToList = (0, express_async_handler_1.default)((req, res) => __awaiter
         "addToWatchLater" = $3,
         "ratingState" = $4,
         "Type" = $5
-      RETURNING *
+      RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
     `;
         const result = yield db_1.default.query(query, [imdbID, watchedDate, watchLaterDate, ratingState, Type, userId]);
         res.json({
@@ -214,7 +211,6 @@ exports.removeFromWatchedList = (0, express_async_handler_1.default)((req, res) 
         return;
     }
     try {
-        // First check if this movie exists in the database for this user
         const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
         if (checkResult.rows.length === 0) {
             res.status(404).json({
@@ -224,13 +220,11 @@ exports.removeFromWatchedList = (0, express_async_handler_1.default)((req, res) 
             return;
         }
         const movie = checkResult.rows[0];
-        // If watchLater is empty, remove the movie completely
-        if (!movie.addToWatchLater) {
+        if (movie.addToWatchLater === null) {
             yield db_1.default.query('DELETE FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
         }
         else {
-            // Otherwise just update the watched status
-            yield db_1.default.query('UPDATE "movieList_YN100" SET "addToWatchedList" = $1, "ratingState" = $2 WHERE "imdbID" = $3 AND "userId" = $4', ['', 'none', imdbID, userId]);
+            yield db_1.default.query('UPDATE "movieList_YN100" SET "addToWatchedList" = $1, "ratingState" = $2 WHERE "imdbID" = $3 AND "userId" = $4', [null, 'none', imdbID, userId]);
         }
         res.json({
             success: true,
@@ -262,7 +256,6 @@ exports.removeFromWatchLater = (0, express_async_handler_1.default)((req, res) =
         return;
     }
     try {
-        // First check if this movie exists in the database for this user
         const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
         if (checkResult.rows.length === 0) {
             res.status(404).json({
@@ -272,13 +265,11 @@ exports.removeFromWatchLater = (0, express_async_handler_1.default)((req, res) =
             return;
         }
         const movie = checkResult.rows[0];
-        // If watchedList is empty, remove the movie completely
-        if (!movie.addToWatchedList) {
+        if (movie.addToWatchedList === null) {
             yield db_1.default.query('DELETE FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
         }
         else {
-            // Otherwise just update the watchLater status
-            yield db_1.default.query('UPDATE "movieList_YN100" SET "addToWatchLater" = $1 WHERE "imdbID" = $2 AND "userId" = $3', ['', imdbID, userId]);
+            yield db_1.default.query('UPDATE "movieList_YN100" SET "addToWatchLater" = $1 WHERE "imdbID" = $2 AND "userId" = $3', [null, imdbID, userId]);
         }
         res.json({
             success: true,
@@ -310,21 +301,18 @@ exports.updateRating = (0, express_async_handler_1.default)((req, res) => __awai
         return;
     }
     try {
-        // Ensure user exists
         yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [userId]);
-        // Check if the movie exists in the database
         const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
         if (checkResult.rows.length === 0) {
-            // Movie doesn't exist, add it
             const query = `
         INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *
+        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
       `;
             const result = yield db_1.default.query(query, [
                 imdbID,
-                new Date().toISOString(), // Add to watched list
-                '', // Not in watch later
+                new Date().toISOString(),
+                null,
                 ratingState,
                 Type,
                 userId
@@ -335,18 +323,22 @@ exports.updateRating = (0, express_async_handler_1.default)((req, res) => __awai
             });
         }
         else {
-            // Movie exists, update it
             const query = `
         UPDATE "movieList_YN100" 
         SET "ratingState" = $1, 
-            "addToWatchedList" = COALESCE(NULLIF("addToWatchedList", ''), $2),
-            "addToWatchLater" = ''
-        WHERE "imdbID" = $3 AND "userId" = $4
-        RETURNING *
+            "addToWatchedList" = 
+              CASE 
+                WHEN "addToWatchedList" IS NULL THEN $2 
+                ELSE "addToWatchedList" 
+              END,
+            "addToWatchLater" = $3
+        WHERE "imdbID" = $4 AND "userId" = $5
+        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
       `;
             const result = yield db_1.default.query(query, [
                 ratingState,
                 new Date().toISOString(),
+                null,
                 imdbID,
                 userId
             ]);
@@ -381,21 +373,18 @@ exports.addToWatchLater = (0, express_async_handler_1.default)((req, res) => __a
         return;
     }
     try {
-        // Ensure user exists
         yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [userId]);
-        // Check if the movie exists in the database
         const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
         if (checkResult.rows.length === 0) {
-            // Movie doesn't exist, add it
             const query = `
         INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *
+        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
       `;
             const result = yield db_1.default.query(query, [
                 imdbID,
-                '', // Not in watched list
-                new Date().toISOString(), // Add to watch later
+                null,
+                new Date().toISOString(),
                 ratingState,
                 Type,
                 userId
@@ -406,12 +395,15 @@ exports.addToWatchLater = (0, express_async_handler_1.default)((req, res) => __a
             });
         }
         else {
-            // Movie exists, update it
             const query = `
         UPDATE "movieList_YN100" 
-        SET "addToWatchLater" = COALESCE(NULLIF("addToWatchLater", ''), $1)
+        SET "addToWatchLater" = 
+          CASE 
+            WHEN "addToWatchLater" IS NULL THEN $1 
+            ELSE "addToWatchLater" 
+          END
         WHERE "imdbID" = $2 AND "userId" = $3
-        RETURNING *
+        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
       `;
             const result = yield db_1.default.query(query, [
                 new Date().toISOString(),

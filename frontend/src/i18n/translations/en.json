@@ -18,7 +18,8 @@
         "NoMoviesFound": "No results found!",
         "fetchFailed": "Failed to load movies. Please try again later.",
         "fillSearch": "Enter a title, year or type to search",
-        "somethingWentWrong": "Something went wrong."
+        "somethingWentWrong": "Something went wrong.",
+        "movieNotFound": "Movie not found!"
     },
     "card":{
         "dislikeTooltip": "Not for me",

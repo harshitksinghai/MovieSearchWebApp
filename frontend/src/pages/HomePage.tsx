@@ -2,24 +2,23 @@
 
 import SearchResults from "../components/SearchResults";
 import MovieCarousel from "../components/MovieCarousel.tsx";
-import { useSearch } from '../context/SearchContext';
 import { useEffect } from "react";
 import Navbar from "../components/Navbar.tsx";
 
+import { useAppDispatch, useAppSelector } from "../app/hooks.ts";
+import { fetchMyListState } from "../features/movie/movieSlice.ts";
+
 const HomePage = () => {
-    const { 
-        movies, 
-        loading, 
-        error, 
-        page, 
-        totalPages, 
-        searchState, 
-        handleSearchState,
-        handlePageChange 
-    } = useSearch();
+
+    const dispatch = useAppDispatch();
+    const userId = useAppSelector((state) => state.auth.userId);
+    const searchState = useAppSelector((state) => state.search.searchState);
 
     useEffect(() => {
-        handleSearchState(false);
+        if(userId){
+            dispatch(fetchMyListState(userId));  
+            console.log("dispatched fetchMyListState asyncThunk")  
+        }
     }, []);
     return (
         <div>
@@ -28,14 +27,7 @@ const HomePage = () => {
                 <MovieCarousel />
             )}
             {searchState && (
-                <SearchResults
-                    movies={movies}
-                    loading={loading}
-                    error={error}
-                    page={page}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
+                <SearchResults />
             )}
         </div>
     );

@@ -1,77 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box, Card, CardMedia, Typography, IconButton, Tooltip, Stack, useTheme } from '@mui/material';
 import placeholder from "../assets/placeholder1.jpg";
 import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart } from "react-icons/fa6";
 import { MdOutlineWatchLater, MdWatchLater } from "react-icons/md";
-import { updateRating, getMovieList, removeFromWatchedList, removeFromWatchLater, addToWatchLater, MovieItem } from '../api/api.ts';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { MovieDetailsItem, SearchApiItem } from '../types/movieTypes.ts';
+import { useAppDispatch } from '../app/hooks.ts';
+import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, updateRating } from '../features/movie/movieSlice.ts';
 
 interface MovieCardProps {
-  movie: any;
-  onListChange?: () => void;
+  movie: Partial<MovieDetailsItem> & SearchApiItem;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [ratingState, setRatingState] = useState<'none' | 'dislike' | 'like' | 'love'>('none');
-  const [isAddedtoWatchLater, setIsAddedToWatchLater] = useState(false);
+  const dispatch = useAppDispatch();
+  const [ratingState, setRatingState] = useState<string>(movie.ratingState);
+  const [isAddedtoWatchLater, setIsAddedToWatchLater] = useState<boolean>(movie.addToWatchLater ? true : false);
 
-  useEffect(() => {
-    const fetchMovieData = async () => {
-      const movieList: MovieItem[] = await getMovieList();
-      const storedMovie = movieList.find((m) => m.imdbID === movie.imdbID);
-  
-      if(!storedMovie){
-        setIsAddedToWatchLater(false);
-        setRatingState('none');
-        return;
-      }
-      if(storedMovie.addToWatchLater !== ''){
-        setIsAddedToWatchLater(true);
-      }
-      setRatingState(storedMovie.ratingState);
-    };
-  
-    fetchMovieData();
-  }, [movie.imdbID]);
-
-  const notifyChange = () => {
-    window.dispatchEvent(new CustomEvent('movieListChanged'));
-    
-    if (onListChange) {
-      onListChange();
-    }
-  };
-
-  const handleRating = async (rating: 'dislike' | 'like' | 'love') => {
+  const handleRating = (rating: string) => {
     const newRating = rating === ratingState ? 'none' : rating;
-    setRatingState(newRating);
-    setIsAddedToWatchLater(false);
     if(newRating === 'none'){
-      await removeFromWatchedList(movie.imdbID);
+      dispatch(removeFromWatchedList(movie.imdbID));
     }
     else{
-      await updateRating(movie.imdbID, newRating, movie.Type);
+      dispatch(updateRating({ imdbID: movie.imdbID, ratingState: newRating, Type: movie.Type }));
     }
-    notifyChange();
+    setRatingState(newRating);
+    setIsAddedToWatchLater(false);
   };
 
-  const handleAddToWatchLater = async () => {
+  const handleAddToWatchLater = () => {
     if (isAddedtoWatchLater) {
+      dispatch(removeFromWatchLater(movie.imdbID));
       setIsAddedToWatchLater(!isAddedtoWatchLater);
-      await removeFromWatchLater(movie.imdbID);
     } else {
+      dispatch(addToWatchLater({imdbID: movie.imdbID, ratingState: ratingState, Type: movie.Type}));
       setIsAddedToWatchLater(!isAddedtoWatchLater);
-      await addToWatchLater(movie.imdbID, ratingState, movie.Type);
     }
-    notifyChange();
   };
 
   let ratingIcon;
   if (ratingState === 'none') {
-    ratingIcon = <FaRegThumbsUp size={14} color={theme.palette.iconColor} />;
+    ratingIcon = <FaRegThumbsUp size={14} color={theme.palette.customPrimary.icon} />;
   } else if (ratingState === 'like') {
     ratingIcon = <FaThumbsUp size={14} />;
   } else if (ratingState === 'dislike') {
@@ -182,22 +155,22 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
               width: 32,
               height: 32,
               borderRadius: '50%',
-              bgcolor: theme.palette.ratingButton.background,
+              bgcolor: theme.palette.customPrimary.bg,
               border: ratingState !== 'none' 
-                ? `2px solid ${theme.palette.ratingButton.activeBorder}` 
-                : `2px solid ${theme.palette.ratingButton.border}`,
+                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
+                : `2px solid ${theme.palette.customPrimary.border}`,
               '&:hover': {
-                borderColor: theme.palette.ratingButton.hoverBorder,
+                borderColor: theme.palette.customPrimary.hoverBorder,
                 transform: 'scale(1.1)',
               },
               ...(ratingState !== 'none' && {
-                bgcolor: theme.palette.ratingButton.activeBackground,
+                bgcolor: theme.palette.customPrimary.activeBg,
                 '& svg': {
-                  color: theme.palette.svgColor,
+                  color: theme.palette.customPrimary.activeIcon,
                 },
                 '&:hover': {
-                  bgcolor: theme.palette.ratingButton.activeBackground,
-                  borderColor: theme.palette.ratingButton.hoverBorder,
+                  bgcolor: theme.palette.customPrimary.activeBg,
+                  borderColor: theme.palette.customPrimary.hoverBorder,
                   transform: 'scale(1.1)',
                 },
               }),
@@ -238,31 +211,31 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                   width: 32,
                   height: 32,
                   borderRadius: '50%',
-                  bgcolor: theme.palette.ratingButton.background,
-                  border: ratingState === 'dislike' 
-                    ? `2px solid ${theme.palette.ratingButton.activeBorder}` 
-                    : `2px solid ${theme.palette.ratingButton.border}`,
-                  '&:hover': {
-                    borderColor: theme.palette.ratingButton.hoverBorder,
-                    transform: 'scale(1.1)',
-                  },
-                  ...(ratingState === 'dislike' && {
-                    bgcolor: theme.palette.ratingButton.activeBackground,
-                    '& svg': {
-                      color: theme.palette.svgColor,
-                    },
-                    '&:hover': {
-                      bgcolor: theme.palette.ratingButton.activeBackground,
-                      borderColor: theme.palette.ratingButton.hoverBorder,
-                      transform: 'scale(1.1)',
-                    },
-                  }),
-                  padding: 0,
-                }}
+                  bgcolor: theme.palette.customPrimary.bg,
+              border: ratingState === 'dislike' 
+                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
+                : `2px solid ${theme.palette.customPrimary.border}`,
+              '&:hover': {
+                borderColor: theme.palette.customPrimary.hoverBorder,
+                transform: 'scale(1.1)',
+              },
+              ...(ratingState === 'dislike' && {
+                bgcolor: theme.palette.customPrimary.activeBg,
+                '& svg': {
+                  color: theme.palette.customPrimary.activeIcon,
+                },
+                '&:hover': {
+                  bgcolor: theme.palette.customPrimary.activeBg,
+                  borderColor: theme.palette.customPrimary.hoverBorder,
+                  transform: 'scale(1.1)',
+                },
+              }),
+              padding: 0,
+            }}
               >
                 {ratingState === 'dislike' ? 
                   <FaThumbsDown size={14} /> : 
-                  <FaRegThumbsDown size={14} color={theme.palette.iconColor} />
+                  <FaRegThumbsDown size={14} color={theme.palette.customPrimary.icon} />
                 }
               </IconButton>
             </Tooltip>
@@ -279,31 +252,31 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                   width: 32,
                   height: 32,
                   borderRadius: '50%',
-                  bgcolor: theme.palette.ratingButton.background,
-                  border: ratingState === 'like' 
-                    ? `2px solid ${theme.palette.ratingButton.activeBorder}` 
-                    : `2px solid ${theme.palette.ratingButton.border}`,
-                  '&:hover': {
-                    borderColor: theme.palette.ratingButton.hoverBorder,
-                    transform: 'scale(1.1)',
-                  },
-                  ...(ratingState === 'like' && {
-                    bgcolor: theme.palette.ratingButton.activeBackground,
-                    '& svg': {
-                      color: theme.palette.svgColor,
-                    },
-                    '&:hover': {
-                      bgcolor: theme.palette.ratingButton.activeBackground,
-                      borderColor: theme.palette.ratingButton.hoverBorder,
-                      transform: 'scale(1.1)',
-                    },
-                  }),
-                  padding: 0,
-                }}
+                  bgcolor: theme.palette.customPrimary.bg,
+              border: ratingState === 'like' 
+                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
+                : `2px solid ${theme.palette.customPrimary.border}`,
+              '&:hover': {
+                borderColor: theme.palette.customPrimary.hoverBorder,
+                transform: 'scale(1.1)',
+              },
+              ...(ratingState === 'like' && {
+                bgcolor: theme.palette.customPrimary.activeBg,
+                '& svg': {
+                  color: theme.palette.customPrimary.activeIcon,
+                },
+                '&:hover': {
+                  bgcolor: theme.palette.customPrimary.activeBg,
+                  borderColor: theme.palette.customPrimary.hoverBorder,
+                  transform: 'scale(1.1)',
+                },
+              }),
+              padding: 0,
+            }}
               >
                 {ratingState === 'like' ? 
                   <FaThumbsUp size={14} /> : 
-                  <FaRegThumbsUp size={14} color={theme.palette.iconColor} />
+                  <FaRegThumbsUp size={14} color={theme.palette.customPrimary.icon} />
                 }
               </IconButton>
             </Tooltip>
@@ -320,31 +293,31 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
                   width: 32,
                   height: 32,
                   borderRadius: '50%',
-                  bgcolor: theme.palette.ratingButton.background,
-                  border: ratingState === 'love' 
-                    ? `2px solid ${theme.palette.ratingButton.activeBorder}` 
-                    : `2px solid ${theme.palette.ratingButton.border}`,
-                  '&:hover': {
-                    borderColor: theme.palette.ratingButton.hoverBorder,
-                    transform: 'scale(1.1)',
-                  },
-                  ...(ratingState === 'love' && {
-                    bgcolor: theme.palette.ratingButton.activeBackground,
-                    '& svg': {
-                      color: theme.palette.svgColor,
-                    },
-                    '&:hover': {
-                      bgcolor: theme.palette.ratingButton.activeBackground,
-                      borderColor: theme.palette.ratingButton.hoverBorder,
-                      transform: 'scale(1.1)',
-                    },
-                  }),
-                  padding: 0,
-                }}
+                  bgcolor: theme.palette.customPrimary.bg,
+              border: ratingState === 'love' 
+                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
+                : `2px solid ${theme.palette.customPrimary.border}`,
+              '&:hover': {
+                borderColor: theme.palette.customPrimary.hoverBorder,
+                transform: 'scale(1.1)',
+              },
+              ...(ratingState === 'love' && {
+                bgcolor: theme.palette.customPrimary.activeBg,
+                '& svg': {
+                  color: theme.palette.customPrimary.activeIcon,
+                },
+                '&:hover': {
+                  bgcolor: theme.palette.customPrimary.activeBg,
+                  borderColor: theme.palette.customPrimary.hoverBorder,
+                  transform: 'scale(1.1)',
+                },
+              }),
+              padding: 0,
+            }}
               >
                 {ratingState === 'love' ? 
                   <FaHeart size={14} /> : 
-                  <FaRegHeart size={14} color={theme.palette.iconColor} />
+                  <FaRegHeart size={14} color={theme.palette.customPrimary.icon} />
                 }
               </IconButton>
             </Tooltip>
@@ -363,22 +336,22 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
               width: 32,
               height: 32,
               borderRadius: '50%',
-              bgcolor: theme.palette.ratingButton.background,
+              bgcolor: theme.palette.customPrimary.bg,
               border: isAddedtoWatchLater
-                ? `2px solid ${theme.palette.ratingButton.activeBorder}`
-                : `2px solid ${theme.palette.ratingButton.border}`,
+                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
+                : `2px solid ${theme.palette.customPrimary.border}`,
               '&:hover': {
-                borderColor: theme.palette.ratingButton.hoverBorder,
+                borderColor: theme.palette.customPrimary.hoverBorder,
                 transform: 'scale(1.1)',
               },
               ...(isAddedtoWatchLater && {
-                bgcolor: theme.palette.ratingButton.activeBackground,
+                bgcolor: theme.palette.customPrimary.activeBg,
                 '& svg': {
-                  color: theme.palette.svgColor,
+                  color: theme.palette.customPrimary.activeIcon,
                 },
                 '&:hover': {
-                  bgcolor: theme.palette.ratingButton.activeBackground,
-                  borderColor: theme.palette.ratingButton.hoverBorder,
+                  bgcolor: theme.palette.customPrimary.activeBg,
+                  borderColor: theme.palette.customPrimary.hoverBorder,
                   transform: 'scale(1.1)',
                 },
               }),
@@ -387,7 +360,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onListChange }) => {
           >
             {isAddedtoWatchLater ? 
               <MdWatchLater size={18} /> : 
-              <MdOutlineWatchLater size={18} color={theme.palette.iconColor} />
+              <MdOutlineWatchLater size={18} color={theme.palette.customPrimary.icon} />
             }
           </IconButton>
         </Tooltip>

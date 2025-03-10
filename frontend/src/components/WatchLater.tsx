@@ -1,36 +1,16 @@
-import { useEffect, useState } from 'react';
-import { getMovieList, MovieItem } from '../api/api.ts';
 import { useTranslation } from 'react-i18next';
 import ShowSavedList from './ShowSavedList.tsx';
 import { Box, Typography, useTheme } from '@mui/material';
+import { useAppSelector } from '../app/hooks.ts';
+import { filterWatchLater } from '../features/filter/filterSlice.ts';
 
 const WatchLater = () => {
-  const {t} = useTranslation();
-  const [filteredMovieList, setFilteredMovieList] = useState<MovieItem[]>([]);
-  const theme = useTheme();
-  
-  const refreshLists = async () => {
-    const list: MovieItem[] = await getMovieList();
-    let filtered = list.filter(movie => movie.addToWatchLater !== ''); 
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.addToWatchLater);
-      const dateB = new Date(b.addToWatchLater);
-      return dateB.getTime() - dateA.getTime(); // Sort in descending order
-    });
-    console.log("filtered in watch later: ", filtered)
-    setFilteredMovieList(filtered);
-  };
+  console.log("Inside WatchLater.tsx");
 
-  useEffect(() => {
-    refreshLists();
-    
-    const handleListChange = () => refreshLists();
-    window.addEventListener('movieListChanged', handleListChange);
-    
-    return () => {
-      window.removeEventListener('movieListChanged', handleListChange);
-    };
-  }, []);
+  const {t} = useTranslation();
+  const theme = useTheme();
+
+  const filteredMovieList = useAppSelector(filterWatchLater);
 
   return (
     <Box>
@@ -46,7 +26,7 @@ const WatchLater = () => {
       >
         {t('watchLater.watchLater')}
       </Typography>
-      <ShowSavedList filteredList={filteredMovieList} refreshList={refreshLists} />
+      <ShowSavedList filteredList={filteredMovieList} />
     </Box>
   )
 }

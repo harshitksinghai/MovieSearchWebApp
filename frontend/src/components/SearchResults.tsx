@@ -3,34 +3,27 @@ import MovieCard from './MovieCard';
 import { Box, Skeleton, Pagination, Typography, useTheme } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useSearch } from '../context/SearchContext';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { enrichedSearchResults, fetchSearchResults, resetSearchBox, setError, setPage, setSearchState } from '../features/search/searchSlice';
 
-interface ShowMoviesProps {
-  movies: any[];
-  loading: boolean;
-  error: string | null;
-  page: number;
-  totalPages: number;
-  onPageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
-}
+const SearchResults: React.FC = () => {
 
-const SearchResults: React.FC<ShowMoviesProps> = ({
-  movies,
-  loading,
-  page,
-  totalPages,
-  onPageChange
-}) => {
-
-  const { handleSearchState, handleError, handleTitle } = useSearch();
   const { t } = useTranslation();
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const { loading, page, totalPages, searchParams } = useAppSelector((state) => state.search);
+  const enrichedResults = useAppSelector(enrichedSearchResults);
 
   const handleNavLinkClick = () => {
-    handleSearchState(false);
-    handleError(null);
-    handleTitle('');
+    dispatch(setSearchState(false));
+    dispatch(setError(null));
+    dispatch(resetSearchBox());
   };
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
+    dispatch(setPage(newPage));
+    dispatch(fetchSearchResults({query: searchParams.query, year: searchParams.year, type: searchParams.type, page: newPage}));
+  }
 
   return (
     <Box sx={{ margin: 0, mb: '54px' }}>
@@ -56,7 +49,7 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
             />
           ))}
         </Box>
-      ) : movies.length > 0 ? (
+      ) : enrichedResults.length > 0 ? (
         <Box sx={{
           padding: '20px 48px',
           marginTop: '16px'
@@ -68,7 +61,7 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
             rowGap: '48px',
 
           }}>
-            {movies.map((movie) => (
+            {enrichedResults.map((movie) => (
               <Box key={movie.imdbID} sx={{ width: '100%' }}>
                 <MovieCard movie={movie} />
               </Box>
@@ -99,14 +92,14 @@ const SearchResults: React.FC<ShowMoviesProps> = ({
         </Box>
       )}
 
-      {totalPages > 1 && movies.length > 0 && (
+      {totalPages > 1 && enrichedResults.length > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3 }}>
           <Pagination
             variant="outlined"
             shape="rounded"
             count={totalPages}
             page={page}
-            onChange={onPageChange}
+            onChange={handlePageChange}
             sx={{
               '& .MuiPaginationItem-root': {
                 color: theme.palette.pagination.color,

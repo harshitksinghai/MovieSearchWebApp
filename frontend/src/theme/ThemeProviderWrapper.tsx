@@ -12,17 +12,25 @@ declare module "@mui/material/styles" {
     footer: string;
     flow: string;
     flowHover: string;
+    lightHover: string;
   }
   interface Palette {
-    watchLaterIcon: string;
-    watchedIcon: string;
-    svgColor: string;
-    iconColor: string;
-    ratingButton: {
+    customPrimary: {
       border: string;
+      bg: string;
+      icon: string;
+      activeIcon: string;
+      activeBg:string;
       activeBorder: string;
-      background: string;
-      activeBackground: string;
+      hoverBorder: string;
+    };
+    customSecondary: {
+      border: string;
+      bg: string;
+      icon: string;
+      activeIcon: string;
+      activeBg:string;
+      activeBorder: string;
       hoverBorder: string;
     };
     detailsBox: {
@@ -39,15 +47,22 @@ declare module "@mui/material/styles" {
     };
   }
   interface PaletteOptions {
-    watchLaterIcon?: string;
-    watchedIcon?: string;
-    svgColor?: string;
-    iconColor?: string;
-    ratingButton?: {
+    customPrimary?: {
       border?: string;
+      bg?: string;
+      icon?: string;
+      activeIcon?: string;
+      activeBg?:string;
       activeBorder?: string;
-      background?: string;
-      activeBackground?: string;
+      hoverBorder?: string;
+    };
+    customSecondary?: {
+      border?: string;
+      bg?: string;
+      icon?: string;
+      activeIcon?: string;
+      activeBg?:string;
+      activeBorder?: string;
       hoverBorder?: string;
     };
     detailsBox?: {
@@ -87,10 +102,28 @@ const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ childre
       palette: {
         mode: darkMode ? 'dark' : 'light',
         primary: {
-          main: darkMode ? '#fff' : '#000', // White in dark mode, Black in light mode
+          main: darkMode ? '#fff' : '#000',
         },
         secondary: {
-          main: darkMode ? '#2f2f2f' : '#e0e0e0', // Button background colors
+          main: darkMode ? '#2f2f2f' : '#e0e0e0',
+        },
+        customPrimary: {
+          border: darkMode ? '#d5d5d5' : '#636363',
+          bg:  darkMode ? '#ededed' : '#2f2f2f',
+          icon: darkMode ? '#000' : '#fff',
+          activeIcon: darkMode ? "#ffffff" : "#181818",
+          activeBg: darkMode ? '#2f2f2f' : '#fff',
+          activeBorder: darkMode ? '#2f2f2f' : '#fff',
+          hoverBorder: darkMode ? '#2f2f2f' : '#ffffff',
+        },
+        customSecondary: {
+          border: darkMode ? '#636363' : '#d5d5d5',
+          bg:  darkMode ? '#2f2f2f' : '#ededed',
+          icon: darkMode ? '#fff' : '#000',
+          activeIcon: darkMode ? "#181818" : "#ffffff",
+          activeBg: darkMode ? '#fff' : '#2f2f2f',
+          activeBorder: darkMode ? '#fff' : '#2f2f2f',
+          hoverBorder: darkMode ? '#fff' : '#2f2f2f',
         },
         background: {
           default: darkMode ? '#222' : '#fff',
@@ -101,24 +134,14 @@ const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ childre
           nav: "#ededed",
           footer: darkMode ? "#333" : "#ededed",
           flow: darkMode ? "#fff" : "#222",
-          flowHover: darkMode ? '#e0e0e0' : '#333'
+          flowHover: darkMode ? '#e0e0e0' : '#333',
+          lightHover: darkMode ? '#666' : '#ededed',
         },
         text: {
           primary: '#222',
           secondary: darkMode ? '#222' : '#fff',
           flow: darkMode ? "#fff" : "#222",
           support: darkMode ? '#ccc' : '#666',
-        },
-        watchLaterIcon: darkMode ? "#FFFFFF" : "#222",
-        watchedIcon: darkMode ? "#FFFFFF" : "#222",
-        svgColor: darkMode ? "#ffffff" : "#181818",
-        iconColor:  darkMode ? '#000' : '#fff',
-        ratingButton: {
-          border: darkMode ? '#d5d5d5' : '#636363',
-          activeBorder: darkMode ? '2f2f2f' : 'white',
-          background: darkMode ? '#ededed' : '#2f2f2f',
-          activeBackground: darkMode ? '#2f2f2f' : 'white',
-          hoverBorder: darkMode ? '#2f2f2f' : '#ffffff',
         },
         detailsBox: {
             bgColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
@@ -180,3 +203,5 @@ const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ childre
 };
 
 export default ThemeProviderWrapper;
+
+

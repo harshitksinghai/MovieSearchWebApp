@@ -2,25 +2,11 @@
 
 import SearchResults from "../components/SearchResults";
 import Favourites from "../components/Favourites.tsx";
-import { useSearch } from '../context/SearchContext';
-import { useEffect } from "react";
 import Navbar from "../components/Navbar.tsx";
+import { useAppSelector } from "../app/hooks.ts";
 
 const FavouritesPage = () => {
-    const {
-        movies,
-        loading,
-        error,
-        page,
-        totalPages,
-        searchState,
-        handleSearchState,
-        handlePageChange
-    } = useSearch();
-
-    useEffect(() => {
-            handleSearchState(false);
-    }, []);
+    const searchState = useAppSelector((state) => state.search.searchState);
 
     return (
         <div>
@@ -29,14 +15,7 @@ const FavouritesPage = () => {
                 <Favourites />
             )}
             {searchState && (
-                <SearchResults
-                    movies={movies}
-                    loading={loading}
-                    error={error}
-                    page={page}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
+                <SearchResults />
             )}
         </div>
     );

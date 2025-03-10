@@ -1,5 +1,16 @@
 import axios from "axios";
 
+export const getUserID = (): string => {
+  let userID = localStorage.getItem("userId");
+  console.log("authSlice => get from storage:", userID);
+
+  if (!userID) {
+    userID = crypto.randomUUID();
+    localStorage.setItem("userId", userID);
+  }
+
+  return userID;
+};
 export interface MovieItem {
   imdbID: string;
   addToWatchedList: string; // ISO date string
@@ -20,17 +31,6 @@ const BACKEND_URL =
   MODE === "production"
     ? import.meta.env.VITE_BACKEND_URL_PROD
     : import.meta.env.VITE_BACKEND_URL_DEV;
-
-export const getUserID = function (): string {
-  let userID = localStorage.getItem("userId");
-  console.log('get from storage:', userID)
-  if (!userID) {
-    userID = crypto.randomUUID();
-    localStorage.setItem("userId", userID);
-  }
-
-  return userID;
-};
 
 // Search and fetch functions
 export const fetchMovies = async (

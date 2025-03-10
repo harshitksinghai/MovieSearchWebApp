@@ -1,76 +1,33 @@
-import { useEffect, useState } from 'react';
-import { MovieItem } from '../api/api.ts';
+
 import MovieCard from './MovieCard';
-import { fetchMoviesByImdbId } from '../api/api';
 import { useTranslation } from 'react-i18next';
 import { Box, Skeleton, Typography, useTheme } from "@mui/material";
-
-interface SimplifiedMovie {
-  Type: "none" | "movie" | "series" | "game";
-  imdbID: string;
-  Poster: string;
-  Year: string;
-  Title: string;
-  ratingState: "none" | "dislike" | "like" | "love";
-}
+import { MovieDetailsItem } from '../types/movieTypes.ts';
+import { useAppDispatch, useAppSelector } from '../app/hooks.ts';
+import { useEffect } from 'react';
+import { filtersApplied } from '../features/filter/filterSlice.ts';
 
 interface ShowSavedListProps {
-  filteredList: MovieItem[];
-  refreshList: () => void;
+  filteredList: MovieDetailsItem[];
 }
 
-const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList, refreshList }) => {
+const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
   const { t } = useTranslation();
-  const [filteredMovies, setFilteredMovies] = useState<SimplifiedMovie[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const theme = useTheme();
+  const dispatch = useAppDispatch();
 
+  const loading = useAppSelector((state) => state.filter.loading);
+  const error = useAppSelector((state) => state.filter.error);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
-      setLoading(true);
-      setError(null);
-
-      if (filteredList.length === 0) {
-        setLoading(false);
-        return; // No items to fetch, exit early
-      }
-
-      try {
-        const fetchPromises = filteredList.map(async (movie) => {
-          try {
-            const result = await fetchMoviesByImdbId(t, movie.imdbID);
-            if (result && result.movie.Response === "True") {
-              return {
-                Type: result.movie.Type as "none" | "movie" | "series" | "game",
-                imdbID: result.movie.imdbID || movie.imdbID,
-                Poster: result.movie.Poster || 'N/A',
-                Year: result.movie.Year || 'N/A',
-                Title: result.movie.Title || 'Unknown Title',
-                ratingState: movie.ratingState as "none" | "dislike" | "like" | "love",
-              };
-            }
-          } catch (err) {
-            console.error(`Failed to fetch movie ${movie.imdbID}:`, err);
-          }
-          return null; // Return null if fetching fails
-        });
-
-        const results = await Promise.all(fetchPromises);
-        const simplifiedResults = results.filter((movie): movie is SimplifiedMovie => movie !== null);
-
-        setFilteredMovies(simplifiedResults);
-      } catch (err) {
-        console.error("Error fetching movie details:", err);
-        setError(t('error.fetchFailed'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovieDetails();
-  }, [filteredList, t]);
+    if (loading) { 
+      const timer = setTimeout(() => {
+        dispatch(filtersApplied());
+      }, 500);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [loading, dispatch]);
 
   if (error) {
     return (
@@ -138,9 +95,9 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList, refreshList
             rowGap: '48px',
 
           }}>
-            {filteredMovies.map((movie) => (
+            {filteredList.map((movie) => (
               <Box key={movie.imdbID}>
-                <MovieCard movie={movie} onListChange={refreshList} />
+                <MovieCard movie={movie} />
               </Box>
             ))}
           </Box>

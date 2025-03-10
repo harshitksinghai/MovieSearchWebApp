@@ -22,7 +22,6 @@ function App() {
 
   return (
     
-      <PersistGate loading={null} persistor={persistor}>
             <ThemeProviderWrapper>
               <div style={{
                 display: 'flex',
@@ -35,7 +34,7 @@ function App() {
                 <Footer />
               </div>
             </ThemeProviderWrapper>
-      </PersistGate>
+
   )
 }
 

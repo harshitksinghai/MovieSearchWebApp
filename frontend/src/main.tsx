@@ -11,6 +11,9 @@ import MovieDetailsPage from './pages/MovieDetailsPage.tsx';
 import { Provider } from 'react-redux';
 import { store } from './app/store.ts';
 
+import { persistor } from './app/store.ts';
+import { PersistGate } from 'redux-persist/integration/react';
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -25,8 +28,11 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
-  {/* // <StrictMode> */}
-    <RouterProvider router={router} />
-  {/* // </StrictMode> */}
+    <PersistGate loading={null} persistor={persistor}>
+
+      {/* // <StrictMode> */}
+      <RouterProvider router={router} />
+      {/* // </StrictMode> */}
+    </PersistGate>
   </Provider>
 )

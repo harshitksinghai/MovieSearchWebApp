@@ -11,7 +11,10 @@
         "lightTooltip": "Cambiar a modo claro",
         "darkTooltip": "Cambiar a modo oscuro",
         "fav": "Favoritos",
-        "watchLater": "Ver más tarde"
+        "watchLater": "Ver más tarde",
+        "signIn": "Iniciar sesión",
+        "signOut": "Cerrar sesión"
+
     },
     "error": {
         "titleError": "El título debe tener al menos 3 caracteres.",

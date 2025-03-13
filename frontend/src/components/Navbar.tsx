@@ -11,6 +11,7 @@ import { setSearchState, setError, resetSearchBox } from '../features/search/sea
 interface NavBarProps{
   isSearchBar: boolean;
 }
+
 const Navbar: React.FC<NavBarProps> = (props: {isSearchBar: boolean}) => {
   const { t } = useTranslation();
   const theme = useTheme();

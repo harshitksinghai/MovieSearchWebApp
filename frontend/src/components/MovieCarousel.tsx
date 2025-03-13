@@ -5,11 +5,11 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "./ui/carousel"
 import MovieCard from "./MovieCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Box, Typography, styled, useTheme } from "@mui/material";
-import { MovieDetailsItem } from "@/types/movieTypes";
+import { MovieDetailsItem } from "../types/movieTypes";
 import { useTranslation } from "react-i18next";
 
 interface MovieCarouselProps {

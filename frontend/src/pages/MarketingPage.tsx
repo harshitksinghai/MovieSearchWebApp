@@ -1,27 +1,22 @@
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Button, Container, useTheme } from '@mui/material';
-import Navbar from "../components/Navbar"
+import Navbar from "../components/Navbar";
+import { useAuth } from "react-oidc-context";
 
 const MarketingPage = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const theme = useTheme();
-  
-  function handleClick() {
-    console.log("click click market -> /home");
-    navigate('/home');
-  }
-  
+  const auth = useAuth();
+
   return (
-    <Box sx={{ 
+    <Box sx={{
       height: '100%',
       width: '100%',
       margin: 0,
       padding: 0
     }}>
-      <Navbar isSearchBar={false}/>
-      <Box sx={{ 
+      <Navbar isSearchBar={false} />
+      <Box sx={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -43,8 +38,8 @@ const MarketingPage = () => {
           <Container sx={{
             textAlign: 'center',
           }}>
-            <Typography 
-              variant="h1" 
+            <Typography
+              variant="h1"
               sx={{
                 fontSize: '4rem',
                 fontWeight: 700,
@@ -57,9 +52,9 @@ const MarketingPage = () => {
             >
               {t('market.appName')}
             </Typography>
-            <Button 
+            <Button
               variant="contained"
-              onClick={handleClick}
+              onClick={() => auth.signinRedirect()}
               sx={{
                 fontSize: '1.2rem',
                 fontWeight: 600,

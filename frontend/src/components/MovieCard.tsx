@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Card, CardMedia, Typography, IconButton, Stack, useTheme } from '@mui/material';
 import placeholder from "../assets/placeholder1.jpg";
 import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart } from "react-icons/fa6";
@@ -21,13 +21,24 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [ratingState, setRatingState] = useState<string>(movie.ratingState);
   const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(movie.addToWatchLater ? true : false);
 
+  useEffect(() => {
+    setRatingState(movie.ratingState);
+    setIsAddedToWatchLater(movie.addToWatchLater ? true : false);
+  }, [movie.ratingState, movie.addToWatchLater]);
+
+  console.log(`ratingState useState for "${movie.Title}" is: `, ratingState)
+  console.log(`isAddedToWatchLater useState for "${movie.Title}" is: `, isAddedToWatchLater)
+
+
   const handleRating = (rating: string) => {
     const currRatingState = ratingState;
     const currAddedToWatchLater = isAddedToWatchLater;
     const newRating = rating === currRatingState ? 'none' : rating;
 
     setRatingState(newRating);
-    setIsAddedToWatchLater(false);
+    if(newRating !== 'none'){
+      setIsAddedToWatchLater(false);
+    }
 
     if (newRating === 'none') {
       dispatch(removeFromWatchedList(movie.imdbID)).unwrap().catch(() => {

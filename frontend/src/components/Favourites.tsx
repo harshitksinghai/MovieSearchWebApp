@@ -15,7 +15,7 @@ const Favourites = () => {
   const theme = useTheme();
 
   const filteredMovieList = useAppSelector(filterFavourites);
-
+  console.log("................filteredFav", filteredMovieList)
   return (
     <Box>
       <Typography

@@ -11,7 +11,9 @@
         "lightTooltip": "Switch to light mode",
         "darkTooltip": "Switch to dark mode",
         "fav": "Favourites",
-        "watchLater": "Watch Later"
+        "watchLater": "Watch Later",
+        "signIn": "Sign In",
+        "signOut": "Sign Out"
     },
     "error":{
         "titleError": "Title must be at least 3 characters long.",

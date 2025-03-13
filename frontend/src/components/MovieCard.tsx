@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { MovieDetailsItem, SearchApiItem } from '../types/movieTypes.ts';
 import { useAppDispatch } from '../app/hooks.ts';
-import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, syncFromMyList, updateRating } from '../features/movie/movieSlice.ts';
+import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, updateRating } from '../features/movie/movieSlice.ts';
 import ReactionButton from './ReactionButton.tsx';
 
 interface MovieCardProps {

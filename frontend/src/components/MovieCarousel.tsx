@@ -23,12 +23,6 @@ const CarouselWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
 }));
 
-const TitleContainer = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-}));
-
 const CarouselBox = styled(Box)({
   position: 'relative',
   width: '100%',

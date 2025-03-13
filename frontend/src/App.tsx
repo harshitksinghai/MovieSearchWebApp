@@ -2,10 +2,10 @@ import { Outlet } from 'react-router-dom'
 import './i18n/config.ts'
 import ThemeProviderWrapper from './theme/ThemeProviderWrapper.tsx'
 import Footer from './components/Footer.tsx'
-
 import { useEffect } from "react";
+
 import { useAppDispatch, useAppSelector } from "./app/hooks.ts";
-import { fetchMyListState } from "./features/movie/movieSlice.ts";
+import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSlice.ts";
 
 function App() {
 
@@ -14,7 +14,9 @@ function App() {
 
   useEffect(() => {
     if (userId) {
-      dispatch(fetchMyListState(userId));
+      dispatch(fetchMyListState(userId)).finally(() => {
+        dispatch(fetchHomeListStates());
+      });
     }
   }, [dispatch, userId]);
 

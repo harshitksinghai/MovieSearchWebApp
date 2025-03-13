@@ -1,6 +1,6 @@
 import express from "express";
 import { 
-  fetchMoviesByImdbId, 
+  fetchMovieByImdbId, 
   searchMovies, 
   fetchPopularMovies,
   getMovieList,
@@ -8,7 +8,8 @@ import {
   removeFromWatchedList,
   removeFromWatchLater,
   updateRating,
-  addToWatchLater
+  addToWatchLater,
+  fetchMovieByTitle
 } from "../controllers/movieController";
 
 const router = express.Router();
@@ -16,7 +17,8 @@ const router = express.Router();
 // Search and fetch routes
 router.post('/search', searchMovies);
 router.post('/popular', fetchPopularMovies);
-router.post('/imdbid', fetchMoviesByImdbId);
+router.post('/imdbid', fetchMovieByImdbId);
+router.post('/title', fetchMovieByTitle);
 
 // Movie list management routes
 router.post('/getlist', getMovieList);

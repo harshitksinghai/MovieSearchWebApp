@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.addToList = exports.getMovieList = exports.fetchMoviesByImdbId = exports.fetchPopularMovies = exports.searchMovies = void 0;
+exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.addToList = exports.getMovieList = exports.fetchMovieByTitle = exports.fetchMovieByImdbId = exports.fetchPopularMovies = exports.searchMovies = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -92,7 +92,7 @@ exports.fetchPopularMovies = (0, express_async_handler_1.default)((req, res) => 
         });
     }
 }));
-exports.fetchMoviesByImdbId = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.fetchMovieByImdbId = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { imdbID } = req.body;
     if (!imdbID) {
         res.status(400).json({
@@ -104,6 +104,40 @@ exports.fetchMoviesByImdbId = (0, express_async_handler_1.default)((req, res) =>
     try {
         const url = `${API_URL}?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
         console.log('Backend IMDB ID Request URL:', url);
+        const response = yield axios_1.default.get(url);
+        if (response.data.Response === "True") {
+            res.json({
+                success: true,
+                movie: response.data
+            });
+        }
+        else {
+            res.status(404).json({
+                success: false,
+                error: "Movie not found"
+            });
+        }
+    }
+    catch (error) {
+        console.error('API Error:', error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch movie details"
+        });
+    }
+}));
+exports.fetchMovieByTitle = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title } = req.body;
+    if (!title) {
+        res.status(400).json({
+            success: false,
+            error: "Title is required"
+        });
+        return;
+    }
+    try {
+        const url = `${API_URL}?apikey=${API_KEY}&t=${encodeURIComponent(title)}&plot=full`;
+        console.log('Backend Title Request URL:', url);
         const response = yield axios_1.default.get(url);
         if (response.data.Response === "True") {
             res.json({

@@ -1,8 +1,8 @@
 {
     "navbar": {
-        "appName": "WikiMovies",
+        "appName": "MovieKeeper",
         "searchPlaceholder": "Buscar título...",
-        "typeAll": "Todos",
+        "typeAll": "Todo",
         "typeMovies": "Películas",
         "typeSeries": "Series",
         "typeGames": "Juegos",
@@ -16,7 +16,7 @@
     "error": {
         "titleError": "El título debe tener al menos 3 caracteres.",
         "NoMoviesFound": "¡No se encontraron resultados!",
-        "fetchFailed": "No se pudieron cargar las películas. Inténtalo de nuevo más tarde.",
+        "fetchFailed": "Error al cargar películas. Inténtalo de nuevo más tarde.",
         "fillSearch": "Introduce un título, año o tipo para buscar",
         "somethingWentWrong": "Algo salió mal.",
         "movieNotFound": "¡Película no encontrada!"
@@ -29,11 +29,11 @@
         "removeWatchLaterTooltip": "Eliminar de Ver más tarde"
     },
     "fav": {
-        "fav": "FAVORITOS",
+        "fav": "Favoritos",
         "loading": "Cargando tus favoritos...",
         "empty": "No hay elementos en tu lista.",
         "filter": {
-            "typeAll": "Todos",
+            "typeAll": "Todo",
             "typeMovies": "Películas",
             "typeSeries": "Series",
             "typeGames": "Juegos",
@@ -45,11 +45,11 @@
         }
     },
     "watchLater": {
-        "watchLater": "VER MÁS TARDE"
+        "watchLater": "Ver más tarde"
     },
     "market": {
-        "appName": "WikiMovies",
-        "getStarted": "Empezar"
+        "appName": "MovieKeeper",
+        "getStarted": "Comenzar"
     },
     "movie": {
         "plot": "Trama",
@@ -66,11 +66,18 @@
     },
     "search": {
         "noResults": "No se encontraron películas.",
-        "tryAgain": "Prueba una búsqueda más específica o ve a",
+        "tryAgain": "Intenta una búsqueda más específica o ve a",
         "goHome": "Inicio"
     },
     "carousel": {
         "soon": "¡Carrusel de películas próximamente!"
     },
-    "backToolTip": "Volver"
+    "backToolTip": "Volver",
+    "homeList": {
+        "discover": "Descubre Sensaciones Globales",
+        "Trending": "Tendencias",
+        "Thriller": "Suspenso",
+        "Comedy": "Comedia",
+        "Romance": "Romance"
+    }
 }

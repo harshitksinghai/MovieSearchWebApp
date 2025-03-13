@@ -9,7 +9,8 @@ const router = express_1.default.Router();
 // Search and fetch routes
 router.post('/search', movieController_1.searchMovies);
 router.post('/popular', movieController_1.fetchPopularMovies);
-router.post('/imdbid', movieController_1.fetchMoviesByImdbId);
+router.post('/imdbid', movieController_1.fetchMovieByImdbId);
+router.post('/title', movieController_1.fetchMovieByTitle);
 // Movie list management routes
 router.post('/getlist', movieController_1.getMovieList);
 router.post('/addtolist', movieController_1.addToList);

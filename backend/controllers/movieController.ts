@@ -139,7 +139,7 @@ export const fetchPopularMovies = asyncHandler(async (req: Request, res: Respons
   }
 });
 
-export const fetchMoviesByImdbId = asyncHandler(async (req: Request, res: Response) => {
+export const fetchMovieByImdbId = asyncHandler(async (req: Request, res: Response) => {
   const { imdbID } = req.body;
   
   if (!imdbID) {
@@ -154,6 +154,43 @@ export const fetchMoviesByImdbId = asyncHandler(async (req: Request, res: Respon
     const url = `${API_URL}?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
     
     console.log('Backend IMDB ID Request URL:', url);
+    const response = await axios.get<OmdbDetailResponse>(url);
+    
+    if (response.data.Response === "True") {
+      res.json({
+        success: true,
+        movie: response.data
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: "Movie not found"
+      });
+    }
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch movie details"
+    });
+  }
+});
+
+export const fetchMovieByTitle = asyncHandler(async (req: Request, res: Response) => {
+  const { title } = req.body;
+  
+  if (!title) {
+    res.status(400).json({
+      success: false,
+      error: "Title is required"
+    });
+    return;
+  }
+  
+  try {
+    const url = `${API_URL}?apikey=${API_KEY}&t=${encodeURIComponent(title)}&plot=full`;
+    
+    console.log('Backend Title Request URL:', url);
     const response = await axios.get<OmdbDetailResponse>(url);
     
     if (response.data.Response === "True") {

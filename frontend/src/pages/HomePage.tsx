@@ -1,9 +1,10 @@
 import SearchResults from "../components/SearchResults";
-import MovieCarousel from "../components/MovieCarousel.tsx";
 import Navbar from "../components/Navbar.tsx";
 import { useAppSelector } from "../app/hooks.ts";
+import HomeMovieList from "../components/HomeMovieList.tsx";
 
 const HomePage = () => {
+    console.log("Inside HomePage.tsx")
 
     const searchState = useAppSelector((state) => state.search.searchState);
 
@@ -11,7 +12,7 @@ const HomePage = () => {
         <div>
             <Navbar isSearchBar={true}/>
             {!searchState && (
-                <MovieCarousel />
+                <HomeMovieList />
             )}
             {searchState && (
                 <SearchResults />

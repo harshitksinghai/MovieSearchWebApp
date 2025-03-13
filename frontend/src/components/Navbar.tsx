@@ -1,4 +1,4 @@
-import Logo from './UI/Logo';
+import Logo from './ui/Logo';
 import SearchBar from './SearchBar';
 import LanguageSelector from '../components/LanguageSelector';
 import { Link } from 'react-router-dom';

@@ -11,26 +11,28 @@ import { filterFavourites } from '../features/filter/filterSlice.ts';
 const Favourites = () => {
   console.log("Inside Favourites.tsx");
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
 
   const filteredMovieList = useAppSelector(filterFavourites);
 
   return (
     <Box>
-      <Typography 
-        variant="h2" 
+      <Typography
+        variant="h2"
         sx={{
           fontWeight: 600,
           fontSize: '50px',
           textAlign: 'center',
           marginTop: '20px',
-          color: theme.palette.text.flow
+          color: theme.palette.text.flow,
+          padding: theme.spacing(4, 0, 0, 0)
+
         }}
       >
         {t('fav.fav')}
       </Typography>
-      <Box sx={{mt: '10px'}}>
+      <Box sx={{ mt: '10px' }}>
         <FavListFilter />
       </Box>
       <ShowSavedList filteredList={filteredMovieList} />

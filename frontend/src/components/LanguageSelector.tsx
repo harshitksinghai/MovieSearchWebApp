@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { FormControl, Select, MenuItem, Typography } from '@mui/material';
+import { FormControl, Select, MenuItem, Typography, Box } from '@mui/material';
 
 const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
@@ -58,7 +58,8 @@ const LanguageSelector: React.FC = () => {
               },
             }}
           >
-           <Typography sx={{display: 'flex'}}><Typography sx={{fontSize: 10, mt: '6px', mr: '5px'}}>{lang.code.toUpperCase()}</Typography> {lang.name}</Typography>
+           <Box sx={{display: 'flex'}}><Typography sx={{fontSize: 10, mt: '6px', mr: '5px'}}>{lang.code.toUpperCase()}</Typography> {lang.name}</Box>
+
           </MenuItem>
         ))}
       </Select>

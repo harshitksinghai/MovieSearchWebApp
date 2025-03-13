@@ -6,6 +6,7 @@ import {
 } from "../../types/movieTypes";
 import axios from "axios";
 import { RootState } from "../../app/store";
+import { comedyTitles, romanceTitles, thrillerTitles, trendingTitles } from "@/utils/movieTitles";
 
 const MODE = import.meta.env.MODE || "development";
 const BACKEND_URL =
@@ -15,12 +16,22 @@ const BACKEND_URL =
 
 interface MovieState {
   myListState: MovieDetailsItem[];
+  trendingListState: MovieDetailsItem[];
+  thrillerListState: MovieDetailsItem[];
+  comedyListState: MovieDetailsItem[];
+  romanceListState: MovieDetailsItem[];
   error: string | null;
+  loading: boolean;
 }
 
 const initialState: MovieState = {
   myListState: [],
+  trendingListState: [],
+  thrillerListState: [],
+  comedyListState: [],
+  romanceListState: [],
   error: null,
+  loading: false
 };
 
 export const fetchMyListState = createAsyncThunk(
@@ -69,6 +80,121 @@ export const fetchMyListState = createAsyncThunk(
       };
     });
     return fetchedMyList;
+  }
+);
+
+export const fetchHomeListStates = createAsyncThunk(
+  'movie/fetchHomeListStates',
+  async (_, {getState}) => {
+    const state = getState() as RootState;
+    const myListState = state.movie.myListState;
+
+    const myListMap = new Map<string, MovieDetailsItem>();
+    myListState.forEach(movie => {
+      myListMap.set(movie.Title, movie);
+    });
+    
+    const processCategory = async (titles: string[]): Promise<MovieDetailsItem[]> => {
+      
+      const promises = titles.map(async (title) => {
+
+        if (myListMap.has(title)) {
+          return myListMap.get(title)!;
+        } else {
+
+          try {
+            const omdbApiUrl = `${BACKEND_URL}/api/movies/title`;
+            const requestBody = { title };
+            const response = await axios.post(omdbApiUrl, requestBody);
+            const apiData = await response.data.movie;
+            return {
+              addToWatchedList: null,
+              addToWatchLater: null,
+              ratingState: "none",
+              Type: apiData.Type,
+              Title: apiData.Title,
+              imdbID: apiData.imdbID,
+              Year: apiData.Year,
+              Rated: apiData.Rated,
+              Released: apiData.Released,
+              Runtime: apiData.Runtime,
+              Genre: apiData.Genre,
+              Director: apiData.Director,
+              Writer: apiData.Writer,
+              Actors: apiData.Actors,
+              Plot: apiData.Plot,
+              Language: apiData.Language,
+              Country: apiData.Country,
+              Awards: apiData.Awards,
+              Poster: apiData.Poster,
+              Ratings: apiData.Ratings,
+              Metascore: apiData.Metascore,
+              imdbRating: apiData.imdbRating,
+              imdbVotes: apiData.imdbVotes,
+            };
+          } catch (error) {
+            console.error(`Error fetching movie ${title}:`, error);
+            return null;
+          }
+        }
+      });
+      
+      const movies = await Promise.all(promises);
+      return movies.filter(movie => movie !== null) as MovieDetailsItem[];
+    };
+    
+    const [trending, thriller, comedy, romance] = await Promise.all([
+      processCategory(trendingTitles),
+      processCategory(thrillerTitles),
+      processCategory(comedyTitles),
+      processCategory(romanceTitles)
+    ]);
+    
+    return {
+      trending,
+      thriller,
+      comedy,
+      romance
+    };
+  }
+);
+
+export const syncFromMyList = createAsyncThunk(
+  'movie/syncFromMyList',
+  async (_, { getState }) => {
+    const state = getState() as RootState;
+    const myListState = state.movie.myListState;
+    const trendingList = state.movie.trendingListState;
+    const thrillerList = state.movie.thrillerListState;
+    const comedyList = state.movie.comedyListState;
+    const romanceList = state.movie.romanceListState;
+    
+    const myListMap = new Map<string, MovieDetailsItem>();
+    myListState.forEach(movie => {
+      myListMap.set(movie.imdbID, movie);
+    });
+
+    const syncList = (list: MovieDetailsItem[]): MovieDetailsItem[] => {
+      return list.map(movie => {
+        const myListMovie = myListMap.get(movie.imdbID);
+        if (myListMovie) {
+          return {
+            ...movie,
+            addToWatchedList: myListMovie.addToWatchedList,
+            addToWatchLater: myListMovie.addToWatchLater,
+            ratingState: myListMovie.ratingState
+          };
+        }
+        return movie;
+      });
+    };
+    
+    return {
+      trendingList: syncList(trendingList),
+      thrillerList: syncList(thrillerList),
+      comedyList: syncList(comedyList),
+      romanceList: syncList(romanceList)
+    };
   }
 );
 
@@ -146,7 +272,7 @@ export const addToWatchLater = createAsyncThunk(
   ) => {
     const state = getState() as RootState;
     const userId = state.auth.userId;
-
+    
     const url = `${BACKEND_URL}/api/movies/addtowatchlater`;
     const requestBody = {
       imdbID,
@@ -192,7 +318,7 @@ export const addToWatchLater = createAsyncThunk(
     }
 
     console.log("movieSlice => addToWatchLater asyncThunk response: ", result);
-
+    
     return result;
   }
 );
@@ -244,9 +370,16 @@ const movieSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchMyListState.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        console.log("movieSlice => fetchMyListState.pending => loading: ", state.loading);
+      })
       .addCase(fetchMyListState.fulfilled, (state, action) => {
         state.myListState = action.payload;
+        state.loading = false;
         state.error = null;
+        console.log("movieSlice => fetchMyListState.fulfilled => myListState: ", state.myListState);
       })
       .addCase(fetchMyListState.rejected, (state, action) => {
         state.error =
@@ -256,6 +389,40 @@ const movieSlice = createSlice({
           "movieSlice => fetchMyListState.rejected => Failed to populate myListState, got error: ",
           state.error
         );
+      })
+
+      .addCase(fetchHomeListStates.pending, (state) => {
+        state.error = null;
+        state.loading = true;
+      })
+      .addCase(fetchHomeListStates.fulfilled, (state, action) => {
+        state.trendingListState = action.payload.trending;
+        state.thrillerListState = action.payload.thriller;
+        state.comedyListState = action.payload.comedy;
+        state.romanceListState = action.payload.romance;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(fetchHomeListStates.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to fetch movie lists';
+        state.loading = false;
+      })
+
+      .addCase(syncFromMyList.pending, (state) => {
+        state.loading = true;
+        console.log("movieSlice => syncFromMyList.pending");
+      })
+      .addCase(syncFromMyList.fulfilled, (state, action) => {
+        state.trendingListState = action.payload.trendingList;
+        state.thrillerListState = action.payload.thrillerList;
+        state.comedyListState = action.payload.comedyList;
+        state.romanceListState = action.payload.romanceList;
+        state.loading = false;
+        console.log("movieSlice => syncFromMyList.fulfilled");
+      })
+      .addCase(syncFromMyList.rejected, (state) => {
+        state.loading = false;
+        console.error("movieSlice => syncFromMyList.rejected");
       })
 
       .addCase(updateRating.fulfilled, (state, action) => {
@@ -276,6 +443,8 @@ const movieSlice = createSlice({
             addToWatchLater: null,
           };
         }
+        
+        console.log("movieSlice => updateRating.fulfilled => updated movie details: ", movie);
       })
       .addCase(updateRating.rejected, (state, action) => {
         state.error =
@@ -303,6 +472,7 @@ const movieSlice = createSlice({
             addToWatchLater: movie.addToWatchLater,
           };
         }
+        console.log("movieSlice => addToWatchLater.fulfilled => updated movie details: ", movie);
       })
       .addCase(addToWatchLater.rejected, (state, action) => {
         state.error =
@@ -326,6 +496,7 @@ const movieSlice = createSlice({
           }
           return true;
         });
+        console.log("movieSlice => removeFromWatchedList.fulfilled")
       })
       .addCase(removeFromWatchedList.rejected, (state, action) => {
         state.error =
@@ -349,6 +520,7 @@ const movieSlice = createSlice({
           }
           return true;
         });
+        console.log("movieSlice => removeFromWatchLater.fulfilled")
       })
       .addCase(removeFromWatchLater.rejected, (state, action) => {
         state.error =

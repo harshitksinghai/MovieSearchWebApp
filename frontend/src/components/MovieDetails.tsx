@@ -13,8 +13,6 @@ import {
   CircularProgress,
   Stack,
   useTheme,
-  IconButton,
-  Tooltip,
   alpha
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
@@ -23,6 +21,8 @@ import { MovieDetailsItem } from '../types/movieTypes';
 import { FaRegThumbsUp, FaThumbsUp, FaThumbsDown, FaHeart, FaRegHeart, FaRegThumbsDown } from 'react-icons/fa6';
 import { removeFromWatchedList, updateRating, removeFromWatchLater, addToWatchLater } from '../features/movie/movieSlice';
 import { MdOutlineWatchLater, MdWatchLater } from 'react-icons/md';
+import ReactionButton from './ReactionButton';
+import placeholder from "../assets/placeholder1.jpg";
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
@@ -34,7 +34,7 @@ const MovieDetails: React.FC = () => {
   const { loading, error } = useAppSelector((state) => state.search);
 
   const [ratingState, setRatingState] = useState<string>('none');
-  const [isAddedtoWatchLater, setIsAddedToWatchLater] = useState<boolean>(false);
+  const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(false);
 
   useEffect(() => {
     if (imdbID) {
@@ -52,26 +52,43 @@ const MovieDetails: React.FC = () => {
   const handleRating = (rating: string) => {
     if (!movieResponse) return;
 
-    const newRating = rating === ratingState ? 'none' : rating;
-    
-    if (newRating === 'none') {
-      dispatch(removeFromWatchedList(movieResponse.imdbID));
-    } else {
-      dispatch(updateRating({ imdbID: movieResponse.imdbID, ratingState: newRating, Type: movieResponse.Type }));
-    }
+    const currRatingState = ratingState;
+    const currAddedToWatchLater = isAddedToWatchLater;
+    const newRating = rating === currRatingState ? 'none' : rating;
+
     setRatingState(newRating);
     setIsAddedToWatchLater(false);
+
+    if (newRating === 'none') {
+      dispatch(removeFromWatchedList(movieResponse.imdbID)).unwrap().catch(() => {
+        setRatingState(currRatingState);
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
+    }
+    else {
+      dispatch(updateRating({ imdbID: movieResponse.imdbID, ratingState: newRating, Type: movieResponse.Type })).unwrap().catch(() => {
+        setRatingState(currRatingState);
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
+    }
+
   };
 
   const handleAddToWatchLater = () => {
     if (!movieResponse) return;
 
-    if (isAddedtoWatchLater) {
-      dispatch(removeFromWatchLater(movieResponse.imdbID));
-      setIsAddedToWatchLater(false);
+    const currAddedToWatchLater = isAddedToWatchLater;
+
+    setIsAddedToWatchLater((prev) => !prev);
+
+    if (currAddedToWatchLater) {
+      dispatch(removeFromWatchLater(movieResponse.imdbID)).unwrap().catch(() => {
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
     } else {
-      dispatch(addToWatchLater({ imdbID: movieResponse.imdbID, ratingState: ratingState, Type: movieResponse.Type }));
-      setIsAddedToWatchLater(true);
+      dispatch(addToWatchLater({ imdbID: movieResponse.imdbID, ratingState: ratingState, Type: movieResponse.Type })).unwrap().catch(() => {
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
     }
   };
 
@@ -149,7 +166,7 @@ const MovieDetails: React.FC = () => {
             >
               <Box
                 component="img"
-                src={movieResponse.Poster !== 'N/A' ? movieResponse.Poster : '/placeholder-poster.jpg'}
+                src={movieResponse.Poster !== 'N/A' ? movieResponse.Poster : placeholder}
                 alt={movieResponse.Title}
                 sx={{
                   width: '100%',
@@ -266,131 +283,33 @@ const MovieDetails: React.FC = () => {
                   }}
                 >
                   <Stack direction="row" spacing={1} alignItems="center">
-                    {/* Dislike Button */}
-                    <Tooltip
+
+                    <ReactionButton
                       title={t('card.dislikeTooltip')}
-                      placement="top"
-                      arrow
-                    >
-                      <IconButton
-                className={`action-button ${ratingState === 'dislike' ? 'active' : ''}`}
-                onClick={() => handleRating('dislike')}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  bgcolor: theme.palette.customSecondary.bg,
-              border: ratingState === 'dislike' 
-                ? `2px solid ${theme.palette.customSecondary.activeBorder}` 
-                : `2px solid ${theme.palette.customSecondary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customSecondary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(ratingState === 'dislike' && {
-                bgcolor: theme.palette.customSecondary.activeBg,
-                '& svg': {
-                  color: theme.palette.customSecondary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customSecondary.activeBg,
-                  borderColor: theme.palette.customSecondary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-              >
-                {ratingState === 'dislike' ? 
-                  <FaThumbsDown size={14} /> : 
-                  <FaRegThumbsDown size={14} color={theme.palette.customSecondary.icon} />
-                }
-              </IconButton>
-                    </Tooltip>
+                      state={ratingState === 'dislike'}
+                      onClick={() => handleRating('dislike')}
+                      activeIcon={<FaThumbsDown size={14} />}
+                      inactiveIcon={<FaRegThumbsDown size={14} color={theme.palette.customSecondary.icon} />}
+                      themeVariant="customSecondary"
+                    />
 
-                    {/* Like Button */}
-                    <Tooltip
+                    <ReactionButton
                       title={t('card.likeTooltip')}
-                      placement="top"
-                      arrow
-                    >
-                      <IconButton
-                className={`action-button ${ratingState === 'like' ? 'active' : ''}`}
-                onClick={() => handleRating('like')}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  bgcolor: theme.palette.customSecondary.bg,
-              border: ratingState === 'like' 
-                ? `2px solid ${theme.palette.customSecondary.activeBorder}` 
-                : `2px solid ${theme.palette.customSecondary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customSecondary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(ratingState === 'like' && {
-                bgcolor: theme.palette.customSecondary.activeBg,
-                '& svg': {
-                  color: theme.palette.customSecondary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customSecondary.activeBg,
-                  borderColor: theme.palette.customSecondary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-              >
-                {ratingState === 'like' ? 
-                  <FaThumbsUp size={14} /> : 
-                  <FaRegThumbsUp size={14} color={theme.palette.customSecondary.icon} />
-                }
-              </IconButton>
-                    </Tooltip>
+                      state={ratingState === 'like'}
+                      onClick={() => handleRating('like')}
+                      activeIcon={<FaThumbsUp size={14} />}
+                      inactiveIcon={<FaRegThumbsUp size={14} color={theme.palette.customSecondary.icon} />}
+                      themeVariant="customSecondary"
+                    />
 
-                    {/* Love Button */}
-                    <Tooltip
+                    <ReactionButton
                       title={t('card.loveTooltip')}
-                      placement="top"
-                      arrow
-                    >
-                      <IconButton
-                className={`action-button ${ratingState === 'love' ? 'active' : ''}`}
-                onClick={() => handleRating('love')}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  bgcolor: theme.palette.customSecondary.bg,
-              border: ratingState === 'love' 
-                ? `2px solid ${theme.palette.customSecondary.activeBorder}` 
-                : `2px solid ${theme.palette.customSecondary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customSecondary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(ratingState === 'love' && {
-                bgcolor: theme.palette.customSecondary.activeBg,
-                '& svg': {
-                  color: theme.palette.customSecondary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customSecondary.activeBg,
-                  borderColor: theme.palette.customSecondary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-              >
-                {ratingState === 'love' ? 
-                  <FaHeart size={14} /> : 
-                  <FaRegHeart size={14} color={theme.palette.customSecondary.icon} />
-                }
-              </IconButton>
-                    </Tooltip>
+                      state={ratingState === 'love'}
+                      onClick={() => handleRating('love')}
+                      activeIcon={<FaHeart size={14} />}
+                      inactiveIcon={<FaRegHeart size={14} color={theme.palette.customSecondary.icon} />}
+                      themeVariant="customSecondary"
+                    />
 
                     <Box
                       sx={{
@@ -402,47 +321,14 @@ const MovieDetails: React.FC = () => {
                       }}
                     />
 
-                    {/* Watch Later Button */}
-                    <Tooltip
-                      title={isAddedtoWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
-                      placement="top"
-                      arrow
-                    >
-                      <IconButton
-            className={`action-button ${isAddedtoWatchLater ? 'active' : ''}`}
-            onClick={handleAddToWatchLater}
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              bgcolor: theme.palette.customSecondary.bg,
-              border: isAddedtoWatchLater
-                ? `2px solid ${theme.palette.customSecondary.activeBorder}` 
-                : `2px solid ${theme.palette.customSecondary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customSecondary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(isAddedtoWatchLater && {
-                bgcolor: theme.palette.customSecondary.activeBg,
-                '& svg': {
-                  color: theme.palette.customSecondary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customSecondary.activeBg,
-                  borderColor: theme.palette.customSecondary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-          >
-            {isAddedtoWatchLater ? 
-              <MdWatchLater size={18} /> : 
-              <MdOutlineWatchLater size={18} color={theme.palette.customSecondary.icon} />
-            }
-          </IconButton>
-                    </Tooltip>
+                    <ReactionButton
+                      title={isAddedToWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
+                      state={isAddedToWatchLater}
+                      onClick={handleAddToWatchLater}
+                      activeIcon={<MdWatchLater size={18} />}
+                      inactiveIcon={<MdOutlineWatchLater size={18} color={theme.palette.customSecondary.icon} />}
+                      themeVariant="customSecondary"
+                    />
                   </Stack>
                 </Paper>
               </Stack>

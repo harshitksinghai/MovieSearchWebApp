@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Card, CardMedia, Typography, IconButton, Tooltip, Stack, useTheme } from '@mui/material';
+import { Box, Card, CardMedia, Typography, IconButton, Stack, useTheme } from '@mui/material';
 import placeholder from "../assets/placeholder1.jpg";
 import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart } from "react-icons/fa6";
 import { MdOutlineWatchLater, MdWatchLater } from "react-icons/md";
@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { MovieDetailsItem, SearchApiItem } from '../types/movieTypes.ts';
 import { useAppDispatch } from '../app/hooks.ts';
-import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, updateRating } from '../features/movie/movieSlice.ts';
+import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, syncFromMyList, updateRating } from '../features/movie/movieSlice.ts';
+import ReactionButton from './ReactionButton.tsx';
 
 interface MovieCardProps {
   movie: Partial<MovieDetailsItem> & SearchApiItem;
@@ -18,28 +19,46 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [ratingState, setRatingState] = useState<string>(movie.ratingState);
-  const [isAddedtoWatchLater, setIsAddedToWatchLater] = useState<boolean>(movie.addToWatchLater ? true : false);
+  const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(movie.addToWatchLater ? true : false);
 
   const handleRating = (rating: string) => {
-    const newRating = rating === ratingState ? 'none' : rating;
-    if(newRating === 'none'){
-      dispatch(removeFromWatchedList(movie.imdbID));
-    }
-    else{
-      dispatch(updateRating({ imdbID: movie.imdbID, ratingState: newRating, Type: movie.Type }));
-    }
+    const currRatingState = ratingState;
+    const currAddedToWatchLater = isAddedToWatchLater;
+    const newRating = rating === currRatingState ? 'none' : rating;
+
     setRatingState(newRating);
     setIsAddedToWatchLater(false);
+
+    if (newRating === 'none') {
+      dispatch(removeFromWatchedList(movie.imdbID)).unwrap().catch(() => {
+        setRatingState(currRatingState);
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
+    }
+    else {
+      dispatch(updateRating({ imdbID: movie.imdbID, ratingState: newRating, Type: movie.Type })).unwrap().catch(() => {
+        setRatingState(currRatingState);
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
+    }
+
   };
 
   const handleAddToWatchLater = () => {
-    if (isAddedtoWatchLater) {
-      dispatch(removeFromWatchLater(movie.imdbID));
-      setIsAddedToWatchLater(!isAddedtoWatchLater);
+    const currAddedToWatchLater = isAddedToWatchLater;
+
+    setIsAddedToWatchLater((prev) => !prev);
+
+    if (currAddedToWatchLater) {
+      dispatch(removeFromWatchLater(movie.imdbID)).unwrap().catch(() => {
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
     } else {
-      dispatch(addToWatchLater({imdbID: movie.imdbID, ratingState: ratingState, Type: movie.Type}));
-      setIsAddedToWatchLater(!isAddedtoWatchLater);
+      dispatch(addToWatchLater({ imdbID: movie.imdbID, ratingState: ratingState, Type: movie.Type })).unwrap().catch(() => {
+        setIsAddedToWatchLater(currAddedToWatchLater);
+      });
     }
+
   };
 
   let ratingIcon;
@@ -62,12 +81,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         height: 300,
         overflow: 'visible',
         transition: 'all 0.3s ease',
-        boxShadow: theme.palette.mode === 'dark' 
+        boxShadow: theme.palette.mode === 'dark'
           ? `
             12px 0 15px -8px rgba(255, 255, 255, 0.2), 
             -4px 0 6px -4px rgba(255, 255, 255, 0.1),
             0 8px 10px -5px rgba(255, 255, 255, 0.15)
-          ` 
+          `
           : `
             12px 0 15px -8px rgba(0, 0, 0, 0.3), 
             -4px 0 6px -4px rgba(0, 0, 0, 0.15),
@@ -156,8 +175,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
               height: 32,
               borderRadius: '50%',
               bgcolor: theme.palette.customPrimary.bg,
-              border: ratingState !== 'none' 
-                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
+              border: ratingState !== 'none'
+                ? `2px solid ${theme.palette.customPrimary.activeBorder}`
                 : `2px solid ${theme.palette.customPrimary.border}`,
               '&:hover': {
                 borderColor: theme.palette.customPrimary.hoverBorder,
@@ -191,180 +210,53 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
               opacity: 0,
               visibility: 'hidden',
               transition: 'all 0.2s ease',
-              bgcolor: theme.palette.mode === 'dark' 
-                ? 'rgba(230, 230, 230, 0.9)' 
+              bgcolor: theme.palette.mode === 'dark'
+                ? 'rgba(230, 230, 230, 0.9)'
                 : 'rgba(42, 42, 42, 0.9)',
               padding: '8px',
               borderRadius: '20px',
               zIndex: 20,
             }}
           >
-            <Tooltip
+            <ReactionButton
               title={t('card.dislikeTooltip')}
-              placement="top"
-              arrow
-            >
-              <IconButton
-                className={`action-button ${ratingState === 'dislike' ? 'active' : ''}`}
-                onClick={() => handleRating('dislike')}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  bgcolor: theme.palette.customPrimary.bg,
-              border: ratingState === 'dislike' 
-                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
-                : `2px solid ${theme.palette.customPrimary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customPrimary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(ratingState === 'dislike' && {
-                bgcolor: theme.palette.customPrimary.activeBg,
-                '& svg': {
-                  color: theme.palette.customPrimary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customPrimary.activeBg,
-                  borderColor: theme.palette.customPrimary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-              >
-                {ratingState === 'dislike' ? 
-                  <FaThumbsDown size={14} /> : 
-                  <FaRegThumbsDown size={14} color={theme.palette.customPrimary.icon} />
-                }
-              </IconButton>
-            </Tooltip>
+              state={ratingState === 'dislike'}
+              onClick={() => handleRating('dislike')}
+              activeIcon={<FaThumbsDown size={14} />}
+              inactiveIcon={<FaRegThumbsDown size={14} color={theme.palette.customPrimary.icon} />}
+              themeVariant="customPrimary"
+            />
 
-            <Tooltip
+            <ReactionButton
               title={t('card.likeTooltip')}
-              placement="top"
-              arrow
-            >
-              <IconButton
-                className={`action-button ${ratingState === 'like' ? 'active' : ''}`}
-                onClick={() => handleRating('like')}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  bgcolor: theme.palette.customPrimary.bg,
-              border: ratingState === 'like' 
-                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
-                : `2px solid ${theme.palette.customPrimary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customPrimary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(ratingState === 'like' && {
-                bgcolor: theme.palette.customPrimary.activeBg,
-                '& svg': {
-                  color: theme.palette.customPrimary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customPrimary.activeBg,
-                  borderColor: theme.palette.customPrimary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-              >
-                {ratingState === 'like' ? 
-                  <FaThumbsUp size={14} /> : 
-                  <FaRegThumbsUp size={14} color={theme.palette.customPrimary.icon} />
-                }
-              </IconButton>
-            </Tooltip>
+              state={ratingState === 'like'}
+              onClick={() => handleRating('like')}
+              activeIcon={<FaThumbsUp size={14} />}
+              inactiveIcon={<FaRegThumbsUp size={14} color={theme.palette.customPrimary.icon} />}
+              themeVariant="customPrimary"
+            />
 
-            <Tooltip
+            <ReactionButton
               title={t('card.loveTooltip')}
-              placement="top"
-              arrow
-            >
-              <IconButton
-                className={`action-button ${ratingState === 'love' ? 'active' : ''}`}
-                onClick={() => handleRating('love')}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  bgcolor: theme.palette.customPrimary.bg,
-              border: ratingState === 'love' 
-                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
-                : `2px solid ${theme.palette.customPrimary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customPrimary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(ratingState === 'love' && {
-                bgcolor: theme.palette.customPrimary.activeBg,
-                '& svg': {
-                  color: theme.palette.customPrimary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customPrimary.activeBg,
-                  borderColor: theme.palette.customPrimary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-              >
-                {ratingState === 'love' ? 
-                  <FaHeart size={14} /> : 
-                  <FaRegHeart size={14} color={theme.palette.customPrimary.icon} />
-                }
-              </IconButton>
-            </Tooltip>
+              state={ratingState === 'love'}
+              onClick={() => handleRating('love')}
+              activeIcon={<FaHeart size={14} />}
+              inactiveIcon={<FaRegHeart size={14} color={theme.palette.customPrimary.icon} />}
+              themeVariant="customPrimary"
+            />
+
+
           </Stack>
         </Box>
 
-        <Tooltip
-          title={isAddedtoWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
-          placement="top"
-          arrow
-          >
-          <IconButton
-            className={`action-button ${isAddedtoWatchLater ? 'active' : ''}`}
-            onClick={handleAddToWatchLater}
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              bgcolor: theme.palette.customPrimary.bg,
-              border: isAddedtoWatchLater
-                ? `2px solid ${theme.palette.customPrimary.activeBorder}` 
-                : `2px solid ${theme.palette.customPrimary.border}`,
-              '&:hover': {
-                borderColor: theme.palette.customPrimary.hoverBorder,
-                transform: 'scale(1.1)',
-              },
-              ...(isAddedtoWatchLater && {
-                bgcolor: theme.palette.customPrimary.activeBg,
-                '& svg': {
-                  color: theme.palette.customPrimary.activeIcon,
-                },
-                '&:hover': {
-                  bgcolor: theme.palette.customPrimary.activeBg,
-                  borderColor: theme.palette.customPrimary.hoverBorder,
-                  transform: 'scale(1.1)',
-                },
-              }),
-              padding: 0,
-            }}
-          >
-            {isAddedtoWatchLater ? 
-              <MdWatchLater size={18} /> : 
-              <MdOutlineWatchLater size={18} color={theme.palette.customPrimary.icon} />
-            }
-          </IconButton>
-        </Tooltip>
-
+        <ReactionButton
+          title={isAddedToWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
+          state={isAddedToWatchLater}
+          onClick={handleAddToWatchLater}
+          activeIcon={<MdWatchLater size={18} />}
+          inactiveIcon={<MdOutlineWatchLater size={18} color={theme.palette.customPrimary.icon} />}
+          themeVariant="customPrimary"
+        />
         <Box
           className="movie-info"
           sx={{

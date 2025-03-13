@@ -1,6 +1,6 @@
 {
     "navbar":{
-        "appName": "WikiMovies",
+        "appName": "MovieKeeper",
         "searchPlaceholder": "Search Title...",
         "typeAll": "All",
         "typeMovies": "Movies",
@@ -29,7 +29,7 @@
         "removeWatchLaterTooltip": "Remove from Watch Later"
     },
     "fav":{
-        "fav": "FAVOURITES",
+        "fav": "Favourites",
         "loading": "Loading your favorites...",
         "empty": "No items found in your list.",
         "filter":{
@@ -45,10 +45,10 @@
         }
     },
     "watchLater":{
-        "watchLater": "WATCH LATER"
+        "watchLater": "Watch Later"
     },
     "market":{
-        "appName": "WikiMovies",
+        "appName": "MovieKeeper",
         "getStarted": "Get Started"
     },
     "movie":{
@@ -72,5 +72,12 @@
     "carousel":{
         "soon": "Movie Carousel implementing soon!!!"
     },
-    "backToolTip": "Go Back"
+    "backToolTip": "Go Back",
+    "homeList": {
+        "discover": "Discover Global Sensations",
+        "Trending": "Trending",
+        "Thriller": "Thriller",
+        "Comedy": "Comedy",
+        "Romance": "Romance"
+    }
 }

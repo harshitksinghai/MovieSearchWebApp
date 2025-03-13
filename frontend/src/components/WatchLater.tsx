@@ -21,7 +21,8 @@ const WatchLater = () => {
           fontSize: '50px',
           textAlign: 'center',
           marginTop: '20px',
-          color: theme.palette.text.flow
+          color: theme.palette.text.flow,
+          padding: theme.spacing(4, 0, 0, 0)
         }}
       >
         {t('watchLater.watchLater')}

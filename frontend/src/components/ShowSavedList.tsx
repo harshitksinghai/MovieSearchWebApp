@@ -50,7 +50,6 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
     );
   }
 
-  // Show skeleton while loading regardless of filteredList length
   if (loading) {
     return (
       <Box sx={{ margin: 0, mb: '2.625rem', width: '90%', justifySelf: 'center', alignItems: 'center' }}>  

@@ -67,12 +67,12 @@ export const themePalettes = {
 
     },
     dark: {
-      primary: '#66cc66',
+      primary: '#236322',
       secondary: '#33b333',
       background: '#071b07',
       paper: '#0e2e0e',
       textPrimary: '#ffffff',
-      textSecondary: '#99e699',
+      textSecondary: '#66b266',
       accent: '102, 204, 102',
       chartColors: ['#f2fff2', '#e6ffe6', '#d9ffd9', '#ccffcc', '#b3ffb3', '#99ff99']
 

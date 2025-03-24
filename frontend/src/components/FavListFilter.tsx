@@ -34,7 +34,7 @@ const FavListFilter: React.FC = () => {
 
     const buttonSx = (isActive: boolean) => ({
         backgroundColor: isActive ? currentPalette.primary : currentPalette.secondary,
-        color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
+        color: (currentTheme === 'White' && darkMode) ? '#222' : '#fff',
         borderStyle: 'solid',
         borderColor: darkMode ? '#fff' : '#444',
         borderWidth: '1px',

@@ -39,7 +39,6 @@ const StatsBox: React.FC<StatsBoxProps> = memo(({ title, primary, secondary, ico
                 borderRadius: "8px",
                 pt: "1rem",
                 pl: "1.5rem",
-                bgcolor: currentTheme === 'White' && !darkMode ? '#fff' : currentPalette.paper
             }}
         >
             <Stack flexDirection={"column"} sx={{ position: "relative" }}>
@@ -153,6 +152,8 @@ const DashboardPage = () => {
     const recentFavourites = useAppSelector(recentFavouritesFilter);
     const reWatches = useAppSelector(reWatchesFilter);
 
+    const userDetails = useAppSelector((State) => State.auth.userDetails);
+
     const navigate = useNavigate();
 
     return (
@@ -165,6 +166,16 @@ const DashboardPage = () => {
                 right: '10%',
                 pb: '5%'
             }}>
+                <Typography sx={{
+                    color: currentPalette.textPrimary,
+                    fontSize: '30px',
+                    justifySelf: 'center',
+                    fontWeight: '700',
+                    pb: '1rem',
+                    pt: '0.5rem'
+                }}>
+                    {'Hi ' + userDetails.firstName + " " + userDetails.middleName + " " + userDetails.lastName}
+                    </Typography>
                 <Grid container spacing={2}>
                     <Grid size={3}>
                         <StatsBox

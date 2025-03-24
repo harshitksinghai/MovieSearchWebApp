@@ -148,7 +148,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     fullWidth
                                     id="middleName"
                                     name="middleName"
-                                    label={t('profile.middleName') + "*"} 
+                                    label={t('profile.middleName')} 
                                     size="small"
                                     placeholder={userDetails?.middleName || "Enter middle name"}
                                     value={formik.values.middleName}

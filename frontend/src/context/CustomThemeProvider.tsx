@@ -16,7 +16,7 @@ export const themePalettes = {
       textPrimary: '#2f2f2f',
       textSecondary: '#525252',
       accent: '47, 47, 47',
-      chartColors: ['#e0e0e0', '#ededed', '#f5f5f5', '#fff9ec', '#fff8dc', '#f3ead3']
+      chartColors: ['#E6E8FA', '#efdfbb',' #ef7575', '#C2D8D3', ' #ffa600', '#EEDC82']
 
     },
     dark: {
@@ -27,7 +27,7 @@ export const themePalettes = {
       textPrimary: '#fff',
       textSecondary: '#f5f5f5',
       accent: '237, 237, 237',
-      chartColors: ['#fff9ec', '#f3ead3', '#fff8dc', '#fbf5df', '#ededed', '#f5f5f5']
+      chartColors: ['#F1E9D2', ' #EAE9E0', '#E6E8FA', '#fbf5df', '#EEDC82', '#ffe599']
 
     }
   },

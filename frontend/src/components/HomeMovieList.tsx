@@ -4,13 +4,12 @@ import {
     Typography,
     Container,
     styled,
-    useTheme,
-    Skeleton
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { syncFromMyList } from "@/features/movie/movieSlice";
+import { themePalettes, useCustomTheme } from "@/context/CustomThemeProvider";
 
 const PageContainer = styled(Box)(({ theme }) => ({
     width: '100%',
@@ -22,32 +21,9 @@ const HeaderContainer = styled(Container)(({ theme }) => ({
     marginBottom: theme.spacing(6)
 }));
 
-const CarouselContainer = styled(Box)(({ theme }) => ({
-    position: 'relative',
-    width: '100vw',
-    left: '50%',
-    right: '50%',
-    marginLeft: '-50vw',
-    marginRight: '-50vw',
-    padding: theme.spacing(0, 6),
-    marginBottom: theme.spacing(-5)
-}));
-
-const SkeletonCarouselContainer = styled(Box)(({ theme }) => ({
-    position: 'relative',
-    width: '100vw',
-    left: '50%',
-    right: '50%',
-    marginLeft: '-50vw',
-    marginRight: '-50vw',
-    padding: theme.spacing(0, 6),
-    marginBottom: theme.spacing(6)
-}));
-
 const HomeMovieList: React.FC = () => {
     console.log("Inside HomeMovieList.tsx")
 
-    const theme = useTheme();
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
@@ -58,101 +34,48 @@ const HomeMovieList: React.FC = () => {
     const romanceList = useAppSelector((state) => state.movie.romanceListState);
     const loading = useAppSelector((state) => state.movie.loading);
 
+      const { currentTheme, darkMode } = useCustomTheme();
+      const getCurrentPalette = () => {
+        const palette = themePalettes[currentTheme];
+        return darkMode ? palette.dark : palette.light;
+      };
+    
+      const currentPalette = getCurrentPalette();
+
     useEffect(() => {
-        if(myListState.length > 0 && (trendingList.length > 0 || thrillerList.length > 0 || comedyList.length > 0 || romanceList.length > 0)){
+        if (myListState.length > 0 && (trendingList.length > 0 || thrillerList.length > 0 || comedyList.length > 0 || romanceList.length > 0)) {
             dispatch(syncFromMyList());
         }
     }, [dispatch, myListState]);
 
-    const SkeletonCarousel = (props: { title: string }) => (
-        <SkeletonCarouselContainer>
-            <Typography
-                variant="h2"
-                sx={{
-                    fontWeight: 600,
-                    fontSize: '30px',
-                    color: theme.palette.text.flow,
-                    ml: 2,
-                    mb: '15px'
-                }}
-            >
-                {t(`homeList.${props.title}`)}
-            </Typography>
-            <Box sx={{
-                display: 'flex',
-                gap: '38px',
-                overflow: 'hidden',
-                ml: '18px'
-            }}>
-                {[...Array(5)].map((_, index) => (
-                    <Skeleton
-                        key={index}
-                        variant="rectangular"
-                        width="250px"
-                        height={300}
-                        sx={{
-                            bgcolor: 'grey.700',
-                            borderRadius: '8px',
-                            flexShrink: 0
-                        }}
-                    />
-                ))}
-            </Box>
-        </SkeletonCarouselContainer>
-    );
-
     return (
+
         <PageContainer>
-            <HeaderContainer maxWidth="lg">
+            <HeaderContainer>
                 <Typography
                     variant="h2"
                     sx={{
                         fontWeight: 600,
-                        fontSize: '50px',
+                        fontSize: 'clamp(2rem, 5vw, 3.125rem)',
                         textAlign: 'center',
-                        marginTop: '20px',
-                        color: theme.palette.text.flow
+                        marginTop: '1.25rem',
+                        color: currentPalette.textPrimary
                     }}
                 >
                     {t('homeList.discover')}
                 </Typography>
             </HeaderContainer>
+            <Box sx={{ margin: 0, mb: '2.625rem', width: '90%', justifySelf: 'center', alignItems: 'center' }}>
 
-            {loading ? (
-                <>
-                    <SkeletonCarousel title="Trending" />
-                    <SkeletonCarousel title="Thriller" />
-                    <SkeletonCarousel title="Comedy" />
-                    <SkeletonCarousel title="Romance" />
-                </>
-            ) : (
-                <>
-                    {trendingList.length > 0 && (
-                        <CarouselContainer>
-                            <MovieCarousel title="Trending" movies={trendingList} />
-                        </CarouselContainer>
-                    )}
+                <MovieCarousel title="Trending" movies={trendingList} isLoading={loading} />
+                <MovieCarousel title="Thriller" movies={thrillerList} isLoading={loading} />
+                <MovieCarousel title="Comedy" movies={comedyList} isLoading={loading} />
+                <MovieCarousel title="Romance" movies={romanceList} isLoading={loading} />
 
-                    {thrillerList.length > 0 && (
-                        <CarouselContainer>
-                            <MovieCarousel title="Thriller" movies={thrillerList} />
-                        </CarouselContainer>
-                    )}
+            </Box>
 
-                    {comedyList.length > 0 && (
-                        <CarouselContainer>
-                            <MovieCarousel title="Comedy" movies={comedyList} />
-                        </CarouselContainer>
-                    )}
-
-                    {romanceList.length > 0 && (
-                        <CarouselContainer>
-                            <MovieCarousel title="Romance" movies={romanceList} />
-                        </CarouselContainer>
-                    )}
-                </>
-            )}
         </PageContainer>
+
     );
 };
 

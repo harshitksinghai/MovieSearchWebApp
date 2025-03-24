@@ -1,16 +1,18 @@
 import Logo from './ui/Logo'
 import SearchBar from './SearchBar';
 import LanguageSelector from '../components/LanguageSelector';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import DarkModeToggle from './DarkModeToggle';
 import { useTranslation } from 'react-i18next';
-import { AppBar, Toolbar, Typography, Box, useTheme, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { useAppDispatch } from '../app/hooks';
 import { setSearchState, setError, resetSearchBox } from '../features/search/searchSlice';
 import { useAuth } from "react-oidc-context";
-
-const AUTH_COGNITO_DOMAIN = import.meta.env.VITE_AUTH_COGNITO_DOMAIN;
-const AUTH_COGNITO_CLIENT_ID = import.meta.env.VITE_AUTH_COGNITO_CLIENT_ID;
+import UserButton from './UserButton';
+import { memo, useCallback, useState } from 'react';
+import ProfilePopup from './ProfilePopup';
+import ThemeSelector from './ThemeSelector';
+import { useCustomTheme, themePalettes } from '../context/CustomThemeProvider';
 
 interface NavBarProps {
   isSearchBar: boolean;
@@ -18,11 +20,26 @@ interface NavBarProps {
 
 const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const dispatch = useAppDispatch();
   const auth = useAuth();
-  const location = useLocation();
-  const isMarketingPage = location.pathname === '/';
+
+    const { currentTheme, darkMode } = useCustomTheme();
+  const getCurrentPalette = () => {
+    const palette = themePalettes[currentTheme];
+    return darkMode ? palette.dark : palette.light;
+  };
+
+  const currentPalette = getCurrentPalette();
+
+  const [profilePopupOpen, setProfilePopupOpen] = useState(false);
+
+  const handleProfilePopupOpen = useCallback(() => {
+    setProfilePopupOpen(true);
+  }, []);
+
+  const handleProfilePopupClose = useCallback(() => {
+    setProfilePopupOpen(false);
+  }, []);
 
   const handleNavLinkClick = () => {
     dispatch(setSearchState(false));
@@ -30,65 +47,63 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
     dispatch(resetSearchBox());
   };
 
-  const signOutRedirect = () => {
-    auth.removeUser();
-    
-    const clientId = AUTH_COGNITO_CLIENT_ID;
-    const logoutUri = window.location.origin;
-    const cognitoDomain = AUTH_COGNITO_DOMAIN;
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
+
+
 
   return (
-    <AppBar 
+    <AppBar
       position="sticky"
-      sx={{ 
-        backgroundColor: theme.palette.background.nav,
-        height: '74px',
-        boxShadow: 0
+      sx={{
+        backgroundColor: currentPalette.background,
+        height: '4.5rem',
+        boxShadow: `0 4px 20px rgba(${currentPalette.accent}, 0.15)`,
       }}
     >
-      <Toolbar sx={{ 
-        display: 'flex', 
+      <Toolbar sx={{
+        display: 'flex',
         justifyContent: 'space-between',
         height: '100%'
       }}>
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '30px' 
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '30px'
         }}>
           <Link to={auth.isAuthenticated ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
             <Logo />
           </Link>
-          <Link to="/mylist" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
-            <Typography 
-              sx={{ 
-                marginTop: '3px',
-                fontSize: '20px',
-                fontWeight: 500,
-                color: theme.palette.text.primary
-              }}
-            >
-              {t('navbar.fav')}
-            </Typography>
-          </Link>
-          <Link to="/watchlater" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
-            <Typography 
-              sx={{ 
-                marginTop: '3px',
-                fontSize: '20px',
-                fontWeight: 500,
-                color: theme.palette.text.primary
-              }}
-            >
-              {t('navbar.watchLater')}
-            </Typography>
-          </Link>
+          {auth.isAuthenticated && (
+            <>
+              <Link to="/mylist" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+                <Typography
+                  sx={{
+                    marginTop: '0.2rem',
+                    fontSize: '1.25rem',
+                    fontWeight: 500,
+                    color: currentPalette.textPrimary
+                  }}
+                >
+                  {t('navbar.fav')}
+                </Typography>
+              </Link>
+              <Link to="/watchlater" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+                <Typography
+                  sx={{
+                    marginTop: '0.2rem',
+                    fontSize: '1.25rem',
+                    fontWeight: 500,
+                    color: currentPalette.textPrimary
+                  }}
+                >
+                  {t('navbar.watchLater')}
+                </Typography>
+              </Link>
+            </>
+          )}
         </Box>
-        
-        <Box sx={{ 
-          display: 'flex', 
+
+        <Box sx={{
+          display: 'flex',
           alignItems: 'center',
           gap: '10px',
           marginRight: '20px'
@@ -96,60 +111,47 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
           {props.isSearchBar && (
             <SearchBar />
           )}
-          
+
+          <DarkModeToggle />
+          <ThemeSelector />
+          <LanguageSelector />
+
           {/* Authentication buttons */}
-          {isMarketingPage ? (
+          {
             !auth.isAuthenticated && (
-              <Button 
+              <Button
                 onClick={() => auth.signinRedirect()}
                 sx={{
                   fontSize: '1rem',
-                  fontWeight: 500,
-                  height: '38px',
-                  marginTop: '2px',
+                  fontWeight: 600,
+                  height: '2.4rem',
+                  marginTop: '0.125rem',
                   padding: '0.5rem 1rem',
-                  borderRadius: '8px',
-                  color: theme.palette.text.secondary,
-                  backgroundColor: theme.palette.background.flow,
+                  borderRadius: '0.5rem',
+                  color: currentTheme === 'White' && darkMode ? '#222' : '#fff', // White text for better contrast on primary button
+                  backgroundColor: currentPalette.primary,
                   '&:hover': {
-                    backgroundColor: theme.palette.background.flowHover,
-                    color: theme.palette.text.secondary,
-                  }
+                    backgroundColor: currentPalette.secondary,
+                    color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
+                    transform: 'translateY(-3px)',
+                    boxShadow: `0 10px 20px rgba(${currentPalette.accent}, ${darkMode ? 0.3 : 0.2})`,
+                  },
+                  transition: 'all 0.3s ease',
                 }}
               >
                 {t('navbar.signIn')}
               </Button>
-            )
-          ) : (
-            auth.isAuthenticated && (
-              <Button 
-                onClick={signOutRedirect}
-                sx={{
-                  fontSize: '1rem',
-                  fontWeight: 500,
-                  height: '38px',
-                  marginTop: '2px',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '8px',
-                  color: theme.palette.text.secondary,
-                  backgroundColor: theme.palette.background.flow,
-                  '&:hover': {
-                    backgroundColor: theme.palette.background.flowHover,
-                    color: theme.palette.text.secondary,
-                  }
-                }}
-              >
-                {t('navbar.signOut')}
-              </Button>
-            )
-          )}
+            )}
           
-          <LanguageSelector />
-          <DarkModeToggle />
+            {auth.isAuthenticated && (
+              <UserButton openProfilePopup={handleProfilePopupOpen} />
+            )
+          }
+          <ProfilePopup open={profilePopupOpen} handleClose={handleProfilePopupClose} />
         </Box>
       </Toolbar>
     </AppBar>
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

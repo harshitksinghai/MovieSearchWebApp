@@ -1,8 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import { FormControl, Select, MenuItem, Typography, Box } from '@mui/material';
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 
 const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
+
+        const { currentTheme, darkMode } = useCustomTheme();
+        const getCurrentPalette = () => {
+          const palette = themePalettes[currentTheme];
+          return darkMode ? palette.dark : palette.light;
+        };
+      
+        const currentPalette = getCurrentPalette();
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -11,35 +20,37 @@ const LanguageSelector: React.FC = () => {
   ];
 
   return (
-    <FormControl size="small">
-      <Select
-        value={i18n.language}
-        onChange={(e) => i18n.changeLanguage(e.target.value)}
-        sx={{
+    <FormControl size="small" sx={{ width: { xs: '100%', sm: 'auto' } }}>
+  <Select
+    value={i18n.language}
+    onChange={(e) => i18n.changeLanguage(e.target.value)}
+    sx={{
+      backgroundColor: currentPalette.primary,
+      color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
+      borderRadius: '0.5rem',
+      height: '2.4rem',
+      marginTop: '0.125rem',
+      width: { xs: '100%', sm: 'auto' },
+      '& .MuiSvgIcon-root': {
+        color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
+      },
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(255, 255, 255, 0.5)',
+      },
+    }}
+    MenuProps={{
+      PaperProps: {
+        sx: {
           backgroundColor: '#222',
-          color: 'white',
-          borderRadius: '8px',
-          height: '38px',
-          marginTop: '2px',
-          '& .MuiSvgIcon-root': {
-            color: 'white !important',
+          maxHeight: '50vh',
+          '& .MuiList-root': {
+            backgroundColor: '#222',
+            padding: 0,
           },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(255, 255, 255, 0.5)',
-          },
-        }}
-        MenuProps={{
-          PaperProps: {
-            sx: {
-              backgroundColor: '#222',
-              '& .MuiList-root': {
-                backgroundColor: '#222',
-                padding: 0,
-              },
-            },
-          },
-        }}
-      >
+        },
+      },
+    }}
+  >
         {languages.map((lang) => (
           <MenuItem
             key={lang.code}
@@ -48,17 +59,16 @@ const LanguageSelector: React.FC = () => {
               backgroundColor: '#222',
               color: 'white',
               '&:hover': {
-                backgroundColor: '#333',
+                backgroundColor: currentPalette.secondary,
               },
               '&.Mui-selected': {
-                backgroundColor: '#444',
-                '&:hover': {
-                  backgroundColor: '#555',
-                },
+                backgroundColor: currentPalette.secondary
               },
             }}
           >
-           <Box sx={{display: 'flex'}}><Typography sx={{fontSize: 10, mt: '6px', mr: '5px'}}>{lang.code.toUpperCase()}</Typography> {lang.name}</Box>
+           <Box sx={{display: 'flex'}}><Typography sx={{fontSize: '0.625rem', 
+  mt: '0.375rem',  
+  mr: '0.3rem', }}>{lang.code.toUpperCase()}</Typography> {lang.name}</Box>
 
           </MenuItem>
         ))}

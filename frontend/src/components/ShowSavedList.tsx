@@ -1,11 +1,11 @@
-
 import MovieCard from './MovieCard';
 import { useTranslation } from 'react-i18next';
-import { Box, Skeleton, Typography, useTheme } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import { MovieDetailsItem } from '../types/movieTypes.ts';
 import { useAppDispatch, useAppSelector } from '../app/hooks.ts';
 import { useEffect } from 'react';
 import { filtersApplied } from '../features/filter/filterSlice.ts';
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
 
 interface ShowSavedListProps {
   filteredList: MovieDetailsItem[];
@@ -13,8 +13,15 @@ interface ShowSavedListProps {
 
 const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const dispatch = useAppDispatch();
+
+  const { currentTheme, darkMode } = useCustomTheme();
+  const getCurrentPalette = () => {
+    const palette = themePalettes[currentTheme];
+    return darkMode ? palette.dark : palette.light;
+  };
+  
+  const currentPalette = getCurrentPalette();
 
   const loading = useAppSelector((state) => state.filter.loading);
   const error = useAppSelector((state) => state.filter.error);
@@ -23,7 +30,7 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
     if (loading) { 
       const timer = setTimeout(() => {
         dispatch(filtersApplied());
-      }, 500);
+      }, 3000);
   
       return () => clearTimeout(timer);
     }
@@ -35,11 +42,48 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
         color="error"
         sx={{
           textAlign: 'center',
-          color: theme.palette.text.flow
+          color: currentPalette.textPrimary
         }}
       >
         {error}
       </Typography>
+    );
+  }
+
+  // Show skeleton while loading regardless of filteredList length
+  if (loading) {
+    return (
+      <Box sx={{ margin: 0, mb: '2.625rem', width: '90%', justifySelf: 'center', alignItems: 'center' }}>  
+        <Box sx={{
+          padding: '1.25rem 3vw',
+          marginTop: '1rem',
+        }}>
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, 250px)',
+            gap: '1.2rem',
+            rowGap: '3rem',
+            justifyItems: 'center',
+            justifyContent: 'center',
+          }}>
+          {[...Array(10)].map((_, index) => (
+            <Skeleton
+              key={index}
+              variant="rectangular"
+              width="100%"
+              animation="wave"
+              sx={{
+                bgcolor: currentPalette.paper,
+                borderRadius: '0.5rem',
+                minWidth: '250px',
+                width: '100%',
+                height: 'clamp(300px, 18vw, 350px)'
+              }}
+            />
+          ))}
+          </Box>
+        </Box>
+      </Box>
     );
   }
 
@@ -49,8 +93,9 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
         sx={{
           textAlign: 'center',
           position: 'relative',
-          top: '200px',
-          color: theme.palette.text.flow
+          top: '20vh',
+          color: currentPalette.textPrimary,
+          fontSize: 'clamp(1rem, 2vw, 1.25rem)'
         }}
       >
         {t('fav.empty')}
@@ -59,50 +104,26 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
   }
 
   return (
-    <Box sx={{ margin: 0, mb: '42px' }}>
-      {loading ? (
+    <Box sx={{ margin: 0, mb: '2.625rem', width: '90%', justifySelf: 'center', alignItems: 'center' }}>  
+      <Box sx={{
+        padding: '1.25rem 3vw',
+        marginTop: '1rem',
+      }}>
         <Box sx={{
-          padding: '20px 48px',
-          marginTop: '16px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '15px',
-          rowGap: '48px',
-
+          gridTemplateColumns: 'repeat(auto-fill, 250px)',
+          gap: '1.2rem',
+          rowGap: '3rem',
+          justifyItems: 'center', 
+          justifyContent: 'center',
         }}>
-          {[...Array(10)].map((_, index) => (
-            <Skeleton
-              key={index}
-              variant="rectangular"
-              width="100%"
-              height={300}
-              sx={{
-                bgcolor: 'grey.700',
-                borderRadius: '8px'
-              }}
-            />
+          {filteredList.map((movie) => (
+            <Box key={movie.imdbID} sx={{ width: '100%' }}>
+              <MovieCard movie={movie} />
+            </Box>
           ))}
         </Box>
-      ) : (
-        <Box sx={{
-          padding: '20px 48px',
-          marginTop: '16px',
-        }}>
-          <Box sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: '15px',
-            rowGap: '48px',
-
-          }}>
-            {filteredList.map((movie) => (
-              <Box key={movie.imdbID}>
-                <MovieCard movie={movie} />
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      )}
+      </Box>
     </Box>
   );
 };

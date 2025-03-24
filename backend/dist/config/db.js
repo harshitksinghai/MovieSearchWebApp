@@ -7,7 +7,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const pg_1 = require("pg");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-// Create PostgreSQL connection pool
 const pool = new pg_1.Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,

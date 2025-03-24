@@ -1,12 +1,20 @@
 import { useTranslation } from 'react-i18next';
-import { Box, Typography, Button, Container, useTheme } from '@mui/material';
+import { Box, Typography, Button, Container } from '@mui/material';
 import Navbar from "../components/Navbar";
-import { useAuth } from "react-oidc-context";
+import { useNavigate } from 'react-router-dom';
+import { useCustomTheme, themePalettes } from '../context/CustomThemeProvider';
 
 const MarketingPage = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const auth = useAuth();
+  const navigate = useNavigate();
+
+  const { currentTheme, darkMode } = useCustomTheme();
+  const getCurrentPalette = () => {
+    const palette = themePalettes[currentTheme];
+    return darkMode ? palette.dark : palette.light;
+  };
+
+  const currentPalette = getCurrentPalette();
 
   return (
     <Box sx={{
@@ -21,7 +29,7 @@ const MarketingPage = () => {
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        bgcolor: theme.palette.background.default,
+        bgcolor: currentPalette.background,
       }}>
         <Box sx={{
           width: '100%',
@@ -46,7 +54,7 @@ const MarketingPage = () => {
                 marginBottom: '1rem',
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
                 letterSpacing: '2px',
-                color: theme.palette.text.flow,
+                color:  currentPalette.textPrimary,
                 fontFamily: '"Montserrat", sans-serif',
               }}
             >
@@ -54,18 +62,18 @@ const MarketingPage = () => {
             </Typography>
             <Button
               variant="contained"
-              onClick={() => auth.signinRedirect()}
+              onClick={() => navigate('/home')}
               sx={{
                 fontSize: '1.2rem',
                 fontWeight: 600,
                 padding: '1rem 2rem',
                 borderRadius: '8px',
-                color: theme.palette.text.secondary,
-                backgroundColor: theme.palette.background.flow,
+                color:  currentPalette.paper,
+                backgroundColor:  currentPalette.primary,
                 '&:hover': {
-                  backgroundColor: theme.palette.background.flowHover,
+                  backgroundColor:  currentPalette.textPrimary,
                   transform: 'scale(1.05)',
-                  color: theme.palette.text.secondary,
+                  color:  currentPalette.background,
                 }
               }}
             >

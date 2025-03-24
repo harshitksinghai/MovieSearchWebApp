@@ -2,7 +2,6 @@ import express from "express";
 import { 
   fetchMovieByImdbId, 
   searchMovies, 
-  fetchPopularMovies,
   getMovieList,
   addToList,
   removeFromWatchedList,
@@ -16,7 +15,6 @@ const router = express.Router();
 
 // Search and fetch routes
 router.post('/search', searchMovies);
-router.post('/popular', fetchPopularMovies);
 router.post('/imdbid', fetchMovieByImdbId);
 router.post('/title', fetchMovieByTitle);
 

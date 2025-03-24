@@ -1,9 +1,9 @@
 import express, { Express } from 'express';
-import http, { Server } from 'http';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import movieRoutes from './routes/movieRoutes';
+import userRoutes from './routes/userRoutes';
 
 dotenv.config();
 const app: Express = express();
@@ -27,6 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/api/movies', movieRoutes);
+app.use('/api/users', userRoutes);
+
 
   const PORT = process.env.PORT;
   app.listen(PORT, () => {

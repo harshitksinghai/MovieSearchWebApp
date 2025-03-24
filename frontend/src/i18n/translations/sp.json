@@ -1,8 +1,8 @@
 {
     "navbar": {
         "appName": "MovieKeeper",
-        "searchPlaceholder": "Buscar título...",
-        "typeAll": "Todo",
+        "searchPlaceholder": "Buscar Título...",
+        "typeAll": "Todos",
         "typeMovies": "Películas",
         "typeSeries": "Series",
         "typeGames": "Juegos",
@@ -11,16 +11,15 @@
         "lightTooltip": "Cambiar a modo claro",
         "darkTooltip": "Cambiar a modo oscuro",
         "fav": "Favoritos",
-        "watchLater": "Ver más tarde",
-        "signIn": "Iniciar sesión",
-        "signOut": "Cerrar sesión"
-
+        "watchLater": "Ver Más Tarde",
+        "signIn": "Iniciar Sesión",
+        "signOut": "Cerrar Sesión"
     },
     "error": {
         "titleError": "El título debe tener al menos 3 caracteres.",
         "NoMoviesFound": "¡No se encontraron resultados!",
-        "fetchFailed": "Error al cargar películas. Inténtalo de nuevo más tarde.",
-        "fillSearch": "Introduce un título, año o tipo para buscar",
+        "fetchFailed": "Error al cargar las películas. Por favor, inténtelo de nuevo más tarde.",
+        "fillSearch": "Ingrese un título, año o tipo para buscar",
         "somethingWentWrong": "Algo salió mal.",
         "movieNotFound": "¡Película no encontrada!"
     },
@@ -28,27 +27,27 @@
         "dislikeTooltip": "No es para mí",
         "likeTooltip": "Me gusta",
         "loveTooltip": "¡Me encanta!",
-        "addWatchLaterTooltip": "Agregar a Ver más tarde",
-        "removeWatchLaterTooltip": "Eliminar de Ver más tarde"
+        "addWatchLaterTooltip": "Agregar a Ver Más Tarde",
+        "removeWatchLaterTooltip": "Quitar de Ver Más Tarde"
     },
     "fav": {
         "fav": "Favoritos",
         "loading": "Cargando tus favoritos...",
         "empty": "No hay elementos en tu lista.",
         "filter": {
-            "typeAll": "Todo",
+            "typeAll": "Todos",
             "typeMovies": "Películas",
             "typeSeries": "Series",
             "typeGames": "Juegos",
             "Year": "Año",
             "none": "Ninguno",
-            "love": "Me encanta",
+            "love": "Amor",
             "like": "Me gusta",
             "meh": "No me gusta"
         }
     },
     "watchLater": {
-        "watchLater": "Ver más tarde"
+        "watchLater": "Ver Más Tarde"
     },
     "market": {
         "appName": "MovieKeeper",
@@ -62,25 +61,77 @@
         "ratings": "Calificación"
     },
     "footer": {
-        "message": "Todos los derechos reservados"
+        "message": "Todos los Derechos Reservados"
     },
     "common": {
         "loading": "Cargando..."
     },
     "search": {
         "noResults": "No se encontraron películas.",
-        "tryAgain": "Intenta una búsqueda más específica o ve a",
+        "tryAgain": "Intente una búsqueda más específica o vaya a",
         "goHome": "Inicio"
     },
     "carousel": {
         "soon": "¡Carrusel de películas próximamente!"
     },
-    "backToolTip": "Volver",
+    "backToolTip": "Regresar",
     "homeList": {
         "discover": "Descubre Sensaciones Globales",
         "Trending": "Tendencias",
         "Thriller": "Suspenso",
         "Comedy": "Comedia",
         "Romance": "Romance"
+    },
+    "dashboard": {
+        "Movies": "Películas",
+        "Series": "Series",
+        "totalTimeWatched": "Tiempo Total Visto",
+        "bestMemories": "Mejores Recuerdos",
+        "contentRatings": "Calificación de Contenido",
+        "favouriteGenres": "Géneros Favoritos",
+        "theLast": "Los Últimos",
+        "days": "Días",
+        "totalWatchedCount": "Total Visto",
+        "watchOverview": "Resumen de Vistas",
+        "recentFavourites": "Favoritos Recientes",
+        "dueAReWatch": "Listo para Re-ver",
+        "noReWatchDue": "No hay re-visionado pendiente",
+        "youCurrentlyHave": "Actualmente tienes",
+        "favourite": "favorito",
+        "favourites": "favoritos",
+        "rewatch": "re-visionado",
+        "reWatches": "re-visionados",
+        "due": "pendiente",
+        "noRecentFavourites": "No hay favoritos recientes",
+        "goTo": "Ir a",
+        "home": "inicio",
+        "viewMore": "Ver Más",
+        "watchLater": "ver más tarde",
+        "noDataAvailable": "No hay datos disponibles",
+        "love": "Amor",
+        "like": "Me gusta",
+        "dislike": "No me gusta"
+    },
+    "customTheme": {
+        "theme": "Tema",
+        "Blue": "Azul",
+        "White": "Blanco",
+        "Green": "Verde"
+    },
+    "userButton": {
+        "dashboard": "Tablero",
+        "profile": "Perfil",
+        "signOut": "Cerrar Sesión"
+    },
+    "profile": {
+        "profile": "Perfil",
+        "firstName": "Nombre",
+        "middleName": "Segundo Nombre",
+        "lastName": "Apellido",
+        "phoneNo": "Teléfono",
+        "dob": "Fecha de Nacimiento (AAAA-MM-DD)",
+        "email": "Correo Electrónico",
+        "cancel": "Cancelar",
+        "update": "Actualizar"
     }
 }

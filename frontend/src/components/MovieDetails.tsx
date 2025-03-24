@@ -12,7 +12,6 @@ import {
   Button,
   CircularProgress,
   Stack,
-  useTheme,
   alpha
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
@@ -23,13 +22,21 @@ import { removeFromWatchedList, updateRating, removeFromWatchLater, addToWatchLa
 import { MdOutlineWatchLater, MdWatchLater } from 'react-icons/md';
 import ReactionButton from './ReactionButton';
 import placeholder from "../assets/placeholder1.jpg";
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
   const [movieResponse, setMovieResponse] = useState<MovieDetailsItem | null>(null);
 
   const { t } = useTranslation();
-  const theme = useTheme();
+
+        const { currentTheme, darkMode } = useCustomTheme();
+        const getCurrentPalette = () => {
+          const palette = themePalettes[currentTheme];
+          return darkMode ? palette.dark : palette.light;
+        };
+      
+        const currentPalette = getCurrentPalette();
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.search);
 
@@ -42,7 +49,6 @@ const MovieDetails: React.FC = () => {
         .unwrap()
         .then((result) => {
           setMovieResponse(result);
-          // Update state after we get the movie response
           setRatingState(result.ratingState || 'none');
           setIsAddedToWatchLater(result.addToWatchLater ? true : false);
         });
@@ -101,11 +107,11 @@ const MovieDetails: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '50vh',
-          bgcolor: theme.palette.background.default,
-          color: theme.palette.text.flow
+          bgcolor: currentPalette.background,
+          color: currentPalette.textPrimary
         }}
       >
-        <CircularProgress sx={{ color: theme.palette.detailsBox.topicColor, mb: 2 }} />
+        <CircularProgress sx={{ color: currentPalette.textPrimary, mb: 2 }} />
         <Typography>{t('common.loading')}</Typography>
       </Box>
     );
@@ -135,12 +141,16 @@ const MovieDetails: React.FC = () => {
         <Container
           id="main-container"
           sx={{
-            position: 'relative',
+            position: 'absolute',      // Absolute positioning to center it
+            top: '50%',                // Move down to 50% of the screen height
+            left: '50%',               // Move right to 50% of the screen width
+            transform: 'translate(-50%, -50%)',  // Center it perfectly
             margin: '0',
-            minHeight: 'auto',
+            minHeight: '60%',
             padding: '2rem',
-            bgcolor: theme.palette.background.default,
-            color: theme.palette.text.flow,
+            bgcolor: currentPalette.background,
+            color: currentPalette.textPrimary,
+            minWidth: '80%',
             maxWidth: { md: 'fit-content' }
           }}
         >
@@ -189,7 +199,7 @@ const MovieDetails: React.FC = () => {
                   fontSize: { xs: '2rem', md: '2.5rem' },
                   fontWeight: 700,
                   mb: 0.5,
-                  color: theme.palette.text.flow
+                  color: currentPalette.textPrimary
                 }}
               >
                 {movieResponse.Title}
@@ -202,7 +212,7 @@ const MovieDetails: React.FC = () => {
                   sx={{
                     mb: 1,
                     fontSize: '0.9rem',
-                    color: theme.palette.text.support
+                    color: currentPalette.textPrimary
                   }}
                 >
                   <Typography component="span">{movieResponse.Runtime}</Typography>
@@ -216,7 +226,7 @@ const MovieDetails: React.FC = () => {
                     height: '20px',
                     mx: 1,
                     mt: '2px',
-                    bgcolor: theme.palette.background.flow,
+                    bgcolor: currentPalette.primary,
                   }}
                 />
 
@@ -229,8 +239,8 @@ const MovieDetails: React.FC = () => {
                       borderRadius: '16px',
                       fontSize: '0.8rem',
                       padding: '0.3rem 0.8rem',
-                      bgcolor: theme.palette.detailsBox.bgColor,
-                      color: theme.palette.detailsBox.textPrimary,
+                      bgcolor: currentPalette.paper,
+                      color: currentPalette.textPrimary,
                     }}
                   />
                 ))}
@@ -254,13 +264,15 @@ const MovieDetails: React.FC = () => {
                   sx={{
                     height: '40px',
                     borderRadius: '8px',
-                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 215, 0, 0.9)' : '#f5c518',
+                    bgcolor: darkMode ? 'rgba(255, 215, 0, 0.9)' : '#f5c518',
                     color: '#000000',
                     fontWeight: 'bold',
                     '&:hover': {
-                      bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 215, 0, 1)' : '#e8ba17',
+                      bgcolor: darkMode ? 'rgba(255, 215, 0, 1)' : '#e8ba17',
                     },
-                    boxShadow: theme.shadows[2]
+                    // boxShadow: theme.shadows[2]
+                    boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.2)'
+
 
                   }}
                   startIcon={<LaunchIcon />}
@@ -274,12 +286,14 @@ const MovieDetails: React.FC = () => {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    bgcolor: alpha(theme.palette.background.paper, 0.7),
+                    bgcolor: currentPalette.background,
                     padding: '4px 12px',
                     borderRadius: '20px',
-                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
                     backdropFilter: 'blur(4px)',
-                    boxShadow: theme.shadows[2]
+                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`
+
+
                   }}
                 >
                   <Stack direction="row" spacing={1} alignItems="center">
@@ -289,8 +303,7 @@ const MovieDetails: React.FC = () => {
                       state={ratingState === 'dislike'}
                       onClick={() => handleRating('dislike')}
                       activeIcon={<FaThumbsDown size={14} />}
-                      inactiveIcon={<FaRegThumbsDown size={14} color={theme.palette.customSecondary.icon} />}
-                      themeVariant="customSecondary"
+                      inactiveIcon={<FaRegThumbsDown size={14} color={currentPalette.primary} />}
                     />
 
                     <ReactionButton
@@ -298,8 +311,7 @@ const MovieDetails: React.FC = () => {
                       state={ratingState === 'like'}
                       onClick={() => handleRating('like')}
                       activeIcon={<FaThumbsUp size={14} />}
-                      inactiveIcon={<FaRegThumbsUp size={14} color={theme.palette.customSecondary.icon} />}
-                      themeVariant="customSecondary"
+                      inactiveIcon={<FaRegThumbsUp size={14} color={currentPalette.primary} />}
                     />
 
                     <ReactionButton
@@ -307,8 +319,7 @@ const MovieDetails: React.FC = () => {
                       state={ratingState === 'love'}
                       onClick={() => handleRating('love')}
                       activeIcon={<FaHeart size={14} />}
-                      inactiveIcon={<FaRegHeart size={14} color={theme.palette.customSecondary.icon} />}
-                      themeVariant="customSecondary"
+                      inactiveIcon={<FaRegHeart size={14} color={currentPalette.primary} />}
                     />
 
                     <Box
@@ -317,7 +328,7 @@ const MovieDetails: React.FC = () => {
                         height: '25px',
                         mx: 1,
                         mt: '2px',
-                        bgcolor: theme.palette.background.flow,
+                        bgcolor: currentPalette.primary,
                       }}
                     />
 
@@ -326,19 +337,25 @@ const MovieDetails: React.FC = () => {
                       state={isAddedToWatchLater}
                       onClick={handleAddToWatchLater}
                       activeIcon={<MdWatchLater size={18} />}
-                      inactiveIcon={<MdOutlineWatchLater size={18} color={theme.palette.customSecondary.icon} />}
-                      themeVariant="customSecondary"
+                      inactiveIcon={<MdOutlineWatchLater size={18} color={currentPalette.primary} />}
                     />
                   </Stack>
                 </Paper>
               </Stack>
 
               {/* Plot Section */}
-              <Box sx={{ mb: 2 }}>
+                    <Box sx={{ 
+                      mb: 2,  
+                      boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                      padding: '4px 12px',
+                      borderRadius: '8px',
+                      border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                      backdropFilter: 'blur(4px)',
+                      }}>
                 <Typography
                   variant="h6"
                   sx={{
-                    color: theme.palette.detailsBox.topicColor,
+                    color: currentPalette.textSecondary,
                     mb: 0.5,
                     fontSize: '1.2rem',
                     textAlign: 'start',
@@ -350,7 +367,7 @@ const MovieDetails: React.FC = () => {
                   sx={{
                     lineHeight: 1.6,
                     textAlign: 'justify',
-                    color: theme.palette.detailsBox.textPrimary,
+                    color: currentPalette.textPrimary,
                   }}
                 >
                   {movieResponse.Plot}
@@ -367,17 +384,20 @@ const MovieDetails: React.FC = () => {
                   elevation={0}
                   sx={{
                     p: '0.8rem 1rem',
-                    borderRadius: '8px',
                     minWidth: '150px',
                     flex: 1,
-                    bgcolor: theme.palette.detailsBox.bgColor,
-                    boxShadow: theme.palette.detailsBox.boxShadow,
+                    bgcolor: currentPalette.background,
+                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                    padding: '4px 12px',
+                    borderRadius: '8px',
+                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                    backdropFilter: 'blur(4px)',
                   }}
                 >
                   <Typography
                     variant="subtitle1"
                     sx={{
-                      color: theme.palette.detailsBox.topicColor,
+                      color: currentPalette.textSecondary,
                       mb: 0.5,
                       fontSize: '1rem',
                     }}
@@ -388,7 +408,7 @@ const MovieDetails: React.FC = () => {
                     sx={{
                       lineHeight: 1.5,
                       fontSize: '0.9rem',
-                      color: theme.palette.detailsBox.textPrimary,
+                      color: currentPalette.textPrimary,
                     }}
                   >
                     {movieResponse.Director}
@@ -399,17 +419,20 @@ const MovieDetails: React.FC = () => {
                   elevation={0}
                   sx={{
                     p: '0.8rem 1rem',
-                    borderRadius: '8px',
                     minWidth: '150px',
                     flex: 1,
-                    bgcolor: theme.palette.detailsBox.bgColor,
-                    boxShadow: theme.palette.detailsBox.boxShadow
+                    bgcolor: currentPalette.background,
+                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                    padding: '4px 12px',
+                    borderRadius: '8px',
+                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                    backdropFilter: 'blur(4px)',
                   }}
                 >
                   <Typography
                     variant="subtitle1"
                     sx={{
-                      color: theme.palette.detailsBox.topicColor,
+                      color: currentPalette.textSecondary,
                       mb: 0.5,
                       fontSize: '1rem',
                     }}
@@ -420,7 +443,7 @@ const MovieDetails: React.FC = () => {
                     sx={{
                       lineHeight: 1.5,
                       fontSize: '0.9rem',
-                      color: theme.palette.detailsBox.textPrimary,
+                      color: currentPalette.textPrimary,
                     }}
                   >
                     {movieResponse.Actors}
@@ -431,17 +454,21 @@ const MovieDetails: React.FC = () => {
                   elevation={0}
                   sx={{
                     p: '0.8rem 1rem',
-                    borderRadius: '8px',
                     minWidth: '150px',
                     flex: 1,
-                    bgcolor: theme.palette.detailsBox.bgColor,
-                    boxShadow: theme.palette.detailsBox.boxShadow
+                    bgcolor: currentPalette.background,
+                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                    padding: '4px 12px',
+                    borderRadius: '8px',
+                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                    backdropFilter: 'blur(4px)',
+
                   }}
                 >
                   <Typography
                     variant="subtitle1"
                     sx={{
-                      color: theme.palette.detailsBox.topicColor,
+                      color: currentPalette.textSecondary,
                       mb: 0.5,
                       fontSize: '1rem',
                     }}
@@ -452,7 +479,7 @@ const MovieDetails: React.FC = () => {
                     sx={{
                       lineHeight: 1.5,
                       fontSize: '0.9rem',
-                      color: theme.palette.detailsBox.textPrimary,
+                      color: currentPalette.textPrimary,
                     }}
                   >
                     {movieResponse.Language}
@@ -466,7 +493,7 @@ const MovieDetails: React.FC = () => {
                   <Typography
                     variant="h6"
                     sx={{
-                      color: theme.palette.detailsBox.topicColor,
+                      color: currentPalette.textSecondary,
                       fontSize: '18px',
                       lineHeight: 1.6,
                     }}
@@ -476,7 +503,7 @@ const MovieDetails: React.FC = () => {
                   <Stack
                     direction="row"
                     flexWrap="wrap"
-                    gap={1}
+                    spacing={2}
                     sx={{ mt: 0.5 }}
                   >
                     {movieResponse.Ratings.map((rating, index) => (
@@ -485,10 +512,14 @@ const MovieDetails: React.FC = () => {
                         elevation={0}
                         sx={{
                           p: '0.8rem 1rem',
+                          minWidth: '254px',
+                          bgcolor: currentPalette.background,
+                          boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                          padding: '4px 12px',
                           borderRadius: '8px',
-                          minWidth: '260px',
-                          bgcolor: theme.palette.detailsBox.bgColor,
-                          boxShadow: theme.palette.detailsBox.boxShadow
+                          border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                          backdropFilter: 'blur(4px)',
+
                         }}
                       >
                         <Typography
@@ -496,7 +527,7 @@ const MovieDetails: React.FC = () => {
                             display: 'block',
                             fontSize: '0.9rem',
                             mb: 0.2,
-                            color: theme.palette.detailsBox.textSecondary,
+                            color: currentPalette.textPrimary,
                           }}
                         >
                           {rating.Source}
@@ -504,7 +535,7 @@ const MovieDetails: React.FC = () => {
                         <Typography
                           sx={{
                             fontSize: '1rem',
-                            color: theme.palette.detailsBox.textSecondary,
+                            color: currentPalette.textPrimary,
                           }}
                         >
                           {rating.Value}

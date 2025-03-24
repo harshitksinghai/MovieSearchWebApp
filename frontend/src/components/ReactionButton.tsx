@@ -1,5 +1,5 @@
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 import { IconButton, Tooltip } from '@mui/material';
-import { Theme } from '@mui/system';
 import { JSX } from 'react';
 
 interface ReactionButtonProps {
@@ -8,7 +8,6 @@ interface ReactionButtonProps {
   onClick: () => void;
   activeIcon: JSX.Element;
   inactiveIcon: JSX.Element;
-  themeVariant: 'customPrimary' | 'customSecondary';  // New prop for switching themes
 }
 
 const ReactionButton = ({ 
@@ -17,34 +16,50 @@ const ReactionButton = ({
   onClick, 
   activeIcon, 
   inactiveIcon, 
-  themeVariant,   // Default to customSecondary
 }: ReactionButtonProps) => {
+
+          const { currentTheme, darkMode } = useCustomTheme();
+          const getCurrentPalette = () => {
+            const palette = themePalettes[currentTheme];
+            return darkMode ? palette.dark : palette.light;
+          };
+        
+          const currentPalette = getCurrentPalette();
+
   return (
     <Tooltip title={title} placement="top" arrow>
       <IconButton
-        onClick={onClick}
-        sx={(theme: Theme) => ({
-          width: 32,
-          height: 32,
-          borderRadius: '50%',
-          bgcolor: theme.palette[themeVariant].bg,  
-          border: state 
-            ? `2px solid ${theme.palette[themeVariant].activeBorder}` 
-            : `2px solid ${theme.palette[themeVariant].border}`,
-          '&:hover': {
-            borderColor: theme.palette[themeVariant].hoverBorder,
-            transform: 'scale(1.1)',
-          },
-          ...(state && {
-            bgcolor: theme.palette[themeVariant].activeBg,
-            '& svg': { color: theme.palette[themeVariant].activeIcon },
-            '&:hover': { bgcolor: theme.palette[themeVariant].activeBg },
-          }),
-          padding: 0,
-        })}
-      >
-        {state ? activeIcon : inactiveIcon}
-      </IconButton>
+  onClick={onClick}
+  sx={{
+    width: '2rem', // Changed from 32px
+    height: '2rem', // Changed from 32px
+    borderRadius: '50%',
+    bgcolor: currentPalette.background,
+    '& svg': {
+                  color: currentPalette.primary,
+                },
+              border: state
+                ? `0.125rem solid ${currentPalette.secondary}`
+                : `0.125rem solid ${currentPalette.primary}`,
+              '&:hover': {
+                borderColor: currentPalette.primary,
+                transform: 'scale(1.1)',
+              },
+              ...(state && {
+                bgcolor: currentPalette.primary,
+                '& svg': {
+                  color: currentPalette.background,
+                },
+                '&:hover': {
+                  bgcolor: currentPalette.primary,
+                  transform: 'scale(1.1)',
+                },
+    }),
+    padding: 0,
+  }}
+>
+  {state ? activeIcon : inactiveIcon}
+</IconButton>
     </Tooltip>
   );
 };

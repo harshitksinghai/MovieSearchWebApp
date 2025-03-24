@@ -1,14 +1,22 @@
 import { useTranslation } from 'react-i18next';
 import ShowSavedList from './ShowSavedList.tsx';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useAppSelector } from '../app/hooks.ts';
 import { filterWatchLater } from '../features/filter/filterSlice.ts';
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
 
 const WatchLater = () => {
   console.log("Inside WatchLater.tsx");
 
   const {t} = useTranslation();
-  const theme = useTheme();
+
+    const { currentTheme, darkMode } = useCustomTheme();
+              const getCurrentPalette = () => {
+                const palette = themePalettes[currentTheme];
+                return darkMode ? palette.dark : palette.light;
+              };
+            
+              const currentPalette = getCurrentPalette();
 
   const filteredMovieList = useAppSelector(filterWatchLater);
 
@@ -18,11 +26,11 @@ const WatchLater = () => {
         variant="h2" 
         sx={{
           fontWeight: 600,
-          fontSize: '50px',
+          fontSize: 'clamp(2rem, 5vw, 3.125rem)', // Changed from fixed 50px
           textAlign: 'center',
           marginTop: '20px',
-          color: theme.palette.text.flow,
-          padding: theme.spacing(4, 0, 0, 0)
+          color: currentPalette.textPrimary,
+          pt: '2rem',
         }}
       >
         {t('watchLater.watchLater')}

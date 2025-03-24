@@ -1,18 +1,26 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Button } from '@mui/material';
 import { FaHeart, FaThumbsDown, FaThumbsUp } from 'react-icons/fa6';
 import { useTranslation } from 'react-i18next';
-import { ThemeContext } from '../context/ThemeContext.tsx';
+
 import { useAppDispatch, useAppSelector } from '../app/hooks.ts';
 import { setFavActiveRating, setFavActiveType } from '../features/filter/filterSlice.ts';
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
 
 const FavListFilter: React.FC = () => {
     const { t } = useTranslation();
-    const { darkMode } = useContext(ThemeContext);
 
     const dispatch = useAppDispatch();
     const activeType = useAppSelector((state) => state.filter.fav_activeType);
     const activeRating = useAppSelector((state) => state.filter.fav_activeRating);
+
+      const { currentTheme, darkMode } = useCustomTheme();
+      const getCurrentPalette = () => {
+        const palette = themePalettes[currentTheme];
+        return darkMode ? palette.dark : palette.light;
+      };
+    
+      const currentPalette = getCurrentPalette();
 
     const updateTypeFilter = (Type: string) => {
         if (activeType !== Type) {
@@ -25,11 +33,11 @@ const FavListFilter: React.FC = () => {
     }
 
     const buttonSx = (isActive: boolean) => ({
-        backgroundColor: isActive ? '#222222' : '#fff',
-        color: isActive ? '#fff' : '#222',
+        backgroundColor: isActive ? currentPalette.primary : currentPalette.secondary,
+        color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
         borderStyle: 'solid',
-        borderColor: '#444',
-        borderWidth: '2px',
+        borderColor: darkMode ? '#fff' : '#444',
+        borderWidth: '1px',
         width: 'fit-content',
         minWidth: '45px',
         minHeight: '40px',
@@ -42,11 +50,11 @@ const FavListFilter: React.FC = () => {
         transition: 'background-color 0.2s ease',
         textTransform: 'none',
         '&:hover': {
-            backgroundColor: '#444',
-            color: '#fff',
+            backgroundColor: currentPalette.textSecondary,
+            color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
         },
     });
-
+    
     const buttonSpanSx = {
         paddingLeft: '8px',
     };

@@ -1,11 +1,18 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@mui/material/styles';
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 
 const Footer: React.FC = () => {
   const {t} = useTranslation();
-  const theme = useTheme();
+
+    const { currentTheme, darkMode } = useCustomTheme();
+    const getCurrentPalette = () => {
+      const palette = themePalettes[currentTheme];
+      return darkMode ? palette.dark : palette.light;
+    };
+  
+    const currentPalette = getCurrentPalette();
 
   return (
     
@@ -14,12 +21,13 @@ const Footer: React.FC = () => {
         position: 'fixed',
         bottom: '0',
         zIndex: '10',
-        backgroundColor: theme.palette.background.footer,
-        color: theme.palette.text.flow,
+        backgroundColor: currentPalette.background,
+        color: currentPalette.textPrimary,
         padding: '10px 0',
         textAlign: 'center',
         width: '100%',
         marginTop: 'auto',
+        boxShadow: `0 4px 20px rgba(${currentPalette.accent}, 0.15)`
       }}
     >
       <Typography variant="body2">

@@ -81,5 +81,58 @@
         "Thriller": "Thriller",
         "Comedy": "Comedy",
         "Romance": "Romance"
+    },
+    "dashboard": {
+        "Movies": "Movies",
+        "Series": "Series",
+        "totalTimeWatched": "Total Time Watched",
+        "bestMemories": "Best Memories",
+        "contentRatings": "Content Ratings",
+        "favouriteGenres": "Favourite Genres",
+        "theLast": "The Last",
+        "days": "Days",
+        "totalWatchedCount": "Total Watched Count",
+        "watchOverview": "Watch Overview",
+        "recentFavourites": "Recent Favourites",
+        "dueAReWatch": "Due a Re-Watch",
+        "noReWatchDue": "No re-watch due",
+        "youCurrentlyHave": "You currently have",
+        "favourite": "favourite",
+        "favourites": "favourites",
+        "rewatch": "re-watch",
+        "reWatches": "re-watches",
+        "due": "due",
+        "noRecentFavourites": "No recent favourites",
+        "goTo": "Go to",
+        "home": "home",
+        "viewMore": "View More",
+        "watchLater": "watch later",
+        "noDataAvailable": "No data available",
+        "love": "Love",
+        "like": "Like",
+        "dislike": "Dislike"
+    },
+    "customTheme": {
+        "theme": "Theme",
+        "Blue": "Blue",
+        "White": "White",
+        "Green": "Green"
+    },
+    "userButton": {
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "signOut": "Sign Out"
+    },
+    "profile": {
+        "profile": "Profile",
+        "firstName": "First Name",
+        "middleName": "Middle Name",
+        "lastName": "Last Name",
+        "phoneNo": "Phone No.",
+        "dob": "Date Of Birth (YYYY-MM-DD)",
+        "email": "Email",
+        "cancel": "Cancel",
+        "update": "Update"
+        
     }
 }

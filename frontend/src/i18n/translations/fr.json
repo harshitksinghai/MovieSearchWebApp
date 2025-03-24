@@ -2,7 +2,7 @@
     "navbar": {
         "appName": "MovieKeeper",
         "searchPlaceholder": "Rechercher un titre...",
-        "typeAll": "Tout",
+        "typeAll": "Tous",
         "typeMovies": "Films",
         "typeSeries": "Séries",
         "typeGames": "Jeux",
@@ -14,37 +14,36 @@
         "watchLater": "Regarder plus tard",
         "signIn": "Se connecter",
         "signOut": "Se déconnecter"
-
     },
     "error": {
         "titleError": "Le titre doit comporter au moins 3 caractères.",
         "NoMoviesFound": "Aucun résultat trouvé !",
         "fetchFailed": "Échec du chargement des films. Veuillez réessayer plus tard.",
         "fillSearch": "Entrez un titre, une année ou un type pour rechercher",
-        "somethingWentWrong": "Une erreur s'est produite.",
+        "somethingWentWrong": "Une erreur est survenue.",
         "movieNotFound": "Film introuvable !"
     },
     "card": {
         "dislikeTooltip": "Pas pour moi",
-        "likeTooltip": "J'aime bien",
+        "likeTooltip": "Ça me plaît",
         "loveTooltip": "J'adore !",
-        "addWatchLaterTooltip": "Ajouter à Regarder plus tard",
-        "removeWatchLaterTooltip": "Retirer de Regarder plus tard"
+        "addWatchLaterTooltip": "Ajouter à regarder plus tard",
+        "removeWatchLaterTooltip": "Retirer de regarder plus tard"
     },
     "fav": {
         "fav": "Favoris",
         "loading": "Chargement de vos favoris...",
-        "empty": "Aucun élément dans votre liste.",
+        "empty": "Aucun élément trouvé dans votre liste.",
         "filter": {
-            "typeAll": "Tout",
+            "typeAll": "Tous",
             "typeMovies": "Films",
             "typeSeries": "Séries",
             "typeGames": "Jeux",
             "Year": "Année",
             "none": "Aucun",
-            "love": "J'adore",
-            "like": "J'aime bien",
-            "meh": "Je n'aime pas"
+            "love": "Adoré",
+            "like": "Aimé",
+            "meh": "Pas aimé"
         }
     },
     "watchLater": {
@@ -55,9 +54,9 @@
         "getStarted": "Commencer"
     },
     "movie": {
-        "plot": "Synopsis",
+        "plot": "Intrigue",
         "director": "Réalisateur",
-        "cast": "Casting",
+        "cast": "Distribution",
         "language": "Langues",
         "ratings": "Note"
     },
@@ -69,18 +68,70 @@
     },
     "search": {
         "noResults": "Aucun film trouvé.",
-        "tryAgain": "Essayez une recherche plus précise ou retournez à",
+        "tryAgain": "Essayez une recherche plus précise ou allez à",
         "goHome": "Accueil"
     },
     "carousel": {
         "soon": "Carrousel de films bientôt disponible !!!"
     },
-    "backToolTip": "Retour",
+    "backToolTip": "Retourner",
     "homeList": {
-        "discover": "Découvrez les Sensations Mondiales",
+        "discover": "Découvrez les sensations mondiales",
         "Trending": "Tendances",
         "Thriller": "Thriller",
         "Comedy": "Comédie",
         "Romance": "Romance"
+    },
+    "dashboard": {
+        "Movies": "Films",
+        "Series": "Séries",
+        "totalTimeWatched": "Temps total regardé",
+        "bestMemories": "Meilleurs souvenirs",
+        "contentRatings": "Évaluations de contenu",
+        "favouriteGenres": "Genres préférés",
+        "theLast": "Les derniers",
+        "days": "Jours",
+        "totalWatchedCount": "Total visionné",
+        "watchOverview": "Aperçu des visionnages",
+        "recentFavourites": "Favoris récents",
+        "dueAReWatch": "À revoir bientôt",
+        "noReWatchDue": "Pas de re-visionnage à faire",
+        "youCurrentlyHave": "Vous avez actuellement",
+        "favourite": "favori",
+        "favourites": "favoris",
+        "rewatch": "re-visionnage",
+        "reWatches": "re-visionnages",
+        "due": "à faire",
+        "noRecentFavourites": "Pas de favoris récents",
+        "goTo": "Aller à",
+        "home": "accueil",
+        "viewMore": "Voir plus",
+        "watchLater": "regarder plus tard",
+        "noDataAvailable": "Pas de données disponibles",
+        "love": "Adoré",
+        "like": "Aimé",
+        "dislike": "Pas aimé"
+    },
+    "customTheme": {
+        "theme": "Thème",
+        "Blue": "Bleu",
+        "White": "Blanc",
+        "Green": "Vert"
+    },
+    "userButton": {
+        "dashboard": "Tableau de bord",
+        "profile": "Profil",
+        "signOut": "Se déconnecter"
+    },
+    "profile": {
+        "profile": "Profil",
+        "firstName": "Prénom",
+        "middleName": "Deuxième prénom",
+        "lastName": "Nom de famille",
+        "phoneNo": "Numéro de téléphone",
+        "dob": "Date de naissance (AAAA-MM-JJ)",
+        "email": "Email",
+        "cancel": "Annuler",
+        "update": "Mettre à jour"
     }
 }

@@ -1,3 +1,5 @@
+// In your main.tsx file, replace the existing code with this approach:
+
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
@@ -13,6 +15,7 @@ import { persistor } from './app/store.ts';
 import { PersistGate } from 'redux-persist/integration/react';
 import { AuthProvider } from "react-oidc-context";
 import ProtectedRoute from './components/ProtectedRoute.tsx';
+import DashboardPage from './pages/DashboardPage.tsx';
 
 const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;
 const AUTH_COGNITO_CLIENT_ID = import.meta.env.VITE_AUTH_COGNITO_CLIENT_ID;
@@ -25,20 +28,22 @@ const cognitoAuthConfig = {
   response_type: "code",
   scope: "phone openid email",
   onSigninCallback: () => {
-    window.location.href = "/home";
-  }
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // window.location.href = "/home";
+  },
+  automaticSilentRenew: true,
 };
-
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<MarketingPage />} />
+      <Route path='/home' element={<HomePage />} />
+      <Route path="/movie/:imdbID" element={<MovieDetailsPage />} />
       <Route path='' element={<ProtectedRoute />}>
-        <Route path='/home' element={<HomePage />} />
         <Route path='/mylist' element={<FavouritesPage />} />
         <Route path='/watchlater' element={<WatchLaterPage />} />
-        <Route path="/movie/:imdbID" element={<MovieDetailsPage />} />
+        <Route path='/dashboard' element={<DashboardPage />} />
       </Route>
     </Route>
   )

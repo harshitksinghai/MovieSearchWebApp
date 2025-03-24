@@ -12,31 +12,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.addToList = exports.getMovieList = exports.fetchMovieByTitle = exports.fetchMovieByImdbId = exports.fetchPopularMovies = exports.searchMovies = void 0;
+exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.addToList = exports.getMovieList = exports.fetchMovieByTitle = exports.fetchMovieByImdbId = exports.searchMovies = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = __importDefault(require("../config/db"));
+const crypto_1 = __importDefault(require("crypto"));
 dotenv_1.default.config();
 const MODE = process.env.MODE;
+const SECRET_KEY = process.env.SECRET_KEY;
+const SALT = process.env.SECRET_SALT;
 const API_KEY = process.env.OMDB_API_KEY;
 const API_URL = MODE === "production"
     ? process.env.OMDB_API_URL_PROD
     : process.env.OMDB_API_URL_DEV;
-const POPULAR_MOVIES = [
-    "Avatar", "Inception", "Interstellar", "The Dark Knight",
-    "Spider-Man", "Iron Man", "Black Panther", "Wonder Woman"
-];
-const POPULAR_SERIES = [
-    "Breaking Bad", "Game of Thrones", "Stranger Things", "The Crown",
-    "The Mandalorian", "Friends", "The Office", "Better Call Saul"
-];
 exports.searchMovies = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { query, year, type, page = 1 } = req.body;
     if (!query) {
         res.status(400).json({
             success: false,
-            error: "Search query is required"
+            error: "Search query is required",
         });
         return;
     }
@@ -46,7 +41,7 @@ exports.searchMovies = (0, express_async_handler_1.default)((req, res) => __awai
             url += `&y=${encodeURIComponent(year)}`;
         if (type)
             url += `&type=${encodeURIComponent(type)}`;
-        console.log('Backend Request URL:', url);
+        // console.log('Backend Request URL:', url);
         const response = yield axios_1.default.get(url);
         if (response.data.Response === "True") {
             res.json({
@@ -58,37 +53,15 @@ exports.searchMovies = (0, express_async_handler_1.default)((req, res) => __awai
         else {
             res.status(404).json({
                 success: false,
-                error: "No movies found"
+                error: "No movies found",
             });
         }
     }
     catch (error) {
-        console.error('API Error:', error);
+        console.error("API Error:", error);
         res.status(500).json({
             success: false,
-            error: "Failed to fetch movies"
-        });
-    }
-}));
-exports.fetchPopularMovies = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { type } = req.body;
-    try {
-        const titles = type === "series" ? POPULAR_SERIES : POPULAR_MOVIES;
-        const promises = titles.map(title => axios_1.default.get(`${API_URL}?apikey=${API_KEY}&t=${encodeURIComponent(title)}${type ? `&type=${type}` : ''}`));
-        const results = yield Promise.all(promises);
-        const validResults = results
-            .map(response => response.data)
-            .filter(data => data.Response === "True");
-        res.json({
-            success: true,
-            movies: validResults
-        });
-    }
-    catch (error) {
-        console.error('API Error:', error);
-        res.status(500).json({
-            success: false,
-            error: "Failed to fetch popular movies"
+            error: "Failed to fetch movies",
         });
     }
 }));
@@ -97,32 +70,32 @@ exports.fetchMovieByImdbId = (0, express_async_handler_1.default)((req, res) => 
     if (!imdbID) {
         res.status(400).json({
             success: false,
-            error: "IMDB ID is required"
+            error: "IMDB ID is required",
         });
         return;
     }
     try {
         const url = `${API_URL}?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
-        console.log('Backend IMDB ID Request URL:', url);
+        // console.log('Backend IMDB ID Request URL:', url);
         const response = yield axios_1.default.get(url);
         if (response.data.Response === "True") {
             res.json({
                 success: true,
-                movie: response.data
+                movie: response.data,
             });
         }
         else {
             res.status(404).json({
                 success: false,
-                error: "Movie not found"
+                error: "Movie not found",
             });
         }
     }
     catch (error) {
-        console.error('API Error:', error);
+        console.error("API Error:", error);
         res.status(500).json({
             success: false,
-            error: "Failed to fetch movie details"
+            error: "Failed to fetch movie details",
         });
     }
 }));
@@ -131,32 +104,32 @@ exports.fetchMovieByTitle = (0, express_async_handler_1.default)((req, res) => _
     if (!title) {
         res.status(400).json({
             success: false,
-            error: "Title is required"
+            error: "Title is required",
         });
         return;
     }
     try {
         const url = `${API_URL}?apikey=${API_KEY}&t=${encodeURIComponent(title)}&plot=full`;
-        console.log('Backend Title Request URL:', url);
+        // console.log('Backend Title Request URL:', url);
         const response = yield axios_1.default.get(url);
         if (response.data.Response === "True") {
             res.json({
                 success: true,
-                movie: response.data
+                movie: response.data,
             });
         }
         else {
             res.status(404).json({
                 success: false,
-                error: "Movie not found"
+                error: "Movie not found",
             });
         }
     }
     catch (error) {
-        console.error('API Error:', error);
+        console.error("API Error:", error);
         res.status(500).json({
             success: false,
-            error: "Failed to fetch movie details"
+            error: "Failed to fetch movie details",
         });
     }
 }));
@@ -165,46 +138,58 @@ exports.getMovieList = (0, express_async_handler_1.default)((req, res) => __awai
     const userId = req.body.userId;
     if (!userId) {
         res.status(400).json({
-            success: false
+            success: false,
         });
         return;
     }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
     try {
-        const result = yield db_1.default.query('SELECT "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type" FROM "movieList_YN100" WHERE "userId" = $1', [userId]);
+        const result = yield db_1.default.query(`SELECT "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type" 
+   FROM "movieList_YN100"
+   WHERE "userId" = $1`, // Using hashed userId for lookup
+        [hashedUserId]);
         res.json({
             success: true,
-            movieList: result.rows
+            movieList: result.rows,
         });
     }
     catch (error) {
-        console.error('Error fetching list:', error);
+        console.error("Error fetching list:", error);
         res.status(500).json({
-            success: false
+            success: false,
         });
     }
 }));
 exports.addToList = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { imdbID, ratingState, Type, isAddToWatchedList, isAddToWatchLater, userId } = req.body;
+    const { imdbID, ratingState, Type, isAddToWatchedList, isAddToWatchLater, userId, } = req.body;
     if (!imdbID) {
         res.status(400).json({
             success: false,
-            error: "IMDB ID is required"
+            error: "IMDB ID is required",
         });
         return;
     }
     if (!userId) {
         res.status(400).json({
             success: false,
-            error: "User ID is required"
+            error: "User ID is required",
         });
         return;
     }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
     try {
-        yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [userId]);
+        yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [hashedUserId]);
         const watchedDate = isAddToWatchedList ? new Date().toISOString() : null;
         const watchLaterDate = isAddToWatchLater ? new Date().toISOString() : null;
         const query = `
-      INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
+      INSERT INTO "movieList_YN100" 
+      ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
       VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT ("userId", "imdbID") 
       DO UPDATE SET 
@@ -214,17 +199,24 @@ exports.addToList = (0, express_async_handler_1.default)((req, res) => __awaiter
         "Type" = $5
       RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
     `;
-        const result = yield db_1.default.query(query, [imdbID, watchedDate, watchLaterDate, ratingState, Type, userId]);
+        const result = yield db_1.default.query(query, [
+            imdbID,
+            watchedDate,
+            watchLaterDate,
+            ratingState,
+            Type,
+            hashedUserId,
+        ]);
         res.json({
             success: true,
-            movie: result.rows[0]
+            movie: result.rows[0],
         });
     }
     catch (error) {
-        console.error('Error adding to list:', error);
+        console.error("Error adding to list:", error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: "Internal server error",
         });
     }
 }));
@@ -233,43 +225,54 @@ exports.removeFromWatchedList = (0, express_async_handler_1.default)((req, res) 
     if (!imdbID) {
         res.status(400).json({
             success: false,
-            error: "IMDB ID is required"
+            error: "IMDB ID is required",
         });
         return;
     }
     if (!userId) {
         res.status(400).json({
             success: false,
-            error: "User ID is required"
+            error: "User ID is required",
         });
         return;
     }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
     try {
-        const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
+        const checkResult = yield db_1.default.query(`SELECT * FROM "movieList_YN100" 
+         WHERE "imdbID" = $1 
+         AND "userId" = $2`, [imdbID, hashedUserId]);
         if (checkResult.rows.length === 0) {
             res.status(404).json({
                 success: false,
-                error: "Movie not found in your list"
+                error: "Movie not found in your list",
             });
             return;
         }
         const movie = checkResult.rows[0];
         if (movie.addToWatchLater === null) {
-            yield db_1.default.query('DELETE FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
+            yield db_1.default.query(`DELETE FROM "movieList_YN100" 
+           WHERE "imdbID" = $1 
+           AND "userId" = $2`, [imdbID, hashedUserId]);
         }
         else {
-            yield db_1.default.query('UPDATE "movieList_YN100" SET "addToWatchedList" = $1, "ratingState" = $2 WHERE "imdbID" = $3 AND "userId" = $4', [null, 'none', imdbID, userId]);
+            yield db_1.default.query(`UPDATE "movieList_YN100" 
+           SET "addToWatchedList" = $1, "ratingState" = $2 
+           WHERE "imdbID" = $3 
+           AND "userId" = $4`, [null, "none", imdbID, hashedUserId]);
         }
         res.json({
             success: true,
-            message: "Movie removed from watched list"
+            message: "Movie removed from watched list",
         });
     }
     catch (error) {
-        console.error('Error removing from watched list:', error);
+        console.error("Error removing from watched list:", error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: "Internal server error",
         });
     }
 }));
@@ -278,43 +281,55 @@ exports.removeFromWatchLater = (0, express_async_handler_1.default)((req, res) =
     if (!imdbID) {
         res.status(400).json({
             success: false,
-            error: "IMDB ID is required"
+            error: "IMDB ID is required",
         });
         return;
     }
     if (!userId) {
         res.status(400).json({
             success: false,
-            error: "User ID is required"
+            error: "User ID is required",
         });
         return;
     }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
     try {
-        const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
+        const checkResult = yield db_1.default.query(`SELECT * FROM "movieList_YN100" 
+         WHERE "imdbID" = $1 
+         AND "userId" = $2`, [imdbID, hashedUserId]);
         if (checkResult.rows.length === 0) {
             res.status(404).json({
                 success: false,
-                error: "Movie not found in your list"
+                error: "Movie not found in your list",
             });
             return;
         }
         const movie = checkResult.rows[0];
         if (movie.addToWatchedList === null) {
-            yield db_1.default.query('DELETE FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
+            yield db_1.default.query(`DELETE FROM "movieList_YN100" 
+           WHERE "imdbID" = $1 
+           AND "userId" = $2`, [imdbID, hashedUserId]);
         }
         else {
-            yield db_1.default.query('UPDATE "movieList_YN100" SET "addToWatchLater" = $1 WHERE "imdbID" = $2 AND "userId" = $3', [null, imdbID, userId]);
+            yield db_1.default.query(`UPDATE "movieList_YN100" 
+           SET "addToWatchLater" = $1 
+           WHERE "imdbID" = $2 
+           AND "userId" = $3`, // Use the hashed userId directly
+            [null, imdbID, hashedUserId]);
         }
         res.json({
             success: true,
-            message: "Movie removed from watch later list"
+            message: "Movie removed from watch later list",
         });
     }
     catch (error) {
-        console.error('Error removing from watch later list:', error);
+        console.error("Error removing from watch later list:", error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: "Internal server error",
         });
     }
 }));
@@ -323,70 +338,80 @@ exports.updateRating = (0, express_async_handler_1.default)((req, res) => __awai
     if (!imdbID) {
         res.status(400).json({
             success: false,
-            error: "IMDB ID is required"
+            error: "IMDB ID is required",
         });
         return;
     }
     if (!userId) {
         res.status(400).json({
             success: false,
-            error: "User ID is required"
+            error: "User ID is required",
         });
         return;
     }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
     try {
-        yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [userId]);
-        const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
+        yield db_1.default.query(`INSERT INTO "users_YN100" ("userId") 
+         VALUES ($1) 
+         ON CONFLICT ("userId") DO NOTHING`, [hashedUserId]);
+        const checkResult = yield db_1.default.query(`SELECT * FROM "movieList_YN100" 
+         WHERE "imdbID" = $1 
+         AND "userId" = $2`, [imdbID, hashedUserId]);
         if (checkResult.rows.length === 0) {
             const query = `
-        INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
-      `;
+      INSERT INTO "movieList_YN100" 
+        ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
+      VALUES ($1, $2, $3, $4, $5, $6) 
+      RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
+    `;
             const result = yield db_1.default.query(query, [
                 imdbID,
                 new Date().toISOString(),
                 null,
                 ratingState,
                 Type,
-                userId
+                hashedUserId,
             ]);
             res.json({
                 success: true,
-                movie: result.rows[0]
+                movie: result.rows[0],
             });
         }
         else {
             const query = `
-        UPDATE "movieList_YN100" 
-        SET "ratingState" = $1, 
-            "addToWatchedList" = 
-              CASE 
-                WHEN "addToWatchedList" IS NULL THEN $2 
-                ELSE "addToWatchedList" 
-              END,
-            "addToWatchLater" = $3
-        WHERE "imdbID" = $4 AND "userId" = $5
-        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
-      `;
+  UPDATE "movieList_YN100" 
+  SET "ratingState" = $1,
+      "addToWatchedList" = 
+        CASE 
+          WHEN "addToWatchedList" IS NULL THEN $2
+          ELSE "addToWatchedList"
+        END,
+      "addToWatchLater" = $3
+  WHERE "imdbID" = $4 
+    AND "userId" = $5  -- Use hashed userId directly
+  RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
+`;
             const result = yield db_1.default.query(query, [
                 ratingState,
                 new Date().toISOString(),
                 null,
                 imdbID,
-                userId
+                hashedUserId,
             ]);
             res.json({
                 success: true,
-                movie: result.rows[0]
+                movie: result.rows[0],
             });
         }
     }
     catch (error) {
-        console.error('Error updating rating:', error);
+        console.error("Error updating rating:", error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: "Internal server error",
         });
     }
 }));
@@ -395,66 +420,72 @@ exports.addToWatchLater = (0, express_async_handler_1.default)((req, res) => __a
     if (!imdbID) {
         res.status(400).json({
             success: false,
-            error: "IMDB ID is required"
+            error: "IMDB ID is required",
         });
         return;
     }
     if (!userId) {
         res.status(400).json({
             success: false,
-            error: "User ID is required"
+            error: "User ID is required",
         });
         return;
     }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
     try {
-        yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [userId]);
-        const checkResult = yield db_1.default.query('SELECT * FROM "movieList_YN100" WHERE "imdbID" = $1 AND "userId" = $2', [imdbID, userId]);
+        yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [hashedUserId]);
+        const checkResult = yield db_1.default.query(`SELECT * FROM "movieList_YN100" 
+         WHERE "imdbID" = $1 AND "userId" = $2`, [imdbID, hashedUserId]);
         if (checkResult.rows.length === 0) {
             const query = `
-        INSERT INTO "movieList_YN100" ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
-      `;
+      INSERT INTO "movieList_YN100" 
+      ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
+    `;
             const result = yield db_1.default.query(query, [
                 imdbID,
                 null,
                 new Date().toISOString(),
                 ratingState,
                 Type,
-                userId
+                hashedUserId,
             ]);
             res.json({
                 success: true,
-                movie: result.rows[0]
+                movie: result.rows[0],
             });
         }
         else {
             const query = `
-        UPDATE "movieList_YN100" 
-        SET "addToWatchLater" = 
-          CASE 
-            WHEN "addToWatchLater" IS NULL THEN $1 
-            ELSE "addToWatchLater" 
-          END
-        WHERE "imdbID" = $2 AND "userId" = $3
-        RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
-      `;
+  UPDATE "movieList_YN100" 
+  SET "addToWatchLater" = 
+    CASE 
+      WHEN "addToWatchLater" IS NULL THEN $1 
+      ELSE "addToWatchLater" 
+    END
+  WHERE "imdbID" = $2 AND "userId" = $3
+  RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
+`;
             const result = yield db_1.default.query(query, [
                 new Date().toISOString(),
                 imdbID,
-                userId
+                hashedUserId,
             ]);
             res.json({
                 success: true,
-                movie: result.rows[0]
+                movie: result.rows[0],
             });
         }
     }
     catch (error) {
-        console.error('Error adding to watch later:', error);
+        console.error("Error adding to watch later:", error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: "Internal server error",
         });
     }
 }));

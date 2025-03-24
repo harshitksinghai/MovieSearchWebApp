@@ -16,6 +16,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchSearchResults, setError, setSearchParams } from '../features/search/searchSlice';
+import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 
 const SearchBar = () => {
   const { t } = useTranslation();
@@ -29,6 +30,14 @@ const SearchBar = () => {
   const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
   const isTypeOpen = Boolean(typeAnchorEl);
   const isYearOpen = Boolean(yearAnchorEl);
+
+      const { currentTheme, darkMode } = useCustomTheme();
+      const getCurrentPalette = () => {
+        const palette = themePalettes[currentTheme];
+        return darkMode ? palette.dark : palette.light;
+      };
+    
+      const currentPalette = getCurrentPalette();
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1887 }, (_, i) => currentYear - i);
@@ -95,17 +104,17 @@ const SearchBar = () => {
   };
 
   const buttonStyles = {
-    height: '38px',
-    backgroundColor: '#222222',
-    color: 'white',
+    height: '2.4rem',  // Changed from 38px to 2.4rem
+
+    backgroundColor: currentPalette.primary,
+    color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
     padding: '0 16px',
     borderRadius: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     '&:hover': {
-      backgroundColor: '#424242',
-
+      backgroundColor: currentPalette.secondary,
     },
     textTransform: 'none',
     minWidth: '80px'
@@ -113,25 +122,30 @@ const SearchBar = () => {
 
   const menuItemStyles = {
     '&:hover': {
-      backgroundColor: '#424242',
+      backgroundColor: currentPalette.secondary,
+    },
 
-    }
   };
 
   return (
-    <Box sx={{ position: 'relative', marginRight: '100px' }}>
+    <Box sx={{ 
+      position: 'relative', 
+      marginRight: { xs: '0', sm: '2rem', md: '6.25rem' },
+      width: { xs: '100%', sm: 'auto' }
+    }}>
       <Paper
         elevation={0}
         sx={{
-          width: '550px',
-          height: '40px',
+          width: '100%',
+          maxWidth: '34rem',
+          height: '2.5rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          paddingLeft: '6px',
-          gap: '2px',
+          backgroundColor: currentPalette.background,
+          borderRadius: '0.5rem',
+          paddingLeft: '0.375rem',
+          gap: '0.125rem',
           border: error ? '2px solid rgb(247, 87, 87)' : 'none',
           color: theme.palette.text.secondary
         }}
@@ -160,14 +174,15 @@ const SearchBar = () => {
           }}
         />
 
-        <Box sx={{ 
-          height: '90%', 
-          display: 'flex', 
-          alignItems: 'center',
-          backgroundColor: 'white',
-          gap: '2px', 
-          width: 'fit-content',
-        }}>
+<Box sx={{ 
+    height: '90%', 
+    display: 'flex', 
+    alignItems: 'center',
+    backgroundColor: currentPalette.background,
+    gap: '0.125rem', 
+    width: 'fit-content',
+    flexWrap: { xs: 'wrap', sm: 'nowrap' }
+  }}>
           <Button
             id="type-button"
             aria-controls={isTypeOpen ? 'type-popover' : undefined}
@@ -176,7 +191,7 @@ const SearchBar = () => {
             onClick={handleTypeClick}
             sx={{
               ...buttonStyles,
-              minWidth: '82px',
+    minWidth: '5rem',  // Changed from 82px to 5rem
             }}
             endIcon={isTypeOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           >
@@ -280,14 +295,14 @@ const SearchBar = () => {
           <IconButton
             onClick={handleSearchButton}
             sx={{
-              backgroundColor: '#222222',
-              color: 'white',
+              backgroundColor: currentPalette.primary,
+              color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
               borderRadius: '6px',
-              height: '38px',
-              width: '40px',
+              height: '2.4rem',  // Changed from 38px to 2.4rem
+    width: '2.5rem',  // Changed from 40px to 2.5rem
               padding: '0 10px',
               '&:hover': {
-                backgroundColor: '#424242',
+                backgroundColor: currentPalette.secondary,
                 cursor: 'pointer'
               }
             }}
@@ -300,8 +315,8 @@ const SearchBar = () => {
       {error && (
         <Typography 
           sx={{ 
-            fontSize: '13px',
-            marginLeft: '7px',
+            fontSize: '0.8rem',  // Changed from 13px to 0.8rem
+    marginLeft: '0.4rem',  // Changed from 7px to 0.4rem
             color: 'red',
             position: 'absolute',
             bottom: '-18px',

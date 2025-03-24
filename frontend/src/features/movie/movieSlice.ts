@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   MovieApiItem,
   MovieDbItem,
@@ -7,6 +7,7 @@ import {
 import axios from "axios";
 import { RootState } from "../../app/store";
 import { comedyTitles, romanceTitles, thrillerTitles, trendingTitles } from "@/utils/movieTitles";
+import { logout } from "../auth/authSlice.ts";
 
 const MODE = import.meta.env.MODE || "development";
 const BACKEND_URL =
@@ -36,7 +37,10 @@ const initialState: MovieState = {
 
 export const fetchMyListState = createAsyncThunk(
   "movie/fetchMyListState",
-  async (userId: string) => {
+  async (userId: string | null) => {
+    if(!userId){
+      return [];
+    }
     // Fetch from db
     const dbFetchUrl = `${BACKEND_URL}/api/movies/getlist`;
     const dbResponses = await axios.post<{
@@ -77,6 +81,7 @@ export const fetchMyListState = createAsyncThunk(
         Metascore: apiData.Metascore,
         imdbRating: apiData.imdbRating,
         imdbVotes: apiData.imdbVotes,
+        totalSeasons: apiData.totalSeasons
       };
     });
     return fetchedMyList;
@@ -131,6 +136,8 @@ export const fetchHomeListStates = createAsyncThunk(
               Metascore: apiData.Metascore,
               imdbRating: apiData.imdbRating,
               imdbVotes: apiData.imdbVotes,
+              totalSeasons: apiData.totalSeasons
+
             };
           } catch (error) {
             console.error(`Error fetching movie ${title}:`, error);
@@ -251,6 +258,8 @@ export const updateRating = createAsyncThunk(
         Metascore: apiData.Metascore,
         imdbRating: apiData.imdbRating,
         imdbVotes: apiData.imdbVotes,
+        totalSeasons: apiData.totalSeasons
+
       };
     }
 
@@ -314,6 +323,8 @@ export const addToWatchLater = createAsyncThunk(
         Metascore: apiData.Metascore,
         imdbRating: apiData.imdbRating,
         imdbVotes: apiData.imdbVotes,
+        totalSeasons: apiData.totalSeasons
+
       };
     }
 
@@ -367,7 +378,11 @@ export const removeFromWatchLater = createAsyncThunk(
 const movieSlice = createSlice({
   name: "movie",
   initialState,
-  reducers: {},
+  reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchMyListState.pending, (state) => {
@@ -530,9 +545,12 @@ const movieSlice = createSlice({
           "movieSlice => removeFromWatchLater.rejected => Failed to remove from watch later list, got error: ",
           state.error
         );
-      });
+      })
+      .addCase(logout, () => {
+        return initialState;
+      })
   },
 });
 
-export const {} = movieSlice.actions;
+export const {setLoading} = movieSlice.actions;
 export default movieSlice.reducer;

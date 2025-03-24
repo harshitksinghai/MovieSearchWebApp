@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom'
 import './i18n/config.ts'
-import ThemeProviderWrapper from './theme/ThemeProviderWrapper.tsx'
+import { CustomThemeProvider } from '../src/context/CustomThemeProvider.tsx'
 import Footer from './components/Footer.tsx'
 import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useAppDispatch, useAppSelector } from "./app/hooks.ts";
 import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSlice.ts";
+import { addUserIdInDB, fetchCurrentUserDetails } from './features/auth/authSlice.ts';
+import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 
 function App() {
   const auth = useAuth();
@@ -13,23 +15,47 @@ function App() {
   const userId = useAppSelector((state) => state.auth.userId);
 
   useEffect(() => {
-    if (userId) {
+    // Set user ID when authenticated
+    if (auth.isAuthenticated && auth.user?.profile.email) {
+      dispatch(addUserIdInDB(auth.user.profile.email))
+        .unwrap()
+        .then(() => {
+          if(auth.user?.profile.email){
+            dispatch(fetchCurrentUserDetails(auth.user.profile.email));
+          }
+      })
+    }
+  }, [auth.isAuthenticated, auth.user, dispatch]);
+  
+  useEffect(() => {
+    
       dispatch(fetchMyListState(userId)).finally(() => {
         dispatch(fetchHomeListStates());
       });
-    }
+    
   }, [dispatch, userId]);
 
   if (auth.isLoading) {
-    return <div>Loading authentication...</div>;
+    return (
+      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh">
+        <CircularProgress />
+        <Typography variant="h6" sx={{ ml: 2 }}>
+          Loading...
+        </Typography>
+      </Box>
+    );
   }
 
   if (auth.error) {
-    return <div>Authentication error: {auth.error.message}</div>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <Alert severity="error">Authentication error: {auth.error.message}</Alert>
+      </Box>
+    );
   }
 
   return (
-    <ThemeProviderWrapper>
+    <CustomThemeProvider>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -40,7 +66,7 @@ function App() {
         </main>
         <Footer />
       </div>
-    </ThemeProviderWrapper>
+      </CustomThemeProvider>
   )
 }
 

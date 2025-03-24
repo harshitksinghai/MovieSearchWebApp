@@ -37,13 +37,26 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
     
       const currentPalette = getCurrentPalette();
 
+      const isAtLeastEightYearsOld = (dateString: string) => {
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        const ageDifference = today.getFullYear() - birthDate.getFullYear();
+        const hasBirthdayOccurred = 
+            today.getMonth() > birthDate.getMonth() || 
+            (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+        
+        return ageDifference > 8 || (ageDifference === 8 && hasBirthdayOccurred);
+    };
+
     const validationSchema = z.object({
         firstName: z.string().min(1, 'First name is required'),
-        middleName: z.string().nullable(),
+        middleName: z.string().optional().nullable(),
         lastName: z.string().min(1, 'Last name is required'),
         dateOfBirth: z.string()
-            .min(1, 'Date of birth is required')
-            .regex(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, 'Must be in YYYY-MM-DD format'),
+        .min(1, 'Date of birth is required')
+        .refine(isAtLeastEightYearsOld, {
+            message: 'You must be at least 8 years old',
+        }),
         phone: z.string().min(1, 'Phone number is required'),
     })
 
@@ -61,7 +74,15 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         onSubmit: (values, actions) => {
 
             console.log({ values });
-            dispatch(updateCurrentUserDetails({ formDetails: values }))
+            dispatch(updateCurrentUserDetails({
+                formDetails: {
+                    firstName: values.firstName,
+                    middleName: values.middleName,
+                    lastName: values.lastName,
+                    phone: values.phone,
+                    dateOfBirth: String(values.dateOfBirth)
+                }
+            }))
             // alert(JSON.stringify(values, null, 2));
 
             actions.setSubmitting(false);
@@ -81,7 +102,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                     firstName: userDetails.firstName || '',
                     middleName: userDetails.middleName || '',
                     lastName: userDetails.lastName || '',
-                    dateOfBirth: userDetails.dateOfBirth || '',
+                    dateOfBirth: userDetails.dateOfBirth ? new Date(userDetails.dateOfBirth).toISOString().split('T')[0] : '',
                     phone: userDetails.phone || '',
                 }
             });
@@ -185,6 +206,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     name="dateOfBirth"
                                     label={t('profile.dob') + "*"} 
                                     size="small"
+                                    type='date'
                                     placeholder={userDetails?.dateOfBirth || "Enter date of birth"}
                                     value={formik.values.dateOfBirth}
                                     onChange={formik.handleChange}
@@ -192,7 +214,8 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     error={formik.touched.dateOfBirth && Boolean(formik.errors.dateOfBirth)}
                                     helperText={formik.touched.dateOfBirth && formik.errors.dateOfBirth}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary}
+                                        style: {color: currentPalette.textPrimary},
+                                        shrink: true
                                     }}
                                 />
                             </Grid>
@@ -226,7 +249,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                             display: 'flex',
                             gap: 2,
                             width: '100%',
-                            maxWidth: '250px'
+                            maxWidth: '300px'
                         }}>
                             <Button
                                 color="inherit"

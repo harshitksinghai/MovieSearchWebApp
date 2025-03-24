@@ -129,7 +129,7 @@
         "middleName": "Middle Name",
         "lastName": "Last Name",
         "phoneNo": "Phone No.",
-        "dob": "Date Of Birth (YYYY-MM-DD)",
+        "dob": "Date Of Birth",
         "email": "Email",
         "cancel": "Cancel",
         "update": "Update"

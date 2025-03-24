@@ -27,7 +27,7 @@ export const thrillerTitles: string[] = [
     // "Black Doves",
     "Dexter",
     "The Crown",
-    "Monsters: The Lyle and Erik Menendez Story",
+    "Halka",
     "Squid Game",
     "Slow Horses",
     "The Boys",

@@ -129,7 +129,7 @@
         "middleName": "Deuxième prénom",
         "lastName": "Nom de famille",
         "phoneNo": "Numéro de téléphone",
-        "dob": "Date de naissance (AAAA-MM-JJ)",
+        "dob": "Date de naissance",
         "email": "Email",
         "cancel": "Annuler",
         "update": "Mettre à jour"

@@ -13,7 +13,9 @@
         "fav": "Favourites",
         "watchLater": "Watch Later",
         "signIn": "Sign In",
-        "signOut": "Sign Out"
+        "signOut": "Sign Out",
+        "appearance": "Appearance",
+        "language": "Language"
     },
     "error":{
         "titleError": "Title must be at least 3 characters long.",

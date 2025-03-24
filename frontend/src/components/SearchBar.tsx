@@ -9,19 +9,21 @@ import {
   Paper,
   IconButton,
   InputBase,
-  Popover
+  Popover,
+  useMediaQuery
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchSearchResults, setError, setSearchParams } from '../features/search/searchSlice';
-import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
+import { themePalettes, useCustomTheme } from '../context/CustomThemeProvider';
 
 const SearchBar = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const isMobile = useMediaQuery('(max-width:1300px)');
 
   const {query, year, type} = useAppSelector((state) => state.search.searchParams)
   const {error} = useAppSelector((state) => state.search);
@@ -31,13 +33,13 @@ const SearchBar = () => {
   const isTypeOpen = Boolean(typeAnchorEl);
   const isYearOpen = Boolean(yearAnchorEl);
 
-      const { currentTheme, darkMode } = useCustomTheme();
-      const getCurrentPalette = () => {
-        const palette = themePalettes[currentTheme];
-        return darkMode ? palette.dark : palette.light;
-      };
-    
-      const currentPalette = getCurrentPalette();
+  const { currentTheme, darkMode } = useCustomTheme();
+  const getCurrentPalette = () => {
+    const palette = themePalettes[currentTheme];
+    return darkMode ? palette.dark : palette.light;
+  };
+
+  const currentPalette = getCurrentPalette();
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1887 }, (_, i) => currentYear - i);
@@ -104,8 +106,7 @@ const SearchBar = () => {
   };
 
   const buttonStyles = {
-    height: '2.4rem',  // Changed from 38px to 2.4rem
-
+    height: '2.4rem',
     backgroundColor: currentPalette.primary,
     color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
     padding: '0 16px',
@@ -117,27 +118,27 @@ const SearchBar = () => {
       backgroundColor: currentPalette.secondary,
     },
     textTransform: 'none',
-    minWidth: '80px'
+    minWidth: isMobile ? '60px' : '80px',
+    fontSize: isMobile ? '0.75rem' : 'inherit'
   };
 
   const menuItemStyles = {
     '&:hover': {
       backgroundColor: currentPalette.secondary,
     },
-
   };
 
   return (
     <Box sx={{ 
       position: 'relative', 
-      marginRight: { xs: '0', sm: '2rem', md: '6.25rem' },
-      width: { xs: '100%', sm: 'auto' }
+      marginRight: isMobile ? '0' : { xs: '0', sm: '2rem', md: '6.25rem' },
+      width: isMobile ? '100%' : 'auto'
     }}>
       <Paper
         elevation={0}
         sx={{
           width: '100%',
-          maxWidth: '34rem',
+          maxWidth: isMobile ? '100%' : '34rem',
           height: '2.5rem',
           display: 'flex',
           alignItems: 'center',
@@ -174,15 +175,15 @@ const SearchBar = () => {
           }}
         />
 
-<Box sx={{ 
-    height: '90%', 
-    display: 'flex', 
-    alignItems: 'center',
-    backgroundColor: currentPalette.background,
-    gap: '0.125rem', 
-    width: 'fit-content',
-    flexWrap: { xs: 'wrap', sm: 'nowrap' }
-  }}>
+        <Box sx={{ 
+          height: '90%', 
+          display: 'flex', 
+          alignItems: 'center',
+          backgroundColor: currentPalette.background,
+          gap: '0.125rem', 
+          width: 'fit-content',
+          flexWrap: { xs: 'nowrap', sm: 'nowrap' }
+        }}>
           <Button
             id="type-button"
             aria-controls={isTypeOpen ? 'type-popover' : undefined}
@@ -191,11 +192,12 @@ const SearchBar = () => {
             onClick={handleTypeClick}
             sx={{
               ...buttonStyles,
-    minWidth: '5rem',  // Changed from 82px to 5rem
+              minWidth: isMobile ? '4rem' : '5rem',
             }}
             endIcon={isTypeOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           >
-            {typeOption}
+            {isMobile && type ? type.charAt(0).toUpperCase() + type.slice(1, 3) : 
+             isMobile && !type ? t('navbar.typeAll').substring(0, 3) : typeOption}
           </Button>
           
           <Popover
@@ -240,10 +242,13 @@ const SearchBar = () => {
             aria-haspopup="true"
             aria-expanded={isYearOpen ? 'true' : undefined}
             onClick={handleYearClick}
-            sx={buttonStyles}
+            sx={{
+              ...buttonStyles,
+              minWidth: isMobile ? '3.5rem' : '5rem',
+            }}
             endIcon={isYearOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           >
-            {year ? year : t('navbar.Year')}
+            {year ? (isMobile ? "'" + year.slice(2) : year) : t('navbar.Year')}
           </Button>
           
           <Popover
@@ -298,8 +303,8 @@ const SearchBar = () => {
               backgroundColor: currentPalette.primary,
               color: currentTheme === 'White' && darkMode ? '#222' : '#fff',
               borderRadius: '6px',
-              height: '2.4rem',  // Changed from 38px to 2.4rem
-    width: '2.5rem',  // Changed from 40px to 2.5rem
+              height: '2.4rem',
+              width: '2.5rem',
               padding: '0 10px',
               '&:hover': {
                 backgroundColor: currentPalette.secondary,
@@ -315,8 +320,8 @@ const SearchBar = () => {
       {error && (
         <Typography 
           sx={{ 
-            fontSize: '0.8rem',  // Changed from 13px to 0.8rem
-    marginLeft: '0.4rem',  // Changed from 7px to 0.4rem
+            fontSize: '0.8rem',
+            marginLeft: '0.4rem',
             color: 'red',
             position: 'absolute',
             bottom: '-18px',

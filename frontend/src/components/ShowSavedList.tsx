@@ -30,7 +30,7 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
     if (loading) { 
       const timer = setTimeout(() => {
         dispatch(filtersApplied());
-      }, 3000);
+      }, 3600);
   
       return () => clearTimeout(timer);
     }

@@ -8,9 +8,11 @@ import { useAppDispatch, useAppSelector } from "./app/hooks.ts";
 import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSlice.ts";
 import { addUserIdInDB, fetchCurrentUserDetails } from './features/auth/authSlice.ts';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 function App() {
   const auth = useAuth();
+  const {t} = useTranslation();
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
 
@@ -40,7 +42,7 @@ function App() {
       <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh">
         <CircularProgress />
         <Typography variant="h6" sx={{ ml: 2 }}>
-          Loading...
+          {t('loading...')}
         </Typography>
       </Box>
     );
@@ -49,7 +51,7 @@ function App() {
   if (auth.error) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <Alert severity="error">Authentication error: {auth.error.message}</Alert>
+        <Alert severity="error">{t('authError')} {auth.error.message}</Alert>
       </Box>
     );
   }

@@ -135,6 +135,7 @@
         "email": "Email",
         "cancel": "Cancel",
         "update": "Update"
-        
-    }
+    },
+    "loading...": "Loading...",
+    "authError": "Authentication error: "
 }

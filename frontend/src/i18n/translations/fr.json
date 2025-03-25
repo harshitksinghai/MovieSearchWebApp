@@ -133,5 +133,7 @@
         "email": "Email",
         "cancel": "Annuler",
         "update": "Mettre à jour"
-    }
+    },
+    "loading...": "Chargement...",
+    "authError": "Erreur d'authentification : "
 }

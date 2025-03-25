@@ -133,5 +133,7 @@
         "email": "Correo Electrónico",
         "cancel": "Cancelar",
         "update": "Actualizar"
-    }
+    },
+    "loading...": "Cargando...",
+    "authError": "Error de autenticación: "
 }

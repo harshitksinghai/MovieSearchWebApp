@@ -5,7 +5,8 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Typography
+  Typography,
+  PaperProps
 } from '@mui/material';
 import PaletteIcon from '@mui/icons-material/Palette';
 import CheckIcon from '@mui/icons-material/Check';
@@ -70,6 +71,15 @@ const ThemeSelector: React.FC = () => {
     return t(`customTheme.${theme}`);
   };
 
+  // Custom PaperProps to ensure consistent background
+  const menuPaperProps: PaperProps = {
+    sx: {
+      backgroundColor: '#222',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    }
+  };
+
   return (
     <>
       <Button
@@ -99,6 +109,7 @@ const ThemeSelector: React.FC = () => {
           vertical: 'top',
           horizontal: 'center',
         }}
+        PaperProps={menuPaperProps}
       >
         {availableThemes.map((theme) => (
           <MenuItem

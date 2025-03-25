@@ -36,7 +36,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
   const currentPalette = getCurrentPalette();
 
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
-  
+
   // Mobile state
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
@@ -97,11 +97,11 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
                 <MenuIcon />
               </IconButton>
             )}
-            
+
             <Link to={auth.isAuthenticated ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
               <Logo />
             </Link>
-            
+
             {!isMobile && auth.isAuthenticated && (
               <>
                 <Link to="/mylist" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
@@ -142,7 +142,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
             {!isMobile && props.isSearchBar && (
               <SearchBar />
             )}
-            
+
             {/* For mobile: show search icon */}
             {isMobile && (
               <IconButton
@@ -190,20 +190,20 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
                   {t('navbar.signIn')}
                 </Button>
               )}
-            
-              {auth.isAuthenticated && (
-                <UserButton openProfilePopup={handleProfilePopupOpen} />
-              )
+
+            {auth.isAuthenticated && (
+              <UserButton openProfilePopup={handleProfilePopupOpen} />
+            )
             }
             <ProfilePopup open={profilePopupOpen} handleClose={handleProfilePopupClose} />
           </Box>
         </Toolbar>
       </AppBar>
-      
+
       {/* Mobile search bar that appears below the AppBar */}
       {isMobile && mobileSearchVisible && (
-        <Box sx={{ 
-          padding: '1rem', 
+        <Box sx={{
+          padding: '1rem',
           backgroundColor: currentPalette.background,
           boxShadow: `0 4px 8px rgba(${currentPalette.accent}, 0.1)`,
           width: '100%',
@@ -229,16 +229,19 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
             }
           }}
         >
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             padding: '0 1rem 1rem',
             borderBottom: `1px solid rgba(${currentPalette.accent}, 0.1)`
           }}>
-            <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-            {t('navbar.appName')}
-            </Typography>
+            <Link to={auth.isAuthenticated ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+              <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+                {t('navbar.appName')}
+              </Typography>
+            </Link>
+
             <IconButton onClick={toggleDrawer} sx={{ color: currentPalette.textPrimary }}>
               <CloseIcon />
             </IconButton>
@@ -258,8 +261,8 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
 
             <ListItem>
               <Box sx={{ width: '100%' }}>
-                <Typography sx={{ 
-                  fontSize: '0.875rem', 
+                <Typography sx={{
+                  fontSize: '0.875rem',
                   mb: 1,
                   color: currentPalette.textPrimary
                 }}>
@@ -267,7 +270,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <ThemeSelector />
+                    <ThemeSelector />
                     <DarkModeToggle />
                   </Box>
                 </Box>
@@ -276,10 +279,10 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
 
             <ListItem>
               <Box sx={{ width: '100%' }}>
-                <Typography sx={{ 
-                  fontSize: '0.875rem', 
+                <Typography sx={{
+                  fontSize: '0.875rem',
                   mb: 1,
-                  color: currentPalette.textPrimary 
+                  color: currentPalette.textPrimary
                 }}>
                   {t('navbar.language')}
                 </Typography>

@@ -35,7 +35,7 @@ const MarketingPage = () => {
       }}>
         <Box sx={{
           width: '100%',
-          height: isMobile ? 'calc(100vh - 80px)' : 'calc(100vh - 120px)',
+          height: isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 120px)',
           backgroundImage: 'url("https://source.unsplash.com/random/1920x1080/?cinema")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

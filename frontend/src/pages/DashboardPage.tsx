@@ -189,7 +189,7 @@ const DashboardPage = () => {
                     textOverflow: 'ellipsis',
                     whiteSpace: { xs: 'normal', sm: 'nowrap' }
                 }}>
-                    {'Hi ' + userDetails.firstName + " " + userDetails.middleName + " " + userDetails.lastName}
+                    {t('dashboard.hi') + userDetails.firstName + " " + userDetails.middleName + " " + userDetails.lastName}
                 </Typography>
                 <Grid container spacing={{ xs: 1, sm: 2 }}>
                     {/* Stats Boxes - Responsive grid sizing */}

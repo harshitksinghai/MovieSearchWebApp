@@ -110,7 +110,8 @@
         "noDataAvailable": "Pas de données disponibles",
         "love": "Adoré",
         "like": "Aimé",
-        "dislike": "Pas aimé"
+        "dislike": "Pas aimé",
+        "hi": "Salut "
     },
     "customTheme": {
         "theme": "Thème",

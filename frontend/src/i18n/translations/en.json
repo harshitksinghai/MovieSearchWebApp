@@ -112,7 +112,8 @@
         "noDataAvailable": "No data available",
         "love": "Love",
         "like": "Like",
-        "dislike": "Dislike"
+        "dislike": "Dislike",
+        "hi": "Hi "
     },
     "customTheme": {
         "theme": "Theme",

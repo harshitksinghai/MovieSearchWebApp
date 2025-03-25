@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-import { Box, Button, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import Paper from '@mui/material/Paper';
 import TimelapseIcon from '@mui/icons-material/Timelapse';
@@ -136,9 +136,6 @@ const MediaItem = ({ item }: MediaItemProps) => {
 
 const DashboardPage = () => {
     const {t} = useTranslation();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
     const { currentTheme, darkMode } = useCustomTheme();
     const getCurrentPalette = () => {

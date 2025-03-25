@@ -12,7 +12,9 @@ import {
   Button,
   CircularProgress,
   Stack,
-  alpha
+  alpha,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchMovieByImdbId } from '../features/search/searchSlice';
@@ -31,15 +33,18 @@ const MovieDetails: React.FC = () => {
   const auth = useAuth();
   const { t } = useTranslation();
 
-        const { currentTheme, darkMode } = useCustomTheme();
-        const getCurrentPalette = () => {
-          const palette = themePalettes[currentTheme];
-          return darkMode ? palette.dark : palette.light;
-        };
-      
-        const currentPalette = getCurrentPalette();
+  const { currentTheme, darkMode } = useCustomTheme();
+  const getCurrentPalette = () => {
+    const palette = themePalettes[currentTheme];
+    return darkMode ? palette.dark : palette.light;
+  };
+
+  const currentPalette = getCurrentPalette();
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.search);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const [ratingState, setRatingState] = useState<string>('none');
   const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(false);
@@ -78,7 +83,6 @@ const MovieDetails: React.FC = () => {
         setIsAddedToWatchLater(currAddedToWatchLater);
       });
     }
-
   };
 
   const handleAddToWatchLater = () => {
@@ -136,22 +140,21 @@ const MovieDetails: React.FC = () => {
   }
 
   if (movieResponse) {
-
     return (
       <>
         <Container
           id="main-container"
           sx={{
-            position: 'absolute',      // Absolute positioning to center it
-            top: '50%',                // Move down to 50% of the screen height
-            left: '50%',               // Move right to 50% of the screen width
-            transform: 'translate(-50%, -50%)',  // Center it perfectly
+            position: isSmallScreen ? 'static' : 'absolute',
+            top: isSmallScreen ? 'auto' : '50%',
+            left: isSmallScreen ? 'auto' : '50%',
+            transform: isSmallScreen ? 'none' : 'translate(-50%, -50%)',
             margin: '0',
             minHeight: '60%',
             padding: '2rem',
             bgcolor: currentPalette.background,
             color: currentPalette.textPrimary,
-            minWidth: '80%',
+            minWidth: isSmallScreen ? '100%' : '80%',
             maxWidth: { md: 'fit-content' }
           }}
         >
@@ -161,18 +164,21 @@ const MovieDetails: React.FC = () => {
               position: 'relative',
               zIndex: 1,
               display: 'flex',
-              flexDirection: 'row',
+              flexDirection: isSmallScreen ? 'column' : 'row',
               gap: '4rem',
               mt: 2,
+              alignItems: isSmallScreen ? 'center' : 'flex-start',
             }}
           >
             {/* Poster */}
             <Box
               sx={{
                 position: 'relative',
-                alignSelf: { xs: 'center', md: 'flex-start' },
-                flex: { md: '0 0 300px' },
+                alignSelf: 'center',
+                flex: isSmallScreen ? 'none' : { md: '0 0 300px' },
                 mb: { xs: 2, md: 0 },
+                width: isSmallScreen ? '100%' : 'auto',
+                maxWidth: '300px',
               }}
             >
               <Box
@@ -186,13 +192,17 @@ const MovieDetails: React.FC = () => {
                   borderRadius: '12px',
                   boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
                   display: 'block',
-                  mt: '2rem'
+                  mt: isSmallScreen ? '1rem' : '2rem'
                 }}
               />
             </Box>
 
             {/* Movie Info */}
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ 
+              flex: 1, 
+              width: isSmallScreen ? '100%' : 'auto',
+              textAlign: isSmallScreen ? 'center' : 'left'
+            }}>
               <Typography
                 variant="h3"
                 component="h1"
@@ -200,26 +210,29 @@ const MovieDetails: React.FC = () => {
                   fontSize: { xs: '2rem', md: '2.5rem' },
                   fontWeight: 700,
                   mb: 0.5,
-                  color: currentPalette.textPrimary
+                  color: currentPalette.textPrimary,
+                  textAlign: isSmallScreen ? 'center' : 'left'
                 }}
               >
                 {movieResponse.Title}
               </Typography>
               <Box sx={{
                 display: 'flex',
-                gap: '3px'
+                gap: '3px',
+                justifyContent: isSmallScreen ? 'center' : 'flex-start',
+                flexWrap: 'wrap'
               }}>
                 <Box
                   sx={{
                     mb: 1,
                     fontSize: '0.9rem',
-                    color: currentPalette.textPrimary
+                    color: currentPalette.textPrimary,
+                    textAlign: 'center'
                   }}
                 >
                   <Typography component="span">{movieResponse.Runtime}</Typography>
                   <Typography component="span" sx={{ mx: 0.5 }}>•</Typography>
                   <Typography component="span">{movieResponse.Released}</Typography>
-
                 </Box>
                 <Box
                   sx={{
@@ -228,23 +241,31 @@ const MovieDetails: React.FC = () => {
                     mx: 1,
                     mt: '2px',
                     bgcolor: currentPalette.primary,
+                    display: isSmallScreen ? 'none' : 'block'
                   }}
                 />
 
-                {movieResponse.Genre.split(', ').map((genre, index) => (
-                  <Chip
-                    key={index}
-                    label={genre}
-                    size="small"
-                    sx={{
-                      borderRadius: '16px',
-                      fontSize: '0.8rem',
-                      padding: '0.3rem 0.8rem',
-                      bgcolor: currentPalette.paper,
-                      color: currentPalette.textPrimary,
-                    }}
-                  />
-                ))}
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: isSmallScreen ? 'center' : 'flex-start',
+                  flexWrap: 'wrap',
+                  gap: 1
+                }}>
+                  {movieResponse.Genre.split(', ').map((genre, index) => (
+                    <Chip
+                      key={index}
+                      label={genre}
+                      size="small"
+                      sx={{
+                        borderRadius: '16px',
+                        fontSize: '0.8rem',
+                        padding: '0.3rem 0.8rem',
+                        bgcolor: currentPalette.paper,
+                        color: currentPalette.textPrimary,
+                      }}
+                    />
+                  ))}
+                </Box>
               </Box>
 
               {/* Action Buttons */}
@@ -255,7 +276,8 @@ const MovieDetails: React.FC = () => {
                   mt: 0.5,
                   mb: 3,
                   flexWrap: { xs: 'wrap', sm: 'nowrap' },
-                  gap: { xs: 1, sm: 2 }
+                  gap: { xs: 1, sm: 2 },
+                  justifyContent: isSmallScreen ? 'center' : 'flex-start'
                 }}
               >
                 <Button
@@ -271,10 +293,7 @@ const MovieDetails: React.FC = () => {
                     '&:hover': {
                       bgcolor: darkMode ? 'rgba(255, 215, 0, 1)' : '#e8ba17',
                     },
-                    // boxShadow: theme.shadows[2]
                     boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.2)'
-
-
                   }}
                   startIcon={<LaunchIcon />}
                 >
@@ -282,88 +301,84 @@ const MovieDetails: React.FC = () => {
                 </Button>
                 {auth.isAuthenticated && (
                   <>
-                {/* Rating Container */}
-                <Paper
-                  elevation={0}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    bgcolor: currentPalette.background,
-                    padding: '4px 12px',
-                    borderRadius: '20px',
-                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
-                    backdropFilter: 'blur(4px)',
-                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`
-
-
-                  }}
-                >
-                  <Stack direction="row" spacing={1} alignItems="center">
-
-                    <ReactionButton
-                      title={t('card.dislikeTooltip')}
-                      state={ratingState === 'dislike'}
-                      onClick={() => handleRating('dislike')}
-                      activeIcon={<FaThumbsDown size={14} />}
-                      inactiveIcon={<FaRegThumbsDown size={14} color={currentPalette.primary} />}
-                    />
-
-                    <ReactionButton
-                      title={t('card.likeTooltip')}
-                      state={ratingState === 'like'}
-                      onClick={() => handleRating('like')}
-                      activeIcon={<FaThumbsUp size={14} />}
-                      inactiveIcon={<FaRegThumbsUp size={14} color={currentPalette.primary} />}
-                    />
-
-                    <ReactionButton
-                      title={t('card.loveTooltip')}
-                      state={ratingState === 'love'}
-                      onClick={() => handleRating('love')}
-                      activeIcon={<FaHeart size={14} />}
-                      inactiveIcon={<FaRegHeart size={14} color={currentPalette.primary} />}
-                    />
-
-                    <Box
+                    {/* Rating Container */}
+                    <Paper
+                      elevation={0}
                       sx={{
-                        width: '1px',
-                        height: '25px',
-                        mx: 1,
-                        mt: '2px',
-                        bgcolor: currentPalette.primary,
+                        display: 'flex',
+                        alignItems: 'center',
+                        bgcolor: currentPalette.background,
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                        backdropFilter: 'blur(4px)',
+                        boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`
                       }}
-                    />
+                    >
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <ReactionButton
+                          title={t('card.dislikeTooltip')}
+                          state={ratingState === 'dislike'}
+                          onClick={() => handleRating('dislike')}
+                          activeIcon={<FaThumbsDown size={14} />}
+                          inactiveIcon={<FaRegThumbsDown size={14} color={currentPalette.primary} />}
+                        />
 
-                    <ReactionButton
-                      title={isAddedToWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
-                      state={isAddedToWatchLater}
-                      onClick={handleAddToWatchLater}
-                      activeIcon={<MdWatchLater size={18} />}
-                      inactiveIcon={<MdOutlineWatchLater size={18} color={currentPalette.primary} />}
-                    />
-                  </Stack>
-                </Paper>
-                </>
+                        <ReactionButton
+                          title={t('card.likeTooltip')}
+                          state={ratingState === 'like'}
+                          onClick={() => handleRating('like')}
+                          activeIcon={<FaThumbsUp size={14} />}
+                          inactiveIcon={<FaRegThumbsUp size={14} color={currentPalette.primary} />}
+                        />
+
+                        <ReactionButton
+                          title={t('card.loveTooltip')}
+                          state={ratingState === 'love'}
+                          onClick={() => handleRating('love')}
+                          activeIcon={<FaHeart size={14} />}
+                          inactiveIcon={<FaRegHeart size={14} color={currentPalette.primary} />}
+                        />
+
+                        <Box
+                          sx={{
+                            width: '1px',
+                            height: '25px',
+                            mx: 1,
+                            mt: '2px',
+                            bgcolor: currentPalette.primary,
+                          }}
+                        />
+
+                        <ReactionButton
+                          title={isAddedToWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
+                          state={isAddedToWatchLater}
+                          onClick={handleAddToWatchLater}
+                          activeIcon={<MdWatchLater size={18} />}
+                          inactiveIcon={<MdOutlineWatchLater size={18} color={currentPalette.primary} />}
+                        />
+                      </Stack>
+                    </Paper>
+                  </>
                 )}
               </Stack>
 
-
               {/* Plot Section */}
-                    <Box sx={{ 
-                      mb: 2,  
-                      boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
-                      padding: '4px 12px',
-                      borderRadius: '8px',
-                      border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
-                      backdropFilter: 'blur(4px)',
-                      }}>
+              <Box sx={{ 
+                mb: 2,  
+                boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                padding: '4px 12px',
+                borderRadius: '8px',
+                border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                backdropFilter: 'blur(4px)',
+              }}>
                 <Typography
                   variant="h6"
                   sx={{
                     color: currentPalette.textSecondary,
                     mb: 0.5,
                     fontSize: '1.2rem',
-                    textAlign: 'start',
+                    textAlign: isSmallScreen ? 'center' : 'start',
                   }}
                 >
                   {t('movie.plot')}
@@ -371,7 +386,7 @@ const MovieDetails: React.FC = () => {
                 <Typography
                   sx={{
                     lineHeight: 1.6,
-                    textAlign: 'justify',
+                    textAlign: isSmallScreen ? 'center' : 'justify',
                     color: currentPalette.textPrimary,
                   }}
                 >
@@ -383,133 +398,79 @@ const MovieDetails: React.FC = () => {
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
                 spacing={2}
-                sx={{ mb: 2 }}
+                sx={{ 
+                  mb: 2,
+                  alignItems: isSmallScreen ? 'center' : 'stretch'
+                }}
               >
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: '0.8rem 1rem',
-                    minWidth: '150px',
-                    flex: 1,
-                    bgcolor: currentPalette.background,
-                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
-                    padding: '4px 12px',
-                    borderRadius: '8px',
-                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
-                    backdropFilter: 'blur(4px)',
-                  }}
-                >
-                  <Typography
-                    variant="subtitle1"
+                {[
+                  { title: t('movie.director'), content: movieResponse.Director },
+                  { title: t('movie.cast'), content: movieResponse.Actors },
+                  { title: t('movie.language'), content: movieResponse.Language }
+                ].map((section, index) => (
+                  <Paper
+                    key={index}
+                    elevation={0}
                     sx={{
-                      color: currentPalette.textSecondary,
-                      mb: 0.5,
-                      fontSize: '1rem',
+                      p: '0.8rem 1rem',
+                      minWidth: '150px',
+                      flex: 1,
+                      width: isSmallScreen ? '100%' : 'auto',
+                      bgcolor: currentPalette.background,
+                      boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
+                      padding: '4px 12px',
+                      borderRadius: '8px',
+                      border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                      backdropFilter: 'blur(4px)',
                     }}
                   >
-                    {t('movie.director')}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      lineHeight: 1.5,
-                      fontSize: '0.9rem',
-                      color: currentPalette.textPrimary,
-                    }}
-                  >
-                    {movieResponse.Director}
-                  </Typography>
-                </Paper>
-
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: '0.8rem 1rem',
-                    minWidth: '150px',
-                    flex: 1,
-                    bgcolor: currentPalette.background,
-                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
-                    padding: '4px 12px',
-                    borderRadius: '8px',
-                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
-                    backdropFilter: 'blur(4px)',
-                  }}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      color: currentPalette.textSecondary,
-                      mb: 0.5,
-                      fontSize: '1rem',
-                    }}
-                  >
-                    {t('movie.cast')}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      lineHeight: 1.5,
-                      fontSize: '0.9rem',
-                      color: currentPalette.textPrimary,
-                    }}
-                  >
-                    {movieResponse.Actors}
-                  </Typography>
-                </Paper>
-
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: '0.8rem 1rem',
-                    minWidth: '150px',
-                    flex: 1,
-                    bgcolor: currentPalette.background,
-                    boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
-                    padding: '4px 12px',
-                    borderRadius: '8px',
-                    border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
-                    backdropFilter: 'blur(4px)',
-
-                  }}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      color: currentPalette.textSecondary,
-                      mb: 0.5,
-                      fontSize: '1rem',
-                    }}
-                  >
-                    {t('movie.language')}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      lineHeight: 1.5,
-                      fontSize: '0.9rem',
-                      color: currentPalette.textPrimary,
-                    }}
-                  >
-                    {movieResponse.Language}
-                  </Typography>
-                </Paper>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        color: currentPalette.textSecondary,
+                        mb: 0.5,
+                        fontSize: '1rem',
+                        textAlign: isSmallScreen ? 'center' : 'left',
+                      }}
+                    >
+                      {section.title}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        lineHeight: 1.5,
+                        fontSize: '0.9rem',
+                        color: currentPalette.textPrimary,
+                        textAlign: isSmallScreen ? 'center' : 'left',
+                      }}
+                    >
+                      {section.content}
+                    </Typography>
+                  </Paper>
+                ))}
               </Stack>
 
               {/* Ratings Section */}
               {movieResponse.Ratings && movieResponse.Ratings.length > 0 && (
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: 2, pb: '1rem' }}>
                   <Typography
                     variant="h6"
                     sx={{
                       color: currentPalette.textSecondary,
                       fontSize: '18px',
                       lineHeight: 1.6,
+                      textAlign: isSmallScreen ? 'center' : 'left',
                     }}
                   >
                     {t('movie.ratings')}
                   </Typography>
                   <Stack
-                    direction="row"
+                    direction={{ xs: 'column', sm: 'row' }}
                     flexWrap="wrap"
                     spacing={2}
-                    sx={{ mt: 0.5 }}
+                    sx={{ 
+                      mt: 0.5,
+                      justifyContent: isSmallScreen ? 'center' : 'flex-start'
+                    }}
                   >
                     {movieResponse.Ratings.map((rating, index) => (
                       <Paper
@@ -524,7 +485,6 @@ const MovieDetails: React.FC = () => {
                           borderRadius: '8px',
                           border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
                           backdropFilter: 'blur(4px)',
-
                         }}
                       >
                         <Typography
@@ -533,6 +493,7 @@ const MovieDetails: React.FC = () => {
                             fontSize: '0.9rem',
                             mb: 0.2,
                             color: currentPalette.textPrimary,
+                            textAlign: isSmallScreen ? 'center' : 'left',
                           }}
                         >
                           {rating.Source}
@@ -541,6 +502,7 @@ const MovieDetails: React.FC = () => {
                           sx={{
                             fontSize: '1rem',
                             color: currentPalette.textPrimary,
+                            textAlign: isSmallScreen ? 'center' : 'left',
                           }}
                         >
                           {rating.Value}
@@ -556,7 +518,6 @@ const MovieDetails: React.FC = () => {
       </>
     );
   }
-
 };
 
 export default MovieDetails;

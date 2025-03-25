@@ -65,7 +65,7 @@ const HomeMovieList: React.FC = () => {
                     {t('homeList.discover')}
                 </Typography>
             </HeaderContainer>
-            <Box sx={{ margin: 0, mb: '2.625rem', width: '90%', justifySelf: 'center', alignItems: 'center' }}>
+            <Box sx={{ margin: 0, mb: '2.625rem', width: '90%', justifySelf: 'center', alignItems: 'center', px: '1rem' }}>
 
                 <MovieCarousel title="Trending" movies={trendingList} isLoading={loading} />
                 <MovieCarousel title="Thriller" movies={thrillerList} isLoading={loading} />

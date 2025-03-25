@@ -23,11 +23,12 @@ import { MdOutlineWatchLater, MdWatchLater } from 'react-icons/md';
 import ReactionButton from './ReactionButton';
 import placeholder from "../assets/placeholder1.jpg";
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
+import { useAuth } from 'react-oidc-context';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
   const [movieResponse, setMovieResponse] = useState<MovieDetailsItem | null>(null);
-
+  const auth = useAuth();
   const { t } = useTranslation();
 
         const { currentTheme, darkMode } = useCustomTheme();
@@ -279,7 +280,8 @@ const MovieDetails: React.FC = () => {
                 >
                   IMDb
                 </Button>
-
+                {auth.isAuthenticated && (
+                  <>
                 {/* Rating Container */}
                 <Paper
                   elevation={0}
@@ -341,7 +343,10 @@ const MovieDetails: React.FC = () => {
                     />
                   </Stack>
                 </Paper>
+                </>
+                )}
               </Stack>
+
 
               {/* Plot Section */}
                     <Box sx={{ 

@@ -135,7 +135,14 @@
         "dob": "Date Of Birth",
         "email": "Email",
         "cancel": "Cancel",
-        "update": "Update"
+        "update": "Update",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "dobRequired": "Date of birth is required",
+        "dobAtleastEight": "You must be at least 8 years old",
+        "phRequired": "Phone number is required",
+        "invalidPh": "Invalid phone number",
+        "phTen": "Phone number must be 10 digits long"
     },
     "loading...": "Loading...",
     "authError": "Authentication error: "

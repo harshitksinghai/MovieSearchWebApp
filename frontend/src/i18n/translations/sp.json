@@ -125,15 +125,22 @@
         "signOut": "Cerrar Sesión"
     },
     "profile": {
-        "profile": "Perfil",
-        "firstName": "Nombre",
-        "middleName": "Segundo Nombre",
-        "lastName": "Apellido",
-        "phoneNo": "Teléfono",
-        "dob": "Fecha de Nacimiento",
-        "email": "Correo Electrónico",
-        "cancel": "Cancelar",
-        "update": "Actualizar"
+    "profile": "Perfil",
+    "firstName": "Nombre",
+    "middleName": "Segundo Nombre",
+    "lastName": "Apellido",
+    "phoneNo": "N.º de Teléfono",
+    "dob": "Fecha de Nacimiento",
+    "email": "Correo Electrónico",
+    "cancel": "Cancelar",
+    "update": "Actualizar",
+    "firstNameRequired": "El nombre es obligatorio",
+    "lastNameRequired": "El apellido es obligatorio",
+    "dobRequired": "La fecha de nacimiento es obligatoria",
+    "dobAtleastEight": "Debe tener al menos 8 años",
+    "phRequired": "El número de teléfono es obligatorio",
+    "invalidPh": "Número de teléfono inválido",
+    "phTen": "El número de teléfono debe tener 10 dígitos"
     },
     "loading...": "Cargando...",
     "authError": "Error de autenticación: "

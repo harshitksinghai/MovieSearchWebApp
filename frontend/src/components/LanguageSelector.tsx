@@ -62,7 +62,10 @@ const LanguageSelector: React.FC = () => {
                 backgroundColor: currentPalette.secondary,
               },
               '&.Mui-selected': {
-                backgroundColor: currentPalette.secondary
+                backgroundColor: '#444',
+                '&:hover': {
+                  backgroundColor: currentPalette.secondary,
+                },
               },
             }}
           >

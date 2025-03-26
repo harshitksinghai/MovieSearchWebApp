@@ -143,6 +143,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             objectFit: 'cover',
             borderRadius: 2,
           }}
+          onError={(e) => e.currentTarget.src = placeholder}
         />
       </Box>
 

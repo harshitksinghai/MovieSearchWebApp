@@ -46,6 +46,7 @@ const MovieDetails: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+
   const [ratingState, setRatingState] = useState<string>('none');
   const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(false);
 
@@ -151,10 +152,12 @@ const MovieDetails: React.FC = () => {
             transform: isSmallScreen ? 'none' : 'translate(-50%, -50%)',
             margin: '0',
             minHeight: '60%',
+            maxHeight: '80%',
+            overflowY: 'auto',
             padding: '2rem',
             bgcolor: currentPalette.background,
             color: currentPalette.textPrimary,
-            minWidth: isSmallScreen ? '100%' : '80%',
+            minWidth: window.innerWidth > 2000 ? '80%' : '100%',
             maxWidth: { md: 'fit-content' }
           }}
         >

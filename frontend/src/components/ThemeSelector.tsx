@@ -120,12 +120,12 @@ const ThemeSelector: React.FC = () => {
               backgroundColor: '#222',
               color: 'white',
               '&:hover': {
-                backgroundColor: '#333',
+                backgroundColor: currentPalette.secondary,
               },
               '&.Mui-selected': {
                 backgroundColor: '#444',
                 '&:hover': {
-                  backgroundColor: '#555',
+                  backgroundColor: currentPalette.secondary,
                 },
               },
             }}

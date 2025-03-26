@@ -50,7 +50,7 @@ const SearchBar = () => {
       return;
     }
     dispatch(setError(null));
-    dispatch(fetchSearchResults({query, year, type}));
+    dispatch(fetchSearchResults({query: query.trim(), year, type}));
   };
 
   const handleTypeClick = (event: React.MouseEvent<HTMLButtonElement>) => {

@@ -27,37 +27,46 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
     const { userId, userDetails } = useAppSelector((state) => state.auth);
     console.log("ProfilePopup => userDetails redux store state: ", userDetails)
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
-        const { currentTheme, darkMode } = useCustomTheme();
-      const getCurrentPalette = () => {
+    const { currentTheme, darkMode } = useCustomTheme();
+    const getCurrentPalette = () => {
         const palette = themePalettes[currentTheme];
         return darkMode ? palette.dark : palette.light;
-      };
-    
-      const currentPalette = getCurrentPalette();
+    };
 
-      const isAtLeastEightYearsOld = (dateString: string) => {
+    const currentPalette = getCurrentPalette();
+
+    const isAtLeastEightYearsOld = (dateString: string) => {
         const today = new Date();
         const birthDate = new Date(dateString);
         const ageDifference = today.getFullYear() - birthDate.getFullYear();
-        const hasBirthdayOccurred = 
-            today.getMonth() > birthDate.getMonth() || 
+        const hasBirthdayOccurred =
+            today.getMonth() > birthDate.getMonth() ||
             (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
-        
+
         return ageDifference > 8 || (ageDifference === 8 && hasBirthdayOccurred);
     };
 
     const validationSchema = z.object({
-        firstName: z.string().min(1, 'First name is required'),
+        firstName: z.string().min(1, t('profile.firstNameRequired')),
         middleName: z.string().optional().nullable(),
-        lastName: z.string().min(1, 'Last name is required'),
+        lastName: z.string().min(1, t('profile.lastNameRequired')),
         dateOfBirth: z.string()
-        .min(1, 'Date of birth is required')
-        .refine(isAtLeastEightYearsOld, {
-            message: 'You must be at least 8 years old',
-        }),
-        phone: z.string().min(1, 'Phone number is required'),
+            .min(1, t('profile.dobRequired'))
+            .refine(isAtLeastEightYearsOld, {
+                message: t('profile.dobAtleastEight'),
+            }),
+        phone: z.string()
+            .min(1, t('profile.phRequired'))
+            .regex(/^[6-9]\d{9}$/, t('profile.invalidPh'))
+            .refine(
+                (value) => {
+                    const digits = value.replace(/\D/g, '');
+                    return digits.length === 10;
+                },
+                { message:  t('profile.phTen')}
+            )
     })
 
     const initialValues: UserFormItem = {
@@ -115,7 +124,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                 open={open}
                 onClose={handleDialogClose}
                 PaperProps={{
-                    style: {backgroundColor: currentPalette.background}
+                    style: { backgroundColor: currentPalette.background }
                 }}
             >
                 <DialogTitle sx={{ fontWeight: '600', bgcolor: currentPalette.background, color: currentPalette.textPrimary, py: 2 }}>
@@ -130,7 +139,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     fullWidth
                                     id="firstName"
                                     name="firstName"
-                                    label={t('profile.firstName') + "*"} 
+                                    label={t('profile.firstName') + "*"}
                                     size="small"
                                     placeholder={userDetails.firstName || "Enter first name"}
                                     value={formik.values.firstName}
@@ -139,7 +148,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     error={formik.touched.firstName && Boolean(formik.errors.firstName)}
                                     helperText={formik.touched.firstName && formik.errors.firstName}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary}
+                                        style: { color: currentPalette.textPrimary }
                                     }}
                                 />
                             </Grid>
@@ -148,7 +157,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     fullWidth
                                     id="middleName"
                                     name="middleName"
-                                    label={t('profile.middleName')} 
+                                    label={t('profile.middleName')}
                                     size="small"
                                     placeholder={userDetails?.middleName || "Enter middle name"}
                                     value={formik.values.middleName}
@@ -157,7 +166,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     error={formik.touched.middleName && Boolean(formik.errors.middleName)}
                                     helperText={formik.touched.middleName && formik.errors.middleName}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary}
+                                        style: { color: currentPalette.textPrimary }
                                     }}
                                 />
                             </Grid>
@@ -166,7 +175,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     fullWidth
                                     id="lastName"
                                     name="lastName"
-                                    label={t('profile.lastName') + "*"} 
+                                    label={t('profile.lastName') + "*"}
                                     size="small"
                                     placeholder={userDetails?.lastName || "Enter last name"}
                                     value={formik.values.lastName}
@@ -175,7 +184,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     error={formik.touched.lastName && Boolean(formik.errors.lastName)}
                                     helperText={formik.touched.lastName && formik.errors.lastName}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary}
+                                        style: { color: currentPalette.textPrimary }
                                     }}
                                 />
                             </Grid>
@@ -186,7 +195,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     fullWidth
                                     id="phone"
                                     name="phone"
-                                    label={t('profile.phoneNo') + "*"} 
+                                    label={t('profile.phoneNo') + "*"}
                                     size="small"
                                     placeholder={userDetails?.phone || "Enter phone number"}
                                     value={formik.values.phone}
@@ -195,7 +204,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     error={formik.touched.phone && Boolean(formik.errors.phone)}
                                     helperText={formik.touched.phone && formik.errors.phone}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary}
+                                        style: { color: currentPalette.textPrimary }
                                     }}
                                 />
                             </Grid>
@@ -204,7 +213,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     fullWidth
                                     id="dateOfBirth"
                                     name="dateOfBirth"
-                                    label={t('profile.dob') + "*"} 
+                                    label={t('profile.dob') + "*"}
                                     size="small"
                                     type='date'
                                     placeholder={userDetails?.dateOfBirth || "Enter date of birth"}
@@ -214,8 +223,13 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     error={formik.touched.dateOfBirth && Boolean(formik.errors.dateOfBirth)}
                                     helperText={formik.touched.dateOfBirth && formik.errors.dateOfBirth}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary},
+                                        style: { color: currentPalette.textPrimary },
                                         shrink: true
+                                    }}
+                                    InputProps={{
+                                        inputProps: {
+                                            max: new Date().toISOString().split('T')[0],
+                                        }
                                     }}
                                 />
                             </Grid>
@@ -232,12 +246,12 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     placeholder={userId || "Enter email address"}
                                     slotProps={{
                                         input: {
-                                          readOnly: true,
+                                            readOnly: true,
                                         },
-                                      }}
+                                    }}
                                     value={userId}
                                     InputLabelProps={{
-                                        style: {color: currentPalette.textPrimary}
+                                        style: { color: currentPalette.textPrimary }
                                     }}
                                 />
                             </Grid>

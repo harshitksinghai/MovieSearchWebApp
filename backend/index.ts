@@ -17,10 +17,6 @@ const CLIENT_URL =
     ? process.env.CLIENT_URL_PROD
     : process.env.CLIENT_URL_DEV;
 
-const SERVER_URL =
-  MODE === "production"
-    ? process.env.SERVER_URL_PROD
-    : process.env.SERVER_URL_DEV;
 
 const corsOptions = {
   origin: CLIENT_URL,
@@ -58,7 +54,7 @@ const options = {
       },
       {
         url: `${process.env.SERVER_URL_PROD}`,
-        description: "Development Server"
+        description: "Production Server"
       }
     ],
   },

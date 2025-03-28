@@ -50,7 +50,7 @@ const router = express.Router();
 
 /**
  * @swagger
- *  /users/details:
+ *  /api/users/details:
  *   post:
  *     summary: Fetch user details by userId
  *     tags: [Users]
@@ -111,7 +111,7 @@ router.post('/details', verifyToken, getUserDetails);
 
 /**
  * @swagger
- *  /users/updateDetails:
+ *  /api/users/updateDetails:
  *   post:
  *     summary: Update user details
  *     tags: [Users]
@@ -188,7 +188,7 @@ router.post('/updateDetails', verifyToken, updateProfileRateLimiter, updateUserD
 
 /**
  * @swagger
- * /users/addUser:
+ * /api/users/addUser:
  *   post:
  *     summary: Add a new user
  *     tags: [Users]

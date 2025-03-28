@@ -53,8 +53,12 @@ const options = {
     ],
     servers: [
       {
-        url: `${SERVER_URL}/api`,
-        description: "Main API server"
+        url: `${process.env.SERVER_URL_DEV}`,
+        description: "Development Server"
+      },
+      {
+        url: `${process.env.SERVER_URL_PROD}`,
+        description: "Development Server"
       }
     ],
   },

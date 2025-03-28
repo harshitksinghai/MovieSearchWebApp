@@ -173,7 +173,7 @@ const router = express.Router();
 
 /**
  * @swagger
- *  /movies/search:
+ *  /api/movies/search:
  *   post:
  *     summary: Search for movies
  *     tags: [Movies]
@@ -243,7 +243,7 @@ router.post('/search', searchRateLimiter, searchMovies);
 
 /**
  * @swagger
- *  /movies/imdbid:
+ *  /api/movies/imdbid:
  *   post:
  *     summary: Fetch movie details by IMDb ID
  *     description: Retrieves detailed information about a movie using its IMDb ID.
@@ -319,7 +319,7 @@ router.post('/imdbid', fetchMovieByImdbId);
 
 /**
  * @swagger
- *  /movies/title:
+ *  /api/movies/title:
  *   post:
  *     summary: Fetch movie details by title
  *     description: Retrieves detailed information about a movie using its title.
@@ -397,7 +397,7 @@ router.post('/title', fetchMovieByTitle);
 
 /**
  * @swagger
- *  /movies/getlist:
+ *  /api/movies/getlist:
  *   post:
  *     summary: Retrieve the user's movie list
  *     description: Fetches the list of movies associated with a user, including their watch status and rating.
@@ -479,7 +479,7 @@ router.post('/getlist', verifyToken, getMovieList);
 
 /**
  * @swagger
- *  /movies/removefromwatched:
+ *  /api/movies/removefromwatched:
  *   post:
  *     summary: Remove a movie from the watched list
  *     description: Removes a movie from the user's watched list. If the movie is not in the watch later list, it is deleted; otherwise, only the watched status is updated.
@@ -562,7 +562,7 @@ router.post('/removefromwatched', verifyToken, actionButtonLimiter, removeFromWa
 
 /**
  * @swagger
- *  /movies/removefromwatchlater:
+ *  /api/movies/removefromwatchlater:
  *   post:
  *     summary: Remove a movie from the watch later list
  *     description: Removes a movie from the user's watch later list. If the movie is not in the watched list, it is deleted; otherwise, only the watch later status is updated.
@@ -645,7 +645,7 @@ router.post('/removefromwatchlater', verifyToken, actionButtonLimiter, removeFro
 
 /**
  * @swagger
- *  /movies/updaterating:
+ *  /api/movies/updaterating:
  *   post:
  *     summary: Update or add a movie rating
  *     description: Updates the rating of a movie for a user. If the movie does not exist in the list, it is added automatically.
@@ -741,7 +741,7 @@ router.post('/updaterating', verifyToken, actionButtonLimiter, updateRating);
 
 /**
  * @swagger
- *  /movies/addtowatchlater:
+ *  /api/movies/addtowatchlater:
  *   post:
  *     summary: Add a movie to the "Watch Later" list
  *     description: Adds a movie to the user's "Watch Later" list. If the movie does not exist in the user's list, it is inserted.

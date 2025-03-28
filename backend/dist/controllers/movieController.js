@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.addToList = exports.getMovieList = exports.fetchMovieByTitle = exports.fetchMovieByImdbId = exports.searchMovies = void 0;
+exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.getMovieList = exports.fetchMovieByTitle = exports.fetchMovieByImdbId = exports.searchMovies = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -20,7 +20,7 @@ const db_1 = __importDefault(require("../config/db"));
 const crypto_1 = __importDefault(require("crypto"));
 dotenv_1.default.config();
 const MODE = process.env.MODE;
-const SECRET_KEY = process.env.SECRET_KEY;
+// const SECRET_KEY = process.env.SECRET_KEY;
 const SALT = process.env.SECRET_SALT;
 const API_KEY = process.env.OMDB_API_KEY;
 const API_URL = MODE === "production"
@@ -160,63 +160,6 @@ exports.getMovieList = (0, express_async_handler_1.default)((req, res) => __awai
         console.error("Error fetching list:", error);
         res.status(500).json({
             success: false,
-        });
-    }
-}));
-exports.addToList = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { imdbID, ratingState, Type, isAddToWatchedList, isAddToWatchLater, userId, } = req.body;
-    if (!imdbID) {
-        res.status(400).json({
-            success: false,
-            error: "IMDB ID is required",
-        });
-        return;
-    }
-    if (!userId) {
-        res.status(400).json({
-            success: false,
-            error: "User ID is required",
-        });
-        return;
-    }
-    const hashedUserId = crypto_1.default
-        .createHash("sha256")
-        .update(userId + SALT)
-        .digest("hex");
-    try {
-        yield db_1.default.query('INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING', [hashedUserId]);
-        const watchedDate = isAddToWatchedList ? new Date().toISOString() : null;
-        const watchLaterDate = isAddToWatchLater ? new Date().toISOString() : null;
-        const query = `
-      INSERT INTO "movieList_YN100" 
-      ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
-      VALUES ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT ("userId", "imdbID") 
-      DO UPDATE SET 
-        "addToWatchedList" = $2,
-        "addToWatchLater" = $3,
-        "ratingState" = $4,
-        "Type" = $5
-      RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
-    `;
-        const result = yield db_1.default.query(query, [
-            imdbID,
-            watchedDate,
-            watchLaterDate,
-            ratingState,
-            Type,
-            hashedUserId,
-        ]);
-        res.json({
-            success: true,
-            movie: result.rows[0],
-        });
-    }
-    catch (error) {
-        console.error("Error adding to list:", error);
-        res.status(500).json({
-            success: false,
-            error: "Internal server error",
         });
     }
 }));

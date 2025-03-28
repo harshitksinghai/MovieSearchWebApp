@@ -1,14 +1,8 @@
 import { RootState } from "@/app/store";
 import { UserDetailsItem, UserFormItem } from "@/types/authTypes";
+import { authAxios } from "@/utils/axiosInstance";
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
-import axios from "axios";
 
-
-const MODE = import.meta.env.MODE || "development";
-const BACKEND_URL =
-  MODE === "production"
-    ? import.meta.env.VITE_BACKEND_URL_PROD
-    : import.meta.env.VITE_BACKEND_URL_DEV;
 interface AuthState {
   userId: string | null;
   userDetails: UserDetailsItem;
@@ -31,13 +25,13 @@ export const fetchCurrentUserDetails = createAsyncThunk(
   async (userId: string) => {
     console.log("authSlice => fetchCurrentUserDetails asyncThunk => requestBody ", userId);
 
-    const dbFetchUrl = `${BACKEND_URL}/api/users/details`;
-    const dbResponses = await axios.post<{
-      success: boolean;
-      userDetails: UserDetailsItem;
-    }>(dbFetchUrl, { userId });
-
-    return dbResponses.data.userDetails;
+      const dbFetchUrl = '/users/details';
+      
+      const dbResponse = await authAxios.post<{
+        success: boolean;
+        userDetails: UserDetailsItem;
+      }>(dbFetchUrl, { userId });
+    return dbResponse.data.userDetails;
   }
 );
 
@@ -50,14 +44,14 @@ export const updateCurrentUserDetails = createAsyncThunk(
       const state = getState() as RootState;
       const userId = state.auth.userId;
       
-      const url = `${BACKEND_URL}/api/users/updateDetails`;
+      const url = '/users/updateDetails';
       const requestBody = {
         userId,
         formDetails
       };
       console.log("authSlice => updateCurrentUserDetails asyncThunk => requestBody ", requestBody);
 
-      const response = await axios.post(url, requestBody);
+      const response = await authAxios.post(url, requestBody);
       return response.data.userDetails;
     }
 )
@@ -67,8 +61,8 @@ export const addUserIdInDB = createAsyncThunk(
   async (userId: string) => {
     console.log("authSlice => addUserInDB asyncThunk => requestBody ", userId);
 
-    const dbFetchUrl = `${BACKEND_URL}/api/users/addUser`;
-    await axios.post<{
+    const dbFetchUrl = '/users/addUser';
+    await authAxios.post<{
       success: boolean;
     }>(dbFetchUrl, { userId });
     return userId;

@@ -17,6 +17,7 @@ import { themePalettes, useCustomTheme } from "@/context/CustomThemeProvider";
 
 const AUTH_COGNITO_DOMAIN = import.meta.env.VITE_AUTH_COGNITO_DOMAIN;
 const AUTH_COGNITO_CLIENT_ID = import.meta.env.VITE_AUTH_COGNITO_CLIENT_ID;
+const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;
 
 
 interface UserButtonProps {
@@ -37,6 +38,9 @@ const UserButton: React.FC<UserButtonProps> = ({ openProfilePopup }) => {
     const currentPalette = getCurrentPalette();
 
   const signOutRedirect = () => {
+    const storageKey = `oidc.user:${AUTH_COGNITO_AUTHORITY}:${AUTH_COGNITO_CLIENT_ID}`;
+    localStorage.removeItem(storageKey);
+
     dispatch(logout());
     auth.removeUser();
 

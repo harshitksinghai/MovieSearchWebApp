@@ -16,6 +16,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { AuthProvider } from "react-oidc-context";
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import DashboardPage from './pages/DashboardPage.tsx';
+import { WebStorageStateStore } from 'oidc-client-ts';
 
 const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;
 const AUTH_COGNITO_CLIENT_ID = import.meta.env.VITE_AUTH_COGNITO_CLIENT_ID;
@@ -27,6 +28,7 @@ const cognitoAuthConfig = {
   redirect_uri: window.location.origin,
   response_type: "code",
   scope: "phone openid email",
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
   onSigninCallback: () => {
     window.history.replaceState({}, document.title, window.location.pathname);
     // window.location.href = "/home";

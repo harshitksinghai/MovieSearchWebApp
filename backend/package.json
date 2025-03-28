@@ -16,6 +16,9 @@
   "dependencies": {
     "@types/axios": "^0.9.36",
     "@types/pg": "^8.11.11",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "aws-jwt-verify": "^5.0.0",
     "axios": "^1.8.1",
     "concurrently": "^9.1.2",
     "cookie-parser": "^1.4.7",
@@ -24,8 +27,11 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^7.5.0",
     "nodemon": "^3.1.9",
-    "pg": "^8.13.3"
+    "pg": "^8.13.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@tsconfig/node-lts": "^22.0.1",

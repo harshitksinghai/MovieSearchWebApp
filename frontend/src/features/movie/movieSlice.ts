@@ -4,16 +4,10 @@ import {
   MovieDbItem,
   MovieDetailsItem,
 } from "../../types/movieTypes";
-import axios from "axios";
 import { RootState } from "../../app/store";
 import { comedyTitles, romanceTitles, thrillerTitles, trendingTitles } from "@/utils/movieTitles";
 import { logout } from "../auth/authSlice.ts";
-
-const MODE = import.meta.env.MODE || "development";
-const BACKEND_URL =
-  MODE === "production"
-    ? import.meta.env.VITE_BACKEND_URL_PROD
-    : import.meta.env.VITE_BACKEND_URL_DEV;
+import { authAxios, publicAxios } from "@/utils/axiosInstance.ts";
 
 interface MovieState {
   myListState: MovieDetailsItem[];
@@ -42,17 +36,17 @@ export const fetchMyListState = createAsyncThunk(
       return [];
     }
     // Fetch from db
-    const dbFetchUrl = `${BACKEND_URL}/api/movies/getlist`;
-    const dbResponses = await axios.post<{
+    const dbFetchUrl = '/movies/getlist';
+    const dbResponses = await authAxios.post<{
       success: boolean;
       movieList: MovieDbItem[];
     }>(dbFetchUrl, { userId });
     const dbMovies = dbResponses.data.movieList;
 
     // Fetch from OMDB api by imdbId
-    const omdbApiUrl = `${BACKEND_URL}/api/movies/imdbid`;
+    const omdbApiUrl = '/movies/imdbid';
     const omdbRequests = dbMovies.map((movie: MovieDbItem) =>
-      axios.post<{ success: boolean; movie: MovieApiItem }>(omdbApiUrl, {
+      publicAxios.post<{ success: boolean; movie: MovieApiItem }>(omdbApiUrl, {
         imdbID: movie.imdbID,
       })
     );
@@ -108,9 +102,9 @@ export const fetchHomeListStates = createAsyncThunk(
         } else {
 
           try {
-            const omdbApiUrl = `${BACKEND_URL}/api/movies/title`;
+            const omdbApiUrl = '/movies/title';
             const requestBody = { title };
-            const response = await axios.post(omdbApiUrl, requestBody);
+            const response = await publicAxios.post(omdbApiUrl, requestBody);
             const apiData = await response.data.movie;
             return {
               addToWatchedList: null,
@@ -218,14 +212,14 @@ export const updateRating = createAsyncThunk(
     const state = getState() as RootState;
     const userId = state.auth.userId;
 
-    const url = `${BACKEND_URL}/api/movies/updaterating`;
+    const url = '/movies/updaterating';
     const requestBody = {
       imdbID,
       ratingState,
       Type,
       userId,
     };
-    const response = await axios.post(url, requestBody);
+    const response = await authAxios.post(url, requestBody);
 
     let result: MovieDetailsItem = response.data.movie;
 
@@ -234,8 +228,8 @@ export const updateRating = createAsyncThunk(
     );
 
     if (!movieExists) {
-      const omdbApiUrl = `${BACKEND_URL}/api/movies/imdbid`;
-      const omdbResponse = await axios.post(omdbApiUrl, { imdbID });
+      const omdbApiUrl = '/movies/imdbid';
+      const omdbResponse = await publicAxios.post(omdbApiUrl, { imdbID });
       const apiData = omdbResponse.data.movie;
 
       result = {
@@ -282,14 +276,14 @@ export const addToWatchLater = createAsyncThunk(
     const state = getState() as RootState;
     const userId = state.auth.userId;
     
-    const url = `${BACKEND_URL}/api/movies/addtowatchlater`;
+    const url = '/movies/addtowatchlater';
     const requestBody = {
       imdbID,
       ratingState,
       Type,
       userId,
     };
-    const response = await axios.post(url, requestBody);
+    const response = await authAxios.post(url, requestBody);
 
     let result: MovieDetailsItem = response.data.movie;
 
@@ -298,8 +292,8 @@ export const addToWatchLater = createAsyncThunk(
     );
 
     if (!movieExists) {
-      const omdbApiUrl = `${BACKEND_URL}/api/movies/imdbid`;
-      const omdbResponse = await axios.post(omdbApiUrl, { imdbID });
+      const omdbApiUrl = '/movies/imdbid';
+      const omdbResponse = await publicAxios.post(omdbApiUrl, { imdbID });
       const apiData = omdbResponse.data.movie;
 
       // Return combined data
@@ -340,12 +334,12 @@ export const removeFromWatchedList = createAsyncThunk(
     const state = getState() as RootState;
     const userId = state.auth.userId;
 
-    const url = `${BACKEND_URL}/api/movies/removefromwatched`;
+    const url = '/movies/removefromwatched';
     const requestBody = {
       imdbID,
       userId,
     };
-    const response = await axios.post(url, requestBody);
+    const response = await authAxios.post(url, requestBody);
 
     console.log(
       "movieSlice => removeFromWatchedList asyncThunk Response:",
@@ -361,12 +355,12 @@ export const removeFromWatchLater = createAsyncThunk(
     const state = getState() as RootState;
     const userId = state.auth.userId;
 
-    const url = `${BACKEND_URL}/api/movies/removefromwatchlater`;
+    const url = '/movies/removefromwatchlater';
     const requestBody = {
       imdbID,
       userId,
     };
-    const response = await axios.post(url, requestBody);
+    const response = await authAxios.post(url, requestBody);
     console.log(
       "movieSlice => removeFromWatchLater asyncThunk Response: ",
       response.data.success

@@ -2,12 +2,7 @@ import { createAsyncThunk, createSelector, createSlice, PayloadAction } from "@r
 import axios from "axios";
 import { MovieDetailsItem, SearchApiItem } from "../../types/movieTypes";
 import { RootState } from "../../app/store";
-
-const MODE = import.meta.env.MODE || "development";
-const BACKEND_URL =
-  MODE === "production"
-    ? import.meta.env.VITE_BACKEND_URL_PROD
-    : import.meta.env.VITE_BACKEND_URL_DEV;
+import { publicAxios } from "@/utils/axiosInstance";
 
 interface SearchState {
     searchResults: SearchApiItem[];
@@ -42,14 +37,14 @@ export const fetchSearchResults = createAsyncThunk(
     'search.fetchSearchResults',
     async ({query, year, type, page = 1}: {query: string; year: string; type: string; page?: number}, {rejectWithValue}) => {
         try{
-            const omdbApiUrl = `${BACKEND_URL}/api/movies/search`;
+            const omdbApiUrl = '/movies/search';
             const requestBody = {
                 query,
                 year,
                 type,
                 page,
             };
-            const response = await axios.post(omdbApiUrl, requestBody);
+            const response = await publicAxios.post(omdbApiUrl, requestBody);
             console.log("searchSlice => fetchSearchResults asyncThunk response: ", response.data)
             return response.data;
         }
@@ -84,9 +79,9 @@ export const fetchMovieByImdbId = createAsyncThunk(
     }
 
     try {
-      const url = `${BACKEND_URL}/api/movies/imdbid`;
+      const url = '/movies/imdbid';
       const requestBody = { imdbID };
-      const response = await axios.post(url, requestBody);
+      const response = await publicAxios.post(url, requestBody);
       const apiData = response.data.movie;
 
       return {

@@ -7,7 +7,7 @@ import crypto from "crypto";
 
 dotenv.config();
 const MODE = process.env.MODE;
-const SECRET_KEY = process.env.SECRET_KEY;
+// const SECRET_KEY = process.env.SECRET_KEY;
 const SALT = process.env.SECRET_SALT;
 const API_KEY = process.env.OMDB_API_KEY;
 const API_URL =
@@ -227,81 +227,6 @@ export const getMovieList = asyncHandler(
     }
   }
 );
-
-export const addToList = asyncHandler(async (req: Request, res: Response) => {
-  const {
-    imdbID,
-    ratingState,
-    Type,
-    isAddToWatchedList,
-    isAddToWatchLater,
-    userId,
-  } = req.body;
-
-  if (!imdbID) {
-    res.status(400).json({
-      success: false,
-      error: "IMDB ID is required",
-    });
-    return;
-  }
-
-  if (!userId) {
-    res.status(400).json({
-      success: false,
-      error: "User ID is required",
-    });
-    return;
-  }
-
-  const hashedUserId = crypto
-    .createHash("sha256")
-    .update(userId + SALT)
-    .digest("hex");
-
-  try {
-    await pool.query(
-      'INSERT INTO "users_YN100" ("userId") VALUES ($1) ON CONFLICT ("userId") DO NOTHING',
-      [hashedUserId]
-    );
-
-    const watchedDate = isAddToWatchedList ? new Date().toISOString() : null;
-    const watchLaterDate = isAddToWatchLater ? new Date().toISOString() : null;
-
-    const query = `
-      INSERT INTO "movieList_YN100" 
-      ("imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type", "userId") 
-      VALUES ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT ("userId", "imdbID") 
-      DO UPDATE SET 
-        "addToWatchedList" = $2,
-        "addToWatchLater" = $3,
-        "ratingState" = $4,
-        "Type" = $5
-      RETURNING "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type";
-    `;
-
-    const result = await pool.query(query, [
-      imdbID,
-      watchedDate,
-      watchLaterDate,
-      ratingState,
-      Type,
-      hashedUserId,
-    ]);
-
-    res.json({
-      success: true,
-      movie: result.rows[0],
-    });
-  } catch (error) {
-    console.error("Error adding to list:", error);
-    res.status(500).json({
-      success: false,
-      error: "Internal server error",
-    });
-  }
-});
 
 export const removeFromWatchedList = asyncHandler(
   async (req: Request, res: Response) => {

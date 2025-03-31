@@ -5,7 +5,6 @@ import {
   Box, 
   Button, 
   MenuItem, 
-  Typography, 
   Paper,
   IconButton,
   InputBase,
@@ -18,7 +17,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchSearchResults, setError, setSearchParams } from '../features/search/searchSlice';
 import { themePalettes, useCustomTheme } from '../context/CustomThemeProvider';
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 
 const SearchBar = () => {
   const { t } = useTranslation();

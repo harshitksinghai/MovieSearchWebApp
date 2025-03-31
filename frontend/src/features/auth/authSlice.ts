@@ -31,7 +31,7 @@ export const fetchCurrentUserDetails = createAsyncThunk(
         success: boolean;
         userDetails: UserDetailsItem;
       }>(dbFetchUrl, { userId });
-    return dbResponse.data.userDetails;
+    return dbResponse.data.userDetails
   }
 );
 

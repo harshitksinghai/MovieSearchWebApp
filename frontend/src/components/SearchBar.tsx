@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
 import { 
@@ -18,6 +18,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchSearchResults, setError, setSearchParams } from '../features/search/searchSlice';
 import { themePalettes, useCustomTheme } from '../context/CustomThemeProvider';
+import { Toaster, toast } from 'sonner'
 
 const SearchBar = () => {
   const { t } = useTranslation();
@@ -32,6 +33,12 @@ const SearchBar = () => {
   const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
   const isTypeOpen = Boolean(typeAnchorEl);
   const isYearOpen = Boolean(yearAnchorEl);
+
+  useEffect(() => {
+    if(error){
+      toast.error(t(`error.${error}`));
+    }
+  })
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -155,10 +162,8 @@ const SearchBar = () => {
           placeholder={t('navbar.searchPlaceholder')}
           value={query}
           onChange={(e) => {
-            if (e.target.value === '') {
-              dispatch(setError(null))
-            }
-            dispatch(setSearchParams({query: e.target.value, year, type}))
+            dispatch(setError(null));
+            dispatch(setSearchParams({query: e.target.value, year, type}));
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -316,23 +321,6 @@ const SearchBar = () => {
           </IconButton>
         </Box>
       </Paper>
-      
-      {error && (
-        <Typography 
-          sx={{ 
-            fontSize: '0.8rem',
-            marginLeft: '0.4rem',
-            color: 'red',
-            position: 'absolute',
-            bottom: '-18px',
-            left: 0,
-            width: '100%',
-            textAlign: 'left'
-          }}
-        >
-          {t(`error.${error}`)}
-        </Typography>
-      )}
     </Box>
   );
 };

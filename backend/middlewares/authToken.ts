@@ -7,7 +7,6 @@ const verifier = CognitoJwtVerifier.create({
     clientId: process.env.AUTH_COGNITO_CLIENT_ID!
   });
   
-  // Simple token verification middleware
   export const verifyToken = async (
     req: Request, 
     res: Response, 

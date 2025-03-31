@@ -1,5 +1,6 @@
 import axios from "axios";
 import { User } from "oidc-client-ts";
+import { encryptRequest, decryptResponse } from "./dataInTransitEncryption.ts";
 
 const MODE = import.meta.env.MODE || "development";
 const BACKEND_URL =
@@ -21,12 +22,10 @@ function getUser() {
   try {
     const user = User.fromStorageString(oidcStorage);
     
-    // Additional token validation checks
     if (!user || !user.access_token) {
       return null;
     }
     
-    // Check if token is expired
     if (user.expired) {
       console.warn('Access token has expired');
       return null;
@@ -45,17 +44,45 @@ export const authAxios = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 authAxios.interceptors.request.use(
   (config) => {
     const user = getUser();
     if (user?.access_token) {
       config.headers.Authorization = `Bearer ${user.access_token}`;
     }
+    
+    if (config.data) {
+      const { encryptedData, encryptedAesKey } = encryptRequest(config.data);
+      config.data = { encryptedData };
+      config.headers['x-encrypted-key'] = encryptedAesKey;
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
 );
 
+authAxios.interceptors.response.use(
+  (response) => {
+    console.log("authAxios interceptors response")
+    console.log("response.headers['x-encrypted-key'] outside: ", response.headers['x-encrypted-key'])
+    console.log("response.data.encryptedData outside: ", response.data?.encryptedData);
+    if (response.data?.encryptedData && response.headers['x-encrypted-key']) {
+      console.log("in here buddy")
+      const encryptedData = response.data.encryptedData;
+      console.log("response.data.encryptedData: ", encryptedData);
+      const encryptedAesKey = response.headers['x-encrypted-key'];
+      console.log("response.headers['x-encrypted-key': ", encryptedAesKey);
+
+      response.data = decryptResponse(encryptedData, encryptedAesKey);
+      console.log("response.data decrypted: ", response.data);
+    }
+    
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
 
 export const publicAxios = axios.create({
   baseURL: `${BACKEND_URL}/api`,

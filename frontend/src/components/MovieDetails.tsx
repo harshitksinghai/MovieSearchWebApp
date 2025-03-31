@@ -26,6 +26,7 @@ import ReactionButton from './ReactionButton';
 import placeholder from "../assets/placeholder1.jpg";
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 import { useAuth } from 'react-oidc-context';
+import { toast } from 'sonner';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
@@ -64,7 +65,15 @@ const MovieDetails: React.FC = () => {
 
   const handleRating = (rating: string) => {
     if (!movieResponse) return;
-
+    if(!auth.isAuthenticated){
+      toast(t('card.signInToRate'), {
+        action: {
+          label: 'Sign In',
+          onClick: () => auth.signinRedirect()
+        },
+      });
+      return;
+    }
     const currRatingState = ratingState;
     const currAddedToWatchLater = isAddedToWatchLater;
     const newRating = rating === currRatingState ? 'none' : rating;
@@ -76,18 +85,29 @@ const MovieDetails: React.FC = () => {
       dispatch(removeFromWatchedList(movieResponse.imdbID)).unwrap().catch(() => {
         setRatingState(currRatingState);
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.ratingOptimisticFailed'));
       });
     }
     else {
       dispatch(updateRating({ imdbID: movieResponse.imdbID, ratingState: newRating, Type: movieResponse.Type })).unwrap().catch(() => {
         setRatingState(currRatingState);
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.ratingOptimisticFailed'));
       });
     }
   };
 
   const handleAddToWatchLater = () => {
     if (!movieResponse) return;
+    if(!auth.isAuthenticated){
+      toast(t('card.signInToAddToWatchLater'), {
+        action: {
+          label: 'Sign In',
+          onClick: () => auth.signinRedirect()
+        },
+      });
+      return;
+    }
 
     const currAddedToWatchLater = isAddedToWatchLater;
 
@@ -96,10 +116,12 @@ const MovieDetails: React.FC = () => {
     if (currAddedToWatchLater) {
       dispatch(removeFromWatchLater(movieResponse.imdbID)).unwrap().catch(() => {
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.watchLaterOptimisticFailed'));
       });
     } else {
       dispatch(addToWatchLater({ imdbID: movieResponse.imdbID, ratingState: ratingState, Type: movieResponse.Type })).unwrap().catch(() => {
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.watchLaterOptimisticFailed'));
       });
     }
   };
@@ -302,7 +324,7 @@ const MovieDetails: React.FC = () => {
                 >
                   IMDb
                 </Button>
-                {auth.isAuthenticated && (
+                {/* {auth.isAuthenticated && ( */}
                   <>
                     {/* Rating Container */}
                     <Paper
@@ -363,7 +385,7 @@ const MovieDetails: React.FC = () => {
                       </Stack>
                     </Paper>
                   </>
-                )}
+                {/* )} */}
               </Stack>
 
               {/* Plot Section */}

@@ -11,6 +11,7 @@ import { useAppDispatch } from '../app/hooks.ts';
 import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, updateRating } from '../features/movie/movieSlice.ts';
 import ReactionButton from './ReactionButton.tsx';
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
+import { toast } from 'sonner';
 
 interface MovieCardProps {
   movie: Partial<MovieDetailsItem> & SearchApiItem;
@@ -37,6 +38,15 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   }, [movie.ratingState, movie.addToWatchLater]);
 
   const handleRating = (rating: string) => {
+    if(!auth.isAuthenticated){
+      toast(t('card.signInToRate'), {
+        action: {
+          label: 'Sign In',
+          onClick: () => auth.signinRedirect()
+        },
+      });
+      return;
+    }
     const currRatingState = ratingState;
     const currAddedToWatchLater = isAddedToWatchLater;
     const newRating = rating === currRatingState ? 'none' : rating;
@@ -50,18 +60,29 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       dispatch(removeFromWatchedList(movie.imdbID)).unwrap().catch(() => {
         setRatingState(currRatingState);
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.ratingOptimisticFailed'));
       });
     }
     else {
       dispatch(updateRating({ imdbID: movie.imdbID, ratingState: newRating, Type: movie.Type })).unwrap().catch(() => {
         setRatingState(currRatingState);
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.ratingOptimisticFailed'));
       });
     }
 
   };
 
   const handleAddToWatchLater = () => {
+    if(!auth.isAuthenticated){
+      toast(t('card.signInToAddToWatchLater'), {
+        action: {
+          label: 'Sign In',
+          onClick: () => auth.signinRedirect()
+        },
+      });
+      return;
+    }
     const currAddedToWatchLater = isAddedToWatchLater;
 
     setIsAddedToWatchLater((prev) => !prev);
@@ -69,10 +90,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     if (currAddedToWatchLater) {
       dispatch(removeFromWatchLater(movie.imdbID)).unwrap().catch(() => {
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.watchLaterOptimisticFailed'));
       });
     } else {
       dispatch(addToWatchLater({ imdbID: movie.imdbID, ratingState: ratingState, Type: movie.Type })).unwrap().catch(() => {
         setIsAddedToWatchLater(currAddedToWatchLater);
+        toast.error(t('error.watchLaterOptimisticFailed'));
       });
     }
 
@@ -166,7 +189,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     transition: 'opacity 0.3s ease',
   }}
 >
-{auth.isAuthenticated && (
+{/* {auth.isAuthenticated && ( */}
   <>
         <Box
           className="rating-container"
@@ -269,7 +292,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           inactiveIcon={<MdOutlineWatchLater size={18} />}
         />
         </>
-        )}
+        {/* )} */}
         <Box
           className="movie-info"
           sx={{

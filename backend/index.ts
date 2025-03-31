@@ -22,6 +22,8 @@ const corsOptions = {
   origin: CLIENT_URL,
   optionsSuccessStatus: 200,
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-encrypted-key'],
+  exposedHeaders: ['x-encrypted-key']
 };
 
 const options = {

@@ -10,7 +10,9 @@ import {
   fetchMovieByTitle
 } from "../controllers/movieController";
 import { actionButtonLimiter, searchRateLimiter } from "../middlewares/rateLimiter";
-import { verifyToken } from "../middlewares/protect";
+import { verifyToken } from "../middlewares/authToken";
+import { decryptRequest } from "../middlewares/dataInTransitEncryption";
+import { encryptResponseForRoute } from "../middlewares/encryptResponseForRoute";
 
 const router = express.Router();
 
@@ -475,7 +477,7 @@ router.post('/title', fetchMovieByTitle);
  *                   type: boolean
  *                   example: false
  */
-router.post('/getlist', verifyToken, getMovieList);
+router.post('/getlist', verifyToken, decryptRequest, encryptResponseForRoute, getMovieList);
 
 /**
  * @swagger
@@ -558,7 +560,7 @@ router.post('/getlist', verifyToken, getMovieList);
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/removefromwatched', verifyToken, actionButtonLimiter, removeFromWatchedList);
+router.post('/removefromwatched', verifyToken, actionButtonLimiter, decryptRequest, encryptResponseForRoute, removeFromWatchedList);
 
 /**
  * @swagger
@@ -641,7 +643,7 @@ router.post('/removefromwatched', verifyToken, actionButtonLimiter, removeFromWa
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/removefromwatchlater', verifyToken, actionButtonLimiter, removeFromWatchLater);
+router.post('/removefromwatchlater', verifyToken, actionButtonLimiter, decryptRequest, encryptResponseForRoute, removeFromWatchLater);
 
 /**
  * @swagger
@@ -737,7 +739,7 @@ router.post('/removefromwatchlater', verifyToken, actionButtonLimiter, removeFro
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/updaterating', verifyToken, actionButtonLimiter, updateRating);
+router.post('/updaterating', verifyToken, actionButtonLimiter, decryptRequest, encryptResponseForRoute, updateRating);
 
 /**
  * @swagger
@@ -833,6 +835,6 @@ router.post('/updaterating', verifyToken, actionButtonLimiter, updateRating);
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/addtowatchlater', verifyToken, actionButtonLimiter, addToWatchLater);
+router.post('/addtowatchlater', verifyToken, actionButtonLimiter, decryptRequest, encryptResponseForRoute, addToWatchLater);
 
 export default router;

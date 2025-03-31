@@ -6,7 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const movieController_1 = require("../controllers/movieController");
 const rateLimiter_1 = require("../middlewares/rateLimiter");
-const protect_1 = require("../middlewares/protect");
+const authToken_1 = require("../middlewares/authToken");
+const dataInTransitEncryption_1 = require("../middlewares/dataInTransitEncryption");
+const encryptResponseForRoute_1 = require("../middlewares/encryptResponseForRoute");
 const router = express_1.default.Router();
 /**
  * @swagger
@@ -163,7 +165,7 @@ const router = express_1.default.Router();
 // Search and fetch routes
 /**
  * @swagger
- *  /movies/search:
+ *  /api/movies/search:
  *   post:
  *     summary: Search for movies
  *     tags: [Movies]
@@ -232,7 +234,7 @@ const router = express_1.default.Router();
 router.post('/search', rateLimiter_1.searchRateLimiter, movieController_1.searchMovies);
 /**
  * @swagger
- *  /movies/imdbid:
+ *  /api/movies/imdbid:
  *   post:
  *     summary: Fetch movie details by IMDb ID
  *     description: Retrieves detailed information about a movie using its IMDb ID.
@@ -307,7 +309,7 @@ router.post('/search', rateLimiter_1.searchRateLimiter, movieController_1.search
 router.post('/imdbid', movieController_1.fetchMovieByImdbId);
 /**
  * @swagger
- *  /movies/title:
+ *  /api/movies/title:
  *   post:
  *     summary: Fetch movie details by title
  *     description: Retrieves detailed information about a movie using its title.
@@ -383,7 +385,7 @@ router.post('/title', movieController_1.fetchMovieByTitle);
 // Movie list management routes
 /**
  * @swagger
- *  /movies/getlist:
+ *  /api/movies/getlist:
  *   post:
  *     summary: Retrieve the user's movie list
  *     description: Fetches the list of movies associated with a user, including their watch status and rating.
@@ -461,10 +463,10 @@ router.post('/title', movieController_1.fetchMovieByTitle);
  *                   type: boolean
  *                   example: false
  */
-router.post('/getlist', protect_1.verifyToken, movieController_1.getMovieList);
+router.post('/getlist', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, movieController_1.getMovieList);
 /**
  * @swagger
- *  /movies/removefromwatched:
+ *  /api/movies/removefromwatched:
  *   post:
  *     summary: Remove a movie from the watched list
  *     description: Removes a movie from the user's watched list. If the movie is not in the watch later list, it is deleted; otherwise, only the watched status is updated.
@@ -543,10 +545,10 @@ router.post('/getlist', protect_1.verifyToken, movieController_1.getMovieList);
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/removefromwatched', protect_1.verifyToken, rateLimiter_1.actionButtonLimiter, movieController_1.removeFromWatchedList);
+router.post('/removefromwatched', authToken_1.verifyToken, rateLimiter_1.actionButtonLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, movieController_1.removeFromWatchedList);
 /**
  * @swagger
- *  /movies/removefromwatchlater:
+ *  /api/movies/removefromwatchlater:
  *   post:
  *     summary: Remove a movie from the watch later list
  *     description: Removes a movie from the user's watch later list. If the movie is not in the watched list, it is deleted; otherwise, only the watch later status is updated.
@@ -625,10 +627,10 @@ router.post('/removefromwatched', protect_1.verifyToken, rateLimiter_1.actionBut
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/removefromwatchlater', protect_1.verifyToken, rateLimiter_1.actionButtonLimiter, movieController_1.removeFromWatchLater);
+router.post('/removefromwatchlater', authToken_1.verifyToken, rateLimiter_1.actionButtonLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, movieController_1.removeFromWatchLater);
 /**
  * @swagger
- *  /movies/updaterating:
+ *  /api/movies/updaterating:
  *   post:
  *     summary: Update or add a movie rating
  *     description: Updates the rating of a movie for a user. If the movie does not exist in the list, it is added automatically.
@@ -720,10 +722,10 @@ router.post('/removefromwatchlater', protect_1.verifyToken, rateLimiter_1.action
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/updaterating', protect_1.verifyToken, rateLimiter_1.actionButtonLimiter, movieController_1.updateRating);
+router.post('/updaterating', authToken_1.verifyToken, rateLimiter_1.actionButtonLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, movieController_1.updateRating);
 /**
  * @swagger
- *  /movies/addtowatchlater:
+ *  /api/movies/addtowatchlater:
  *   post:
  *     summary: Add a movie to the "Watch Later" list
  *     description: Adds a movie to the user's "Watch Later" list. If the movie does not exist in the user's list, it is inserted.
@@ -815,5 +817,5 @@ router.post('/updaterating', protect_1.verifyToken, rateLimiter_1.actionButtonLi
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/addtowatchlater', protect_1.verifyToken, rateLimiter_1.actionButtonLimiter, movieController_1.addToWatchLater);
+router.post('/addtowatchlater', authToken_1.verifyToken, rateLimiter_1.actionButtonLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, movieController_1.addToWatchLater);
 exports.default = router;

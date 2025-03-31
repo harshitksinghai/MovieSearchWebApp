@@ -15,6 +15,7 @@ import { updateCurrentUserDetails } from '@/features/auth/authSlice';
 import { useEffect } from 'react';
 import { useCustomTheme, themePalettes } from '../context/CustomThemeProvider';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 interface ProfilePopupProps {
     open: boolean;
@@ -96,6 +97,8 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
             actions.setSubmitting(false);
             handleClose();
+            toast.success(t('profile.toastSuccess'))
+
         },
     });
 

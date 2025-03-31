@@ -23,14 +23,18 @@
         "fetchFailed": "Failed to load movies. Please try again later.",
         "fillSearch": "Enter a title, year or type to search",
         "somethingWentWrong": "Something went wrong.",
-        "movieNotFound": "Movie not found!"
+        "movieNotFound": "Movie not found!",
+        "ratingOptimisticFailed": "Unable to update rating, please try again later.",
+        "watchLaterOptimisticFailed": "Unable to add to watch later, please try again later"
     },
     "card":{
         "dislikeTooltip": "Not for me",
         "likeTooltip": "I like this",
         "loveTooltip": "Love this!",
         "addWatchLaterTooltip": "Add to Watch Later",
-        "removeWatchLaterTooltip": "Remove from Watch Later"
+        "removeWatchLaterTooltip": "Remove from Watch Later",
+        "signInToRate": "Please sign in to rate",
+        "signInToAddToWatchLater": "Please sign in to add to watch later"
     },
     "fav":{
         "fav": "Favourites",
@@ -142,7 +146,8 @@
         "dobAtleastEight": "You must be at least 8 years old",
         "phRequired": "Phone number is required",
         "invalidPh": "Invalid phone number",
-        "phTen": "Phone number must be 10 digits long"
+        "phTen": "Phone number must be 10 digits long",
+        "toastSuccess": "Profile updated successfully."
     },
     "loading...": "Loading...",
     "authError": "Authentication error: "

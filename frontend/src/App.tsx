@@ -9,6 +9,7 @@ import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSli
 import { addUserIdInDB, fetchCurrentUserDetails } from './features/auth/authSlice.ts';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Toaster } from 'sonner';
 
 const AUTH_COGNITO_CLIENT_ID = import.meta.env.VITE_AUTH_COGNITO_CLIENT_ID;
 const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;
@@ -88,6 +89,7 @@ function App() {
         <main style={{ flex: '1 0 auto' }}>
           <Outlet />
         </main>
+        <Toaster richColors position='bottom-right' />
         <Footer />
       </div>
       </CustomThemeProvider>

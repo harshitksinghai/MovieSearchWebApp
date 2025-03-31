@@ -6,7 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const userController_1 = require("../controllers/userController");
 const rateLimiter_1 = require("../middlewares/rateLimiter");
-const protect_1 = require("../middlewares/protect");
+const authToken_1 = require("../middlewares/authToken");
+const dataInTransitEncryption_1 = require("../middlewares/dataInTransitEncryption");
+const encryptResponseForRoute_1 = require("../middlewares/encryptResponseForRoute");
 const router = express_1.default.Router();
 /**
  * @swagger
@@ -51,7 +53,7 @@ const router = express_1.default.Router();
  */
 /**
  * @swagger
- *  /users/details:
+ *  /api/users/details:
  *   post:
  *     summary: Fetch user details by userId
  *     tags: [Users]
@@ -108,10 +110,10 @@ const router = express_1.default.Router();
  *                   type: boolean
  *                   example: false
  */
-router.post('/details', protect_1.verifyToken, userController_1.getUserDetails);
+router.post('/details', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.getUserDetails);
 /**
  * @swagger
- *  /users/updateDetails:
+ *  /api/users/updateDetails:
  *   post:
  *     summary: Update user details
  *     tags: [Users]
@@ -184,10 +186,10 @@ router.post('/details', protect_1.verifyToken, userController_1.getUserDetails);
  *       500:
  *         description: Internal server error
  */
-router.post('/updateDetails', protect_1.verifyToken, rateLimiter_1.updateProfileRateLimiter, userController_1.updateUserDetails);
+router.post('/updateDetails', authToken_1.verifyToken, rateLimiter_1.updateProfileRateLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.updateUserDetails);
 /**
  * @swagger
- * /users/addUser:
+ * /api/users/addUser:
  *   post:
  *     summary: Add a new user
  *     tags: [Users]
@@ -256,5 +258,5 @@ router.post('/updateDetails', protect_1.verifyToken, rateLimiter_1.updateProfile
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/addUser', protect_1.verifyToken, userController_1.addUserIdInDB);
+router.post('/addUser', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.addUserIdInDB);
 exports.default = router;

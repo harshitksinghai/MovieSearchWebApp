@@ -1,7 +1,9 @@
 import express from "express";
 import { addUserIdInDB, getUserDetails, updateUserDetails } from "../controllers/userController";
 import { updateProfileRateLimiter } from "../middlewares/rateLimiter";
-import { verifyToken } from "../middlewares/protect";
+import { verifyToken } from "../middlewares/authToken";
+import { decryptRequest } from "../middlewares/dataInTransitEncryption";
+import { encryptResponseForRoute } from "../middlewares/encryptResponseForRoute";
 
 const router = express.Router();
 
@@ -107,7 +109,7 @@ const router = express.Router();
  *                   type: boolean
  *                   example: false
  */
-router.post('/details', verifyToken, getUserDetails);
+router.post('/details', verifyToken, decryptRequest, encryptResponseForRoute ,getUserDetails);
 
 /**
  * @swagger
@@ -184,7 +186,7 @@ router.post('/details', verifyToken, getUserDetails);
  *       500:
  *         description: Internal server error
  */
-router.post('/updateDetails', verifyToken, updateProfileRateLimiter, updateUserDetails);
+router.post('/updateDetails', verifyToken, updateProfileRateLimiter, decryptRequest, encryptResponseForRoute, updateUserDetails);
 
 /**
  * @swagger
@@ -257,7 +259,7 @@ router.post('/updateDetails', verifyToken, updateProfileRateLimiter, updateUserD
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/addUser', verifyToken, addUserIdInDB);
+router.post('/addUser', verifyToken, decryptRequest, encryptResponseForRoute, addUserIdInDB);
 
 
 

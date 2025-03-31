@@ -18,13 +18,12 @@ const MODE = process.env.MODE || "development";
 const CLIENT_URL = MODE === "production"
     ? process.env.CLIENT_URL_PROD
     : process.env.CLIENT_URL_DEV;
-const SERVER_URL = MODE === "production"
-    ? process.env.SERVER_URL_PROD
-    : process.env.SERVER_URL_DEV;
 const corsOptions = {
     origin: CLIENT_URL,
     optionsSuccessStatus: 200,
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-encrypted-key'],
+    exposedHeaders: ['x-encrypted-key']
 };
 const options = {
     definition: {
@@ -51,8 +50,12 @@ const options = {
         ],
         servers: [
             {
-                url: `${SERVER_URL}/api`,
-                description: "Main API server"
+                url: `${process.env.SERVER_URL_DEV}`,
+                description: "Development Server"
+            },
+            {
+                url: `${process.env.SERVER_URL_PROD}`,
+                description: "Production Server"
             }
         ],
     },

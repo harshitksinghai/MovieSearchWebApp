@@ -51,6 +51,7 @@ function App() {
   
   useEffect(() => {
     if (userId) {
+      console.log("if userId -> inside")
       dispatch(fetchMyListState(userId)).finally(() => {
         dispatch(fetchHomeListStates());
       });

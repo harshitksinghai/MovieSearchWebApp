@@ -31,7 +31,7 @@ export const fetchOrAddUser = createAsyncThunk(
         success: boolean;
         userDetails: UserDetailsItem;
       }>(dbFetchUrl, { userId });
-    return dbResponse.data.userDetails
+    return {userDetails: dbResponse.data.userDetails, userId}
   }
 );
 
@@ -65,7 +65,8 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchOrAddUser.fulfilled, (state, action) => {
-        state.userDetails = action.payload; 
+        state.userDetails = action.payload.userDetails; 
+        state.userId = action.payload.userId;
         console.log("authSlice => fetchOrAddUser.fulfilled => userDetails: ", state.userDetails);
       })
       .addCase(updateCurrentUserDetails.fulfilled, (state, action) => {

@@ -65,18 +65,17 @@ authAxios.interceptors.request.use(
 
 authAxios.interceptors.response.use(
   (response) => {
-    console.log("authAxios interceptors response")
-    console.log("response.headers['x-encrypted-key'] outside: ", response.headers['x-encrypted-key'])
-    console.log("response.data.encryptedData outside: ", response.data?.encryptedData);
+    // console.log("authAxios interceptors response")
+    // console.log("response.headers['x-encrypted-key'] outside: ", response.headers['x-encrypted-key'])
+    // console.log("response.data.encryptedData outside: ", response.data?.encryptedData);
     if (response.data?.encryptedData && response.headers['x-encrypted-key']) {
-      console.log("in here buddy")
       const encryptedData = response.data.encryptedData;
-      console.log("response.data.encryptedData: ", encryptedData);
+      // console.log("response.data.encryptedData: ", encryptedData);
       const encryptedAesKey = response.headers['x-encrypted-key'];
-      console.log("response.headers['x-encrypted-key': ", encryptedAesKey);
+      // console.log("response.headers['x-encrypted-key': ", encryptedAesKey);
 
       response.data = decryptResponse(encryptedData, encryptedAesKey);
-      console.log("response.data decrypted: ", response.data);
+      // console.log("response.data decrypted: ", response.data);
     }
     
     return response;

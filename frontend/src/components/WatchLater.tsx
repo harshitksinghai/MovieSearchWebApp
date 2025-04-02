@@ -1,14 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import ShowSavedList from './ShowSavedList.tsx';
 import { Box, Typography } from '@mui/material';
-import { useAppSelector } from '../app/hooks.ts';
-import { filterWatchLater } from '../features/filter/filterSlice.ts';
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
+import { useFilteredWatchLater } from '@/hooks/useFilteredWatchLater.tsx';
 
 const WatchLater = () => {
   console.log("Inside WatchLater.tsx");
 
   const {t} = useTranslation();
+  const { filteredList, loading } = useFilteredWatchLater();
+
 
     const { currentTheme, darkMode } = useCustomTheme();
               const getCurrentPalette = () => {
@@ -17,8 +18,6 @@ const WatchLater = () => {
               };
             
               const currentPalette = getCurrentPalette();
-
-  const filteredMovieList = useAppSelector(filterWatchLater);
 
   return (
     <Box>
@@ -35,7 +34,7 @@ const WatchLater = () => {
       >
         {t('watchLater.watchLater')}
       </Typography>
-      <ShowSavedList filteredList={filteredMovieList} />
+      <ShowSavedList filteredList={filteredList} loading={loading} />
     </Box>
   )
 }

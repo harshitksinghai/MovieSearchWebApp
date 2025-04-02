@@ -16,7 +16,7 @@ interface FilterState {
 const initialState: FilterState = {
   fav_activeType: "",
   fav_activeRating: "none",
-  loading: true,
+  loading: false,
   error: null,
 };
 
@@ -78,7 +78,6 @@ export const filterFavourites = createSelector(
   [selectMyList, selectFavActiveType, selectFavActiveRating],
   (list: MovieDetailsItem[], activeType: string, activeRating: string) => {
     console.log("myListState: ", list);
-    
 
     let filtered = list.filter((movie) => movie.addToWatchedList !== null);
     if (activeType !== "") {

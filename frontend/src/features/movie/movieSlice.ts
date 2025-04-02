@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  MovieApiItem,
-  MovieDbItem,
   MovieDetailsItem,
 } from "../../types/movieTypes";
 import { RootState } from "../../app/store";
@@ -17,6 +15,8 @@ interface MovieState {
   romanceListState: MovieDetailsItem[];
   error: string | null;
   loading: boolean;
+  myListLoading: boolean;
+  homeListLoading: boolean;
 }
 
 const initialState: MovieState = {
@@ -26,7 +26,9 @@ const initialState: MovieState = {
   comedyListState: [],
   romanceListState: [],
   error: null,
-  loading: false
+  loading: false,
+  myListLoading: false,
+  homeListLoading: false
 };
 
 export const fetchMyListState = createAsyncThunk(
@@ -35,50 +37,14 @@ export const fetchMyListState = createAsyncThunk(
     if(!userId){
       return [];
     }
-    // Fetch from db
-    const dbFetchUrl = '/movies/getlist';
-    const dbResponses = await authAxios.post<{
+    
+    // Single API call to get movie list with details
+    const response = await authAxios.post<{
       success: boolean;
-      movieList: MovieDbItem[];
-    }>(dbFetchUrl, { userId });
-    const dbMovies = dbResponses.data.movieList;
-
-    // Fetch from OMDB api by imdbId
-    const omdbApiUrl = '/movies/imdbid';
-    const omdbRequests = dbMovies.map((movie: MovieDbItem) =>
-      publicAxios.post<{ success: boolean; movie: MovieApiItem }>(omdbApiUrl, {
-        imdbID: movie.imdbID,
-      })
-    );
-    const omdbResponses = await Promise.all(omdbRequests);
-
-    // Get combined list
-    const fetchedMyList: MovieDetailsItem[] = dbMovies.map((dbMovie, index) => {
-      const apiData = omdbResponses[index].data.movie;
-      return {
-        ...dbMovie,
-        Title: apiData.Title,
-        Year: apiData.Year,
-        Rated: apiData.Rated,
-        Released: apiData.Released,
-        Runtime: apiData.Runtime,
-        Genre: apiData.Genre,
-        Director: apiData.Director,
-        Writer: apiData.Writer,
-        Actors: apiData.Actors,
-        Plot: apiData.Plot,
-        Language: apiData.Language,
-        Country: apiData.Country,
-        Awards: apiData.Awards,
-        Poster: apiData.Poster,
-        Ratings: apiData.Ratings,
-        Metascore: apiData.Metascore,
-        imdbRating: apiData.imdbRating,
-        imdbVotes: apiData.imdbVotes,
-        totalSeasons: apiData.totalSeasons
-      };
-    });
-    return fetchedMyList;
+      movieList: MovieDetailsItem[];
+    }>('/movies/getlistwithdetails', { userId });
+    
+    return response.data.movieList;
   }
 );
 
@@ -380,17 +346,18 @@ const movieSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMyListState.pending, (state) => {
-        state.loading = true;
+        state.myListLoading = true;
         state.error = null;
-        console.log("movieSlice => fetchMyListState.pending => loading: ", state.loading);
+        console.log("movieSlice => fetchMyListState.pending => myListLoading: ", state.myListLoading);
       })
       .addCase(fetchMyListState.fulfilled, (state, action) => {
         state.myListState = action.payload;
-        state.loading = false;
+        state.myListLoading = false;
         state.error = null;
         console.log("movieSlice => fetchMyListState.fulfilled => myListState: ", state.myListState);
       })
       .addCase(fetchMyListState.rejected, (state, action) => {
+        state.myListLoading = false;
         state.error =
           action.error.message ||
           "Something went wrong. Please try again later.";
@@ -402,7 +369,8 @@ const movieSlice = createSlice({
 
       .addCase(fetchHomeListStates.pending, (state) => {
         state.error = null;
-        state.loading = true;
+        state.homeListLoading = true;
+        console.log("movieSlice => fetchHomeListStates.pending => homeListLoading: ", state.homeListLoading);
       })
       .addCase(fetchHomeListStates.fulfilled, (state, action) => {
         state.trendingListState = action.payload.trending;
@@ -410,11 +378,16 @@ const movieSlice = createSlice({
         state.comedyListState = action.payload.comedy;
         state.romanceListState = action.payload.romance;
         state.error = null;
-        state.loading = false;
+        state.homeListLoading = false;
+        console.log("movieSlice => fetchHomeListStates.fulfilled => trending: ", state.trendingListState);
       })
       .addCase(fetchHomeListStates.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to fetch movie lists';
-        state.loading = false;
+        state.homeListLoading = false;
+        console.log(
+          "movieSlice => fetchHomeListStates.rejected => Failed to populate home list states, got error: ",
+          state.error
+        );
       })
 
       .addCase(syncFromMyList.pending, (state) => {

@@ -2,12 +2,12 @@ import express from "express";
 import { 
   fetchMovieByImdbId, 
   searchMovies, 
-  getMovieList,
   removeFromWatchedList,
   removeFromWatchLater,
   updateRating,
   addToWatchLater,
-  fetchMovieByTitle
+  fetchMovieByTitle,
+  getMovieListWithDetails
 } from "../controllers/movieController";
 import { actionButtonLimiter, searchRateLimiter } from "../middlewares/rateLimiter";
 import { verifyToken } from "../middlewares/authToken";
@@ -397,87 +397,7 @@ router.post('/title', fetchMovieByTitle);
 
 // Movie list management routes
 
-/**
- * @swagger
- *  /api/movies/getlist:
- *   post:
- *     summary: Retrieve the user's movie list
- *     description: Fetches the list of movies associated with a user, including their watch status and rating.
- *     tags: [Movies]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userId:
- *                 type: string
- *                 description: Unique user identifier
- *             required:
- *               - userId
- *             example:
- *               userId: "user12345"
- *     responses:
- *       200:
- *         description: Successfully retrieved the movie list
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 movieList:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       imdbID:
- *                         type: string
- *                         description: IMDb ID of the movie
- *                         example: "tt0773262"
- *                       addToWatchedList:
- *                         type: boolean
- *                         description: Indicates if the movie is in the watched list
- *                         example: true
- *                       addToWatchLater:
- *                         type: boolean
- *                         description: Indicates if the movie is in the watch later list
- *                         example: false
- *                       ratingState:
- *                         type: integer
- *                         description: User's rating for the movie (if available)
- *                         example: 4
- *                       Type:
- *                         type: string
- *                         description: The type of content (movie, series, etc.)
- *                         example: "series"
- *       400:
- *         description: Missing userId in the request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *       500:
- *         description: Internal server error (Failed to fetch movie list)
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- */
-router.post('/getlist', verifyToken, decryptRequest, encryptResponseForRoute, getMovieList);
+router.post('/getlistwithdetails', verifyToken, decryptRequest, encryptResponseForRoute, getMovieListWithDetails);
 
 /**
  * @swagger

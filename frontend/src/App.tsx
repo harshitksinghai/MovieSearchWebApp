@@ -4,9 +4,9 @@ import { CustomThemeProvider } from '../src/context/CustomThemeProvider.tsx'
 import Footer from './components/Footer.tsx'
 import { useEffect, useState } from "react";
 import { useAuth, hasAuthParams } from "react-oidc-context";
-import { useAppDispatch, useAppSelector } from "./app/hooks.ts";
+import { useAppDispatch } from "./app/hooks.ts";
 import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSlice.ts";
-import { addUserIdInDB, fetchCurrentUserDetails } from './features/auth/authSlice.ts';
+import { fetchOrAddUser } from './features/auth/authSlice.ts';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'sonner';
@@ -18,7 +18,6 @@ function App() {
   const auth = useAuth();
   const {t} = useTranslation();
   const dispatch = useAppDispatch();
-  const userId = useAppSelector((state) => state.auth.userId);
 
   const [hasTriedSignin, setHasTriedSignin] = useState(false);
 
@@ -37,29 +36,18 @@ function App() {
   }, [auth, hasTriedSignin]);
 
   useEffect(() => {
-    // Set user ID when authenticated
+    console.log("auth.isLoading: ", auth.isLoading );
+    if (auth.isLoading) return;
     if (auth.isAuthenticated && auth.user?.profile.email) {
-      dispatch(addUserIdInDB(auth.user.profile.email))
-        .unwrap()
-        .then(() => {
-          if(auth.user?.profile.email){
-            dispatch(fetchCurrentUserDetails(auth.user.profile.email));
-          }
-      })
-    }
-  }, [auth.isAuthenticated, auth.user, dispatch]);
-  
-  useEffect(() => {
-    if (userId) {
-      console.log("if userId -> inside")
-      dispatch(fetchMyListState(userId)).finally(() => {
+      dispatch(fetchOrAddUser(auth.user.profile.email));
+      dispatch(fetchMyListState(auth.user.profile.email)).unwrap().finally(() => {
         dispatch(fetchHomeListStates());
       });
-    } else{
+    }
+    else{
       dispatch(fetchHomeListStates());
     }
-    
-  }, [dispatch, userId]);
+  }, [auth.isAuthenticated, auth.user, dispatch]);
 
   if (auth.isLoading) {
     return (

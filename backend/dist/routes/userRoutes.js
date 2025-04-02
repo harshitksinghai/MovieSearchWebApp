@@ -110,7 +110,7 @@ const router = express_1.default.Router();
  *                   type: boolean
  *                   example: false
  */
-router.post('/details', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.getUserDetails);
+router.post('/details', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.fetchOrAddUser);
 /**
  * @swagger
  *  /api/users/updateDetails:
@@ -187,76 +187,4 @@ router.post('/details', authToken_1.verifyToken, dataInTransitEncryption_1.decry
  *         description: Internal server error
  */
 router.post('/updateDetails', authToken_1.verifyToken, rateLimiter_1.updateProfileRateLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.updateUserDetails);
-/**
- * @swagger
- * /api/users/addUser:
- *   post:
- *     summary: Add a new user
- *     tags: [Users]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - userId
- *             properties:
- *               userId:
- *                 type: string
- *                 description: The unique identifier of the user
- *     responses:
- *       200:
- *         description: User added successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *       400:
- *         description: Missing userId in request body
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Missing userId"
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Invalid or unauthorized token"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Internal server error"
- */
-router.post('/addUser', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.addUserIdInDB);
 exports.default = router;

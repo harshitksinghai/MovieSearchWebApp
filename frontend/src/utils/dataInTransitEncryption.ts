@@ -58,7 +58,7 @@ const decryptData = (encryptedData: string, aesKey: string): any => {
     
     // Parse decrypted JSON string
     const decryptedString = decipher.output.toString();
-    console.log("decryptData success => decrypted data: ", decryptedString);
+    // console.log("decryptData success => decrypted data: ", decryptedString);
     return JSON.parse(decryptedString);
   } catch (error) {
     console.error('Decryption error:', error);
@@ -100,7 +100,7 @@ const decryptAESKey = (encryptedAesKey: string): string => {
     
     // Return hex encoded key
     const decryptedAESKey = forge.util.bytesToHex(decryptedBytes);
-    console.log("decryptedAESKey: ", decryptedAESKey);
+    // console.log("decryptedAESKey: ", decryptedAESKey);
     return decryptedAESKey;
   } catch (error) {
     console.error('AES key decryption error:', error);
@@ -115,7 +115,7 @@ export const encryptRequest = (data: any): {
 } => {
   try {
     const aesKey = generateAESKey();
-    console.log('Generated AES key (FE):', aesKey);
+    // console.log('Generated AES key (FE):', aesKey);
     
     const encryptedData = encryptData(data, aesKey);
     const encryptedAesKey = encryptAESKey(aesKey);
@@ -140,7 +140,7 @@ export const decryptResponse = (
 ): any => {
   try {
     const aesKey = decryptAESKey(encryptedAesKey);
-    console.log('Decrypted AES key (FE):', aesKey);
+    // console.log('Decrypted AES key (FE):', aesKey);
     
     const decryptedData = decryptData(encryptedData, aesKey);
     return decryptedData;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.getMovieList = exports.fetchMovieByTitle = exports.fetchMovieByImdbId = exports.searchMovies = void 0;
+exports.addToWatchLater = exports.updateRating = exports.removeFromWatchLater = exports.removeFromWatchedList = exports.fetchMovieByTitle = exports.getMovieListWithDetails = exports.fetchMovieByImdbId = exports.getMovieDetailsFromOMDB = exports.searchMovies = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -65,6 +65,22 @@ exports.searchMovies = (0, express_async_handler_1.default)((req, res) => __awai
         });
     }
 }));
+// utility
+const getMovieDetailsFromOMDB = (imdbID) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const url = `${API_URL}?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
+        const response = yield axios_1.default.get(url);
+        if (response.data.Response === "True") {
+            return response.data;
+        }
+        return null;
+    }
+    catch (error) {
+        console.error("OMDB API Error:", error);
+        return null;
+    }
+});
+exports.getMovieDetailsFromOMDB = getMovieDetailsFromOMDB;
 exports.fetchMovieByImdbId = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { imdbID } = req.body;
     if (!imdbID) {
@@ -75,13 +91,11 @@ exports.fetchMovieByImdbId = (0, express_async_handler_1.default)((req, res) => 
         return;
     }
     try {
-        const url = `${API_URL}?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
-        // console.log('Backend IMDB ID Request URL:', url);
-        const response = yield axios_1.default.get(url);
-        if (response.data.Response === "True") {
+        const movieData = yield (0, exports.getMovieDetailsFromOMDB)(imdbID);
+        if (movieData) {
             res.json({
                 success: true,
-                movie: response.data,
+                movie: movieData,
             });
         }
         else {
@@ -96,6 +110,52 @@ exports.fetchMovieByImdbId = (0, express_async_handler_1.default)((req, res) => 
         res.status(500).json({
             success: false,
             error: "Failed to fetch movie details",
+        });
+    }
+}));
+exports.getMovieListWithDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.body.userId;
+    if (!userId) {
+        res.status(400).json({
+            success: false,
+            message: "User ID is required"
+        });
+        return;
+    }
+    const hashedUserId = crypto_1.default
+        .createHash("sha256")
+        .update(userId + SALT)
+        .digest("hex");
+    try {
+        const dbResult = yield db_1.default.query(`SELECT "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type" 
+         FROM "movieList_YN100"
+         WHERE "userId" = $1`, [hashedUserId]);
+        const dbMovies = dbResult.rows;
+        if (dbMovies.length === 0) {
+            res.json({
+                success: true,
+                movieList: []
+            });
+            return;
+        }
+        const movieDetailsPromises = dbMovies.map((movie) => __awaiter(void 0, void 0, void 0, function* () {
+            const apiData = yield (0, exports.getMovieDetailsFromOMDB)(movie.imdbID);
+            if (apiData) {
+                return Object.assign(Object.assign({}, movie), { Title: apiData.Title, Year: apiData.Year, Rated: apiData.Rated, Released: apiData.Released, Runtime: apiData.Runtime, Genre: apiData.Genre, Director: apiData.Director, Writer: apiData.Writer, Actors: apiData.Actors, Plot: apiData.Plot, Language: apiData.Language, Country: apiData.Country, Awards: apiData.Awards, Poster: apiData.Poster, Ratings: apiData.Ratings, Metascore: apiData.Metascore, imdbRating: apiData.imdbRating, imdbVotes: apiData.imdbVotes, totalSeasons: apiData.totalSeasons });
+            }
+            return movie;
+        }));
+        const movieListWithDetails = yield Promise.all(movieDetailsPromises);
+        res.json({
+            success: true,
+            movieList: movieListWithDetails
+        });
+    }
+    catch (error) {
+        console.error("Error fetching movie list with details:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch movie list with details"
         });
     }
 }));
@@ -130,36 +190,6 @@ exports.fetchMovieByTitle = (0, express_async_handler_1.default)((req, res) => _
         res.status(500).json({
             success: false,
             error: "Failed to fetch movie details",
-        });
-    }
-}));
-exports.getMovieList = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
-    const userId = req.body.userId;
-    if (!userId) {
-        res.status(400).json({
-            success: false,
-        });
-        return;
-    }
-    const hashedUserId = crypto_1.default
-        .createHash("sha256")
-        .update(userId + SALT)
-        .digest("hex");
-    try {
-        const result = yield db_1.default.query(`SELECT "imdbID", "addToWatchedList", "addToWatchLater", "ratingState", "Type" 
-   FROM "movieList_YN100"
-   WHERE "userId" = $1`, // Using hashed userId for lookup
-        [hashedUserId]);
-        res.json({
-            success: true,
-            movieList: result.rows,
-        });
-    }
-    catch (error) {
-        console.error("Error fetching list:", error);
-        res.status(500).json({
-            success: false,
         });
     }
 }));

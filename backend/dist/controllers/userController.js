@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addUserIdInDB = exports.updateUserDetails = exports.getUserDetails = void 0;
+exports.fetchOrAddUser = exports.addUserIdInDB = exports.updateUserDetails = exports.getUserDetails = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const db_1 = __importDefault(require("../config/db"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -136,6 +136,56 @@ exports.addUserIdInDB = (0, express_async_handler_1.default)((req, res) => __awa
     }
     catch (error) {
         console.error("Error adding user:", error);
+        res.status(500).json({
+            success: false,
+            error: error.message || "Internal server error",
+        });
+    }
+}));
+exports.fetchOrAddUser = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.body;
+    if (!userId) {
+        res.status(400).json({
+            success: false,
+            error: "userId is required",
+        });
+        return;
+    }
+    const hashedUserId = crypto_1.default.createHash("sha256").update(userId + SALT).digest("hex");
+    try {
+        // First, try to get the user details
+        const result = yield db_1.default.query(`SELECT 
+          pgp_sym_decrypt("firstName"::bytea, $2) AS "firstName",
+          pgp_sym_decrypt("middleName"::bytea, $2) AS "middleName",
+          pgp_sym_decrypt("lastName"::bytea, $2) AS "lastName",
+          pgp_sym_decrypt("dateOfBirth"::bytea, $2) AS "dateOfBirth",
+          pgp_sym_decrypt("phone"::bytea, $2) AS "phone",
+          "updatedAt"
+        FROM "users_YN100"
+        WHERE "userId" = $1`, [hashedUserId, SECRET_KEY]);
+        // If user exists, return the details
+        if (result.rows.length > 0) {
+            console.log("userController => fetchOrAddUser => found existing user");
+            res.json({
+                success: true,
+                userExists: true,
+                userDetails: result.rows[0],
+            });
+            return;
+        }
+        // If user doesn't exist, create the user
+        yield db_1.default.query(`INSERT INTO "users_YN100" ("userId")
+        VALUES ($1)
+        ON CONFLICT ("userId") DO NOTHING`, [hashedUserId]);
+        console.log("userController => fetchOrAddUser => created new user");
+        res.json({
+            success: true,
+            userExists: false,
+            userDetails: null,
+        });
+    }
+    catch (error) {
+        console.error("Error in fetchOrAddUser:", error);
         res.status(500).json({
             success: false,
             error: error.message || "Internal server error",

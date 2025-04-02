@@ -20,10 +20,10 @@ const initialState: AuthState = {
   }
 };
 
-export const fetchCurrentUserDetails = createAsyncThunk(
-  'auth/fetchCurrentUserDetails',
+export const fetchOrAddUser = createAsyncThunk(
+  'auth/fetchOrAddUser',
   async (userId: string) => {
-    console.log("authSlice => fetchCurrentUserDetails asyncThunk => requestBody ", userId);
+    console.log("authSlice => fetchOrAddUser asyncThunk => requestBody ", userId);
 
       const dbFetchUrl = '/users/details';
       
@@ -56,19 +56,6 @@ export const updateCurrentUserDetails = createAsyncThunk(
     }
 )
 
-export const addUserIdInDB = createAsyncThunk(
-  'auth/addUserIdInDB',
-  async (userId: string) => {
-    console.log("authSlice => addUserInDB asyncThunk => requestBody ", userId);
-
-    const dbFetchUrl = '/users/addUser';
-    await authAxios.post<{
-      success: boolean;
-    }>(dbFetchUrl, { userId });
-    return userId;
-  }
-)
-
 export const logout = createAction('auth/logout');
 
 const authSlice = createSlice({
@@ -77,17 +64,13 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCurrentUserDetails.fulfilled, (state, action) => {
+      .addCase(fetchOrAddUser.fulfilled, (state, action) => {
         state.userDetails = action.payload; 
-        console.log("authSlice => fetchCurrentUserDetails.fulfilled => userDetails: ", state.userDetails);
+        console.log("authSlice => fetchOrAddUser.fulfilled => userDetails: ", state.userDetails);
       })
       .addCase(updateCurrentUserDetails.fulfilled, (state, action) => {
         state.userDetails = action.payload;
         console.log("authSlice => updateCurrentUserDetails.fulfilled => userDetails: ", state.userDetails);
-      })
-      .addCase(addUserIdInDB.fulfilled, (state, action) => {
-        state.userId = action.payload;
-        console.log("authSlice => addUserIdInDB.fulfilled => userId: ", state.userId);
       })
       .addCase(logout, () => {
         return initialState;

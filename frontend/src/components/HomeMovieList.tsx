@@ -32,7 +32,7 @@ const HomeMovieList: React.FC = () => {
     const thrillerList = useAppSelector((state) => state.movie.thrillerListState);
     const comedyList = useAppSelector((state) => state.movie.comedyListState);
     const romanceList = useAppSelector((state) => state.movie.romanceListState);
-    const loading = useAppSelector((state) => state.movie.loading);
+    const loading = useAppSelector((state) => state.movie.homeListLoading);
 
       const { currentTheme, darkMode } = useCustomTheme();
       const getCurrentPalette = () => {

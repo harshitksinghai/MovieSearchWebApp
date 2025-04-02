@@ -2,18 +2,16 @@ import MovieCard from './MovieCard';
 import { useTranslation } from 'react-i18next';
 import { Box, Skeleton, Typography } from "@mui/material";
 import { MovieDetailsItem } from '../types/movieTypes.ts';
-import { useAppDispatch, useAppSelector } from '../app/hooks.ts';
-import { useEffect } from 'react';
-import { filtersApplied } from '../features/filter/filterSlice.ts';
+import { useAppSelector } from '../app/hooks.ts';
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
 
 interface ShowSavedListProps {
   filteredList: MovieDetailsItem[];
+  loading: boolean;
 }
 
-const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
+const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList, loading }) => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -23,18 +21,7 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
   
   const currentPalette = getCurrentPalette();
 
-  const loading = useAppSelector((state) => state.filter.loading);
   const error = useAppSelector((state) => state.filter.error);
-
-  useEffect(() => {
-    if (loading) { 
-      const timer = setTimeout(() => {
-        dispatch(filtersApplied());
-      }, 3600);
-  
-      return () => clearTimeout(timer);
-    }
-  }, [loading, dispatch]);
 
   if (error) {
     return (
@@ -86,7 +73,7 @@ const ShowSavedList: React.FC<ShowSavedListProps> = ({ filteredList }) => {
     );
   }
 
-  if (filteredList.length === 0) {
+  if (!loading && filteredList.length === 0) {
     return (
       <Typography
         sx={{

@@ -1,28 +1,27 @@
-
 import FavListFilter from './FavListFilter.tsx'
 import { useTranslation } from 'react-i18next';
 import ShowSavedList from './ShowSavedList.tsx'
 import { Box, Typography } from '@mui/material';
-import { useAppSelector } from '../app/hooks.ts';
-import { filterFavourites } from '../features/filter/filterSlice.ts';
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
-
+import { useFilteredFavorites } from '@/hooks/useFilteredFavourites.tsx';
 
 const Favourites = () => {
   console.log("Inside Favourites.tsx");
-
   const { t } = useTranslation();
+  const { filteredList, loading } = useFilteredFavorites();
+
 
   const { currentTheme, darkMode } = useCustomTheme();
-            const getCurrentPalette = () => {
-              const palette = themePalettes[currentTheme];
-              return darkMode ? palette.dark : palette.light;
-            };
-          
-            const currentPalette = getCurrentPalette();
+  const getCurrentPalette = () => {
+    const palette = themePalettes[currentTheme];
+    return darkMode ? palette.dark : palette.light;
+  };
+  
+  const currentPalette = getCurrentPalette();
 
-  const filteredMovieList = useAppSelector(filterFavourites);
-  console.log("Favourites.tsx => filteredFav output from filterFavourites selector", filteredMovieList)
+  
+  console.log("Favourites.tsx => filteredFav output from filterFavourites selector", filteredList)
+  
   return (
     <Box>
       <Typography
@@ -41,7 +40,7 @@ const Favourites = () => {
       <Box sx={{ mt: '10px' }}>
         <FavListFilter />
       </Box>
-      <ShowSavedList filteredList={filteredMovieList} />
+      <ShowSavedList filteredList={filteredList} loading={loading}/>
     </Box>
   )
 }

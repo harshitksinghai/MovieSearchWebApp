@@ -64,7 +64,8 @@
         "director": "Director",
         "cast": "Cast",
         "language": "Languages",
-        "ratings": "Rating"
+        "ratings": "Rating",
+        "boxOffice": "Box Office Collection:"
     },
     "footer":{
         "message": " All Rights Reserved"

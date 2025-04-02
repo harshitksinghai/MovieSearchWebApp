@@ -141,7 +141,7 @@ exports.getMovieListWithDetails = (0, express_async_handler_1.default)((req, res
         const movieDetailsPromises = dbMovies.map((movie) => __awaiter(void 0, void 0, void 0, function* () {
             const apiData = yield (0, exports.getMovieDetailsFromOMDB)(movie.imdbID);
             if (apiData) {
-                return Object.assign(Object.assign({}, movie), { Title: apiData.Title, Year: apiData.Year, Rated: apiData.Rated, Released: apiData.Released, Runtime: apiData.Runtime, Genre: apiData.Genre, Director: apiData.Director, Writer: apiData.Writer, Actors: apiData.Actors, Plot: apiData.Plot, Language: apiData.Language, Country: apiData.Country, Awards: apiData.Awards, Poster: apiData.Poster, Ratings: apiData.Ratings, Metascore: apiData.Metascore, imdbRating: apiData.imdbRating, imdbVotes: apiData.imdbVotes, totalSeasons: apiData.totalSeasons });
+                return Object.assign(Object.assign({}, movie), { Title: apiData.Title, Year: apiData.Year, Rated: apiData.Rated, Released: apiData.Released, Runtime: apiData.Runtime, Genre: apiData.Genre, Director: apiData.Director, Writer: apiData.Writer, Actors: apiData.Actors, Plot: apiData.Plot, Language: apiData.Language, Country: apiData.Country, Awards: apiData.Awards, Poster: apiData.Poster, Ratings: apiData.Ratings, Metascore: apiData.Metascore, imdbRating: apiData.imdbRating, imdbVotes: apiData.imdbVotes, totalSeasons: apiData.totalSeasons, BoxOffice: apiData.BoxOffice });
             }
             return movie;
         }));

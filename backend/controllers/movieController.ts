@@ -220,7 +220,8 @@ export const getMovieListWithDetails = asyncHandler(
             Metascore: apiData.Metascore,
             imdbRating: apiData.imdbRating,
             imdbVotes: apiData.imdbVotes,
-            totalSeasons: apiData.totalSeasons
+            totalSeasons: apiData.totalSeasons,
+            BoxOffice: apiData.BoxOffice
           };
         }
         

@@ -25,6 +25,7 @@ export interface MovieApiItem {
   imdbRating: string;
   imdbVotes: string;
   totalSeasons?: string;
+  BoxOffice?: string;
 }
 
 export interface MovieDetailsItem extends MovieApiItem, MovieDbItem {}

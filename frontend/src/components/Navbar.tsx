@@ -49,7 +49,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
     setProfilePopupOpen(false);
   }, []);
 
-  const handleNavLinkClick = () => {
+  const handleNavLinkClick = (): void => {
     dispatch(setSearchState(false));
     dispatch(setError(null));
     dispatch(resetSearchBox());

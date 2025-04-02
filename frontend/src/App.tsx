@@ -40,9 +40,8 @@ function App() {
     if (auth.isLoading) return;
     if (auth.isAuthenticated && auth.user?.profile.email) {
       dispatch(fetchOrAddUser(auth.user.profile.email));
-      dispatch(fetchMyListState(auth.user.profile.email)).unwrap().finally(() => {
-        dispatch(fetchHomeListStates());
-      });
+      dispatch(fetchMyListState(auth.user.profile.email));
+      dispatch(fetchHomeListStates());
     }
     else{
       dispatch(fetchHomeListStates());

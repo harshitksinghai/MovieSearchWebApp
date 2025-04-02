@@ -37,7 +37,7 @@ const SearchBar = () => {
     if(error){
       toast.error(t(`error.${error}`));
     }
-  })
+  }, [error, t])
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -57,6 +57,10 @@ const SearchBar = () => {
     }
     dispatch(setError(null));
     dispatch(fetchSearchResults({query: query.trim(), year, type}));
+  };
+
+  const handleSearchInputBlur = () => {
+    dispatch(setError(null));
   };
 
   const handleTypeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -164,6 +168,7 @@ const SearchBar = () => {
             dispatch(setError(null));
             dispatch(setSearchParams({query: e.target.value, year, type}));
           }}
+          onBlur={handleSearchInputBlur}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleSearchButton();
@@ -303,6 +308,7 @@ const SearchBar = () => {
 
           <IconButton
             onClick={handleSearchButton}
+            onBlur={handleSearchInputBlur}
             sx={{
               backgroundColor: currentPalette.primary,
               color: currentTheme === 'White' && darkMode ? '#222' : '#fff',

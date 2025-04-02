@@ -11,10 +11,10 @@ i18n
   .init({
     resources: {
       en: { translation: enTranslations },
-      sp: { translation: spTranslations },
+      es: { translation: spTranslations },
       fr: { translation: frTranslations }
     },
-    supportedLngs: ['en', 'sp', 'fr'],
+    supportedLngs: ['en', 'es', 'fr'],
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false

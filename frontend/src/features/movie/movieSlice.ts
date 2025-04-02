@@ -53,7 +53,7 @@ export const fetchHomeListStates = createAsyncThunk(
   async (_, {getState}) => {
     const state = getState() as RootState;
     const myListState = state.movie.myListState;
-
+    console.log("in fetchHomeListStates asyncThunk")
     const myListMap = new Map<string, MovieDetailsItem>();
     myListState.forEach(movie => {
       myListMap.set(movie.Title, movie);
@@ -96,7 +96,8 @@ export const fetchHomeListStates = createAsyncThunk(
               Metascore: apiData.Metascore,
               imdbRating: apiData.imdbRating,
               imdbVotes: apiData.imdbVotes,
-              totalSeasons: apiData.totalSeasons
+              totalSeasons: apiData.totalSeasons,
+              BoxOffice: apiData.BoxOffice
 
             };
           } catch (error) {

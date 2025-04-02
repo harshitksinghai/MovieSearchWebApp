@@ -109,6 +109,8 @@ export const fetchMovieByImdbId = createAsyncThunk(
         Metascore: apiData.Metascore,
         imdbRating: apiData.imdbRating,
         imdbVotes: apiData.imdbVotes,
+        totalSeasons: apiData.totalSeasons,
+        BoxOffice: apiData.BoxOffice
       };
     } catch (err) {
       if (axios.isAxiosError(err)) {

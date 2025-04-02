@@ -27,6 +27,7 @@ import placeholder from "../assets/placeholder1.jpg";
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 import { useAuth } from 'react-oidc-context';
 import { toast } from 'sonner';
+import i18n from '@/i18n/config';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
@@ -43,6 +44,7 @@ const MovieDetails: React.FC = () => {
   const currentPalette = getCurrentPalette();
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.search);
+  const myListState = useAppSelector((state) => state.movie.myListState);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -61,11 +63,11 @@ const MovieDetails: React.FC = () => {
           setIsAddedToWatchLater(result.addToWatchLater ? true : false);
         });
     }
-  }, [imdbID, dispatch]);
+  }, [imdbID, dispatch, myListState]);
 
   const handleRating = (rating: string) => {
     if (!movieResponse) return;
-    if(!auth.isAuthenticated){
+    if (!auth.isAuthenticated) {
       toast(t('card.signInToRate'), {
         action: {
           label: 'Sign In',
@@ -99,7 +101,7 @@ const MovieDetails: React.FC = () => {
 
   const handleAddToWatchLater = () => {
     if (!movieResponse) return;
-    if(!auth.isAuthenticated){
+    if (!auth.isAuthenticated) {
       toast(t('card.signInToAddToWatchLater'), {
         action: {
           label: 'Sign In',
@@ -120,11 +122,36 @@ const MovieDetails: React.FC = () => {
       });
     } else {
       dispatch(addToWatchLater({ imdbID: movieResponse.imdbID, ratingState: ratingState, Type: movieResponse.Type })).unwrap().catch(() => {
-        setIsAddedToWatchLater(currAddedToWatchLater);
+        setIsAddedToWatchLater(currAddedToWatchLater); 
         toast.error(t('error.watchLaterOptimisticFailed'));
       });
     }
   };
+
+  const formatBoxOffice = () => {
+    if(!movieResponse?.BoxOffice) return;
+    const numericValue = parseFloat(movieResponse.BoxOffice.replace(/[^0-9.-]+/g, ""));
+
+    const storedLanguage = localStorage.getItem('i18nextLng') || i18n.language;
+    console.log("language stored: ",storedLanguage)
+   
+    const languageCurrencyMap :any= {
+      'en': { locale: 'en-US', currency: 'USD' },
+      'es': { locale: 'es-ES', currency: 'EUR' },
+      'fr': { locale: 'fr-FR', currency: 'EUR' }
+    };
+   
+    const { locale, currency } = languageCurrencyMap[storedLanguage] ||
+      languageCurrencyMap['en'];
+   
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+      maximumFractionDigits: 2,
+    }).format(numericValue);
+};
+
+
 
   if (loading) {
     return (
@@ -223,8 +250,8 @@ const MovieDetails: React.FC = () => {
             </Box>
 
             {/* Movie Info */}
-            <Box sx={{ 
-              flex: 1, 
+            <Box sx={{
+              flex: 1,
               width: isSmallScreen ? '100%' : 'auto',
               textAlign: isSmallScreen ? 'center' : 'left'
             }}>
@@ -291,14 +318,20 @@ const MovieDetails: React.FC = () => {
                     />
                   ))}
                 </Box>
-              </Box>
 
+
+              </Box>
+              {movieResponse.BoxOffice && (
+                <>
+                  <Typography component="span">{t('movie.boxOffice')} {formatBoxOffice()}</Typography>
+                </>
+              )}
               {/* Action Buttons */}
               <Stack
                 direction="row"
                 spacing={2}
                 sx={{
-                  mt: 0.5,
+                  mt: 2,
                   mb: 3,
                   flexWrap: { xs: 'wrap', sm: 'nowrap' },
                   gap: { xs: 1, sm: 2 },
@@ -325,72 +358,72 @@ const MovieDetails: React.FC = () => {
                   IMDb
                 </Button>
                 {/* {auth.isAuthenticated && ( */}
-                  <>
-                    {/* Rating Container */}
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        bgcolor: currentPalette.background,
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
-                        backdropFilter: 'blur(4px)',
-                        boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`
-                      }}
-                    >
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <ReactionButton
-                          title={t('card.dislikeTooltip')}
-                          state={ratingState === 'dislike'}
-                          onClick={() => handleRating('dislike')}
-                          activeIcon={<FaThumbsDown size={14} />}
-                          inactiveIcon={<FaRegThumbsDown size={14} color={currentPalette.primary} />}
-                        />
+                <>
+                  {/* Rating Container */}
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      bgcolor: currentPalette.background,
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      border: `1px solid ${alpha(currentPalette.textPrimary, 0.1)}`,
+                      backdropFilter: 'blur(4px)',
+                      boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`
+                    }}
+                  >
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <ReactionButton
+                        title={t('card.dislikeTooltip')}
+                        state={ratingState === 'dislike'}
+                        onClick={() => handleRating('dislike')}
+                        activeIcon={<FaThumbsDown size={14} />}
+                        inactiveIcon={<FaRegThumbsDown size={14} color={currentPalette.primary} />}
+                      />
 
-                        <ReactionButton
-                          title={t('card.likeTooltip')}
-                          state={ratingState === 'like'}
-                          onClick={() => handleRating('like')}
-                          activeIcon={<FaThumbsUp size={14} />}
-                          inactiveIcon={<FaRegThumbsUp size={14} color={currentPalette.primary} />}
-                        />
+                      <ReactionButton
+                        title={t('card.likeTooltip')}
+                        state={ratingState === 'like'}
+                        onClick={() => handleRating('like')}
+                        activeIcon={<FaThumbsUp size={14} />}
+                        inactiveIcon={<FaRegThumbsUp size={14} color={currentPalette.primary} />}
+                      />
 
-                        <ReactionButton
-                          title={t('card.loveTooltip')}
-                          state={ratingState === 'love'}
-                          onClick={() => handleRating('love')}
-                          activeIcon={<FaHeart size={14} />}
-                          inactiveIcon={<FaRegHeart size={14} color={currentPalette.primary} />}
-                        />
+                      <ReactionButton
+                        title={t('card.loveTooltip')}
+                        state={ratingState === 'love'}
+                        onClick={() => handleRating('love')}
+                        activeIcon={<FaHeart size={14} />}
+                        inactiveIcon={<FaRegHeart size={14} color={currentPalette.primary} />}
+                      />
 
-                        <Box
-                          sx={{
-                            width: '1px',
-                            height: '25px',
-                            mx: 1,
-                            mt: '2px',
-                            bgcolor: currentPalette.primary,
-                          }}
-                        />
+                      <Box
+                        sx={{
+                          width: '1px',
+                          height: '25px',
+                          mx: 1,
+                          mt: '2px',
+                          bgcolor: currentPalette.primary,
+                        }}
+                      />
 
-                        <ReactionButton
-                          title={isAddedToWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
-                          state={isAddedToWatchLater}
-                          onClick={handleAddToWatchLater}
-                          activeIcon={<MdWatchLater size={18} />}
-                          inactiveIcon={<MdOutlineWatchLater size={18} color={currentPalette.primary} />}
-                        />
-                      </Stack>
-                    </Paper>
-                  </>
+                      <ReactionButton
+                        title={isAddedToWatchLater ? t('card.removeWatchLaterTooltip') : t('card.addWatchLaterTooltip')}
+                        state={isAddedToWatchLater}
+                        onClick={handleAddToWatchLater}
+                        activeIcon={<MdWatchLater size={18} />}
+                        inactiveIcon={<MdOutlineWatchLater size={18} color={currentPalette.primary} />}
+                      />
+                    </Stack>
+                  </Paper>
+                </>
                 {/* )} */}
               </Stack>
 
               {/* Plot Section */}
-              <Box sx={{ 
-                mb: 2,  
+              <Box sx={{
+                mb: 2,
                 boxShadow: `0px 1px 5px ${darkMode ? 'rgba(252, 252, 252, 0.4)' : 'rgba(0, 0, 0, 0.2)'}`,
                 padding: '4px 12px',
                 borderRadius: '8px',
@@ -423,7 +456,7 @@ const MovieDetails: React.FC = () => {
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
                 spacing={2}
-                sx={{ 
+                sx={{
                   mb: 2,
                   alignItems: isSmallScreen ? 'center' : 'stretch'
                 }}
@@ -492,7 +525,7 @@ const MovieDetails: React.FC = () => {
                     direction={{ xs: 'column', sm: 'row' }}
                     flexWrap="wrap"
                     spacing={2}
-                    sx={{ 
+                    sx={{
                       mt: 0.5,
                       justifyContent: isSmallScreen ? 'center' : 'flex-start'
                     }}

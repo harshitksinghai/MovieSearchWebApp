@@ -1,5 +1,5 @@
 import express from "express";
-import { addUserIdInDB, fetchOrAddUser, getUserDetails, updateUserDetails } from "../controllers/userController";
+import { fetchOrAddUser, updateUserDetails } from "../controllers/userController";
 import { updateProfileRateLimiter } from "../middlewares/rateLimiter";
 import { verifyToken } from "../middlewares/authToken";
 import { decryptRequest } from "../middlewares/dataInTransitEncryption";

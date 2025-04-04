@@ -92,6 +92,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const useCustomTheme = (): ThemeContextType => {
+  
   const context = useContext(ThemeContext);
   if (!context) {
     throw new Error('useCustomTheme must be used within a CustomThemeProvider');

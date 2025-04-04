@@ -64,14 +64,14 @@ export const fetchHomeListStates = createAsyncThunk(
       const promises = titles.map(async (title) => {
 
         if (myListMap.has(title)) {
-          return myListMap.get(title)!;
+          return Promise.resolve(myListMap.get(title)!);
         } else {
 
           try {
             const omdbApiUrl = '/movies/title';
             const requestBody = { title };
             const response = await publicAxios.post(omdbApiUrl, requestBody);
-            const apiData = await response.data.movie;
+            const apiData = response.data.movie;
             return {
               addToWatchedList: null,
               addToWatchLater: null,

@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import enTranslations from './translations/en.json';
-import spTranslations from './translations/sp.json';
+import esTranslations from './translations/es.json';
 import frTranslations from './translations/fr.json';
 
 i18n
@@ -11,7 +11,7 @@ i18n
   .init({
     resources: {
       en: { translation: enTranslations },
-      es: { translation: spTranslations },
+      es: { translation: esTranslations },
       fr: { translation: frTranslations }
     },
     supportedLngs: ['en', 'es', 'fr'],
@@ -22,3 +22,6 @@ i18n
   });
 
 export default i18n;
+
+
+

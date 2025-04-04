@@ -148,7 +148,8 @@
         "phRequired": "Phone number is required",
         "invalidPh": "Invalid phone number",
         "phTen": "Phone number must be 10 digits long",
-        "toastSuccess": "Profile updated successfully."
+        "toastSuccess": "Profile updated successfully.",
+        "phNotValid": "Phone number is not valid"
     },
     "loading...": "Loading...",
     "authError": "Authentication error: "

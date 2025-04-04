@@ -1,3 +1,4 @@
+
 export interface UserDetailsItem {
     firstName: string | null;
     middleName: string | null;

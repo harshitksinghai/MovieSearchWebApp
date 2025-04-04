@@ -16,6 +16,8 @@ import { useEffect } from 'react';
 import { useCustomTheme, themePalettes } from '../context/CustomThemeProvider';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { CountryCode, getCountryCallingCode } from 'libphonenumber-js/mobile';
+import PhoneNumInput, { getCountriesData, isValidPhoneNumber, parseFullPhoneNumber } from './PhoneNumInput';
 
 interface ProfilePopupProps {
     open: boolean;
@@ -28,14 +30,18 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
     const { userId, userDetails } = useAppSelector((state) => state.auth);
     console.log("ProfilePopup => userDetails redux store state: ", userDetails)
 
+    const { countryCode, phoneNumber } = userDetails.phone 
+                ? parseFullPhoneNumber(userDetails.phone)
+                : { countryCode: 'IN' as CountryCode, phoneNumber: '' };
+
     const { t } = useTranslation();
+    const countries = getCountriesData();
 
     const { currentTheme, darkMode } = useCustomTheme();
     const getCurrentPalette = () => {
         const palette = themePalettes[currentTheme];
         return darkMode ? palette.dark : palette.light;
     };
-
     const currentPalette = getCurrentPalette();
 
     const isAtLeastEightYearsOld = (dateString: string) => {
@@ -55,27 +61,30 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         lastName: z.string().min(1, t('profile.lastNameRequired')),
         dateOfBirth: z.string()
             .min(1, t('profile.dobRequired'))
-            .refine(isAtLeastEightYearsOld, {
-                message: t('profile.dobAtleastEight'),
-            }),
-        phone: z.string()
-            .min(1, t('profile.phRequired'))
-            .regex(/^[6-9]\d{9}$/, t('profile.invalidPh'))
             .refine(
-                (value) => {
-                    const digits = value.replace(/\D/g, '');
-                    return digits.length === 10;
-                },
-                { message:  t('profile.phTen')}
-            )
+                (value) => isAtLeastEightYearsOld(value), 
+                { message: t('profile.dobAtleastEight') }
+            ),
+        countryCode: z.string().min(1, t('profile.countryCodeRequired')),
+        phoneNumber: z.string()
+            .min(1, t('profile.phRequired'))
     })
+    .refine(
+        (data) => isValidPhoneNumber(data.phoneNumber, data.countryCode as CountryCode),
+        {
+            message: t('profile.phNotValid'),
+            path: ['phoneNumber'] // This specifies which field the error is attached to
+        }
+    );
 
-    const initialValues: UserFormItem = {
+    const initialValues: UserFormItem & { countryCode: CountryCode; phoneNumber: string }= {
         firstName: '',
         middleName: '',
         lastName: '',
         dateOfBirth: '',
-        phone: '',
+        phone: '', // Keep for compatibility with your existing state
+        countryCode: 'IN' as CountryCode, // Default to US
+        phoneNumber: '',
     };
 
     const formik = useFormik({
@@ -89,7 +98,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                     firstName: values.firstName,
                     middleName: values.middleName,
                     lastName: values.lastName,
-                    phone: values.phone,
+                    phone: `+${getCountryCallingCode(values.countryCode)}${values.phoneNumber}`,
                     dateOfBirth: String(values.dateOfBirth)
                 }
             }))
@@ -109,6 +118,8 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
     useEffect(() => {
         if (userDetails && open) {
+            // Parse the existing phone number to extract country code and national number
+                
             formik.resetForm({
                 values: {
                     firstName: userDetails.firstName || '',
@@ -116,10 +127,17 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                     lastName: userDetails.lastName || '',
                     dateOfBirth: userDetails.dateOfBirth ? new Date(userDetails.dateOfBirth).toISOString().split('T')[0] : '',
                     phone: userDetails.phone || '',
+                    countryCode: countryCode || 'IN' as CountryCode,
+                    phoneNumber: phoneNumber || '',
                 }
             });
         }
     }, [userDetails, open]);
+
+    const handlePhoneChange = (value: { countryCode: CountryCode; phoneNumber: string }) => {
+        formik.setFieldValue('countryCode', value.countryCode);
+        formik.setFieldValue('phoneNumber', value.phoneNumber);
+    };
 
     return (
         <>
@@ -133,7 +151,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                 <DialogTitle sx={{ fontWeight: '600', bgcolor: currentPalette.background, color: currentPalette.textPrimary, py: 2 }}>
                     {t('profile.profile')}
                 </DialogTitle>
-                <DialogContent sx={{ position: 'relative', height: 'auto', pb: 8 }}>
+                <DialogContent sx={{ height: 'auto' }}>
                     <form onSubmit={formik.handleSubmit}>
                         <Grid container spacing={2} sx={{ pt: '12px' }}>
                             {/* First row: First name, Middle name, Last name */}
@@ -194,21 +212,24 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
                             {/* Second row: Phone, DOB */}
                             <Grid size={6}>
-                                <TextField
-                                    fullWidth
-                                    id="phone"
-                                    name="phone"
-                                    label={t('profile.phoneNo') + "*"}
-                                    size="small"
-                                    placeholder={userDetails?.phone || "Enter phone number"}
-                                    value={formik.values.phone}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.phone && Boolean(formik.errors.phone)}
-                                    helperText={formik.touched.phone && formik.errors.phone}
-                                    InputLabelProps={{
-                                        style: { color: currentPalette.textPrimary }
+                            <PhoneNumInput
+                                    value={{
+                                        countryCode: formik.values.countryCode,
+                                        phoneNumber: formik.values.phoneNumber
                                     }}
+                                    placeholder={userDetails?.phone || "Enter phone number"}
+                                    onChange={handlePhoneChange}
+                                    onBlur={formik.handleBlur}
+                                    error={(formik.touched.phoneNumber || formik.touched.countryCode) && 
+                                          (Boolean(formik.errors.phoneNumber) || Boolean(formik.errors.countryCode))}
+                                    helperText={(formik.touched.phoneNumber && formik.errors.phoneNumber) || 
+                                              (formik.touched.countryCode && formik.errors.countryCode)}
+                                    label={t('profile.phoneNo')}
+                                    required={true}
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    countries={countries}
+                                    currentPalette={currentPalette}
                                 />
                             </Grid>
                             <Grid size={6}>
@@ -237,7 +258,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                 />
                             </Grid>
 
-                            {/* Third row: Email, Password */}
+                            {/* Third row: Email */}
                             <Grid size={12}>
                                 <TextField
                                     fullWidth
@@ -258,20 +279,13 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     }}
                                 />
                             </Grid>
-                        </Grid>
-                        <Box sx={{
-                            position: 'absolute',
-                            bottom: 16,
-                            right: 24,
-                            display: 'flex',
-                            gap: 2,
-                            width: '100%',
-                            maxWidth: '300px'
-                        }}>
+                            <Grid size={12}>
+                                <Box
+                                sx={{display: 'flex', justifyContent: 'flex-end', gap: 2}}>
                             <Button
                                 color="inherit"
                                 variant="outlined"
-                                fullWidth
+                                sx={{px: '5%'}}
                                 onClick={handleDialogClose}
                             >
                                 {t('profile.cancel')}
@@ -279,13 +293,15 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                             <Button
                                 color="primary"
                                 variant="contained"
-                                fullWidth
+                                sx={{px: '5%'}}
                                 type="submit"
                                 disabled={formik.isSubmitting || !formik.dirty}
                             >
                                 {t('profile.update')}
                             </Button>
-                        </Box>
+                            </Box>
+                            </Grid>
+                        </Grid>
                     </form>
                 </DialogContent>
             </Dialog>

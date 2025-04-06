@@ -4,18 +4,18 @@ import { createRoot } from 'react-dom/client'
 import './styles.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import App from './App';
-import MarketingPage from './pages/MarketingPage.tsx';
-import HomePage from './pages/HomePage.tsx';
-import FavouritesPage from './pages/FavouritesPage.tsx';
-import WatchLaterPage from './pages/WatchLaterPage.tsx';
-import MovieDetailsPage from './pages/MovieDetailsPage.tsx';
+import MarketingPage from './services/marketing-service/pages/MarketingPage.tsx';
+import HomePage from './services/movie-service/pages/HomePage.tsx';
+import FavouritesPage from './services/user-service/favourites/pages/FavouritesPage.tsx';
+import WatchLaterPage from './services/user-service/watch-later/pages/WatchLaterPage.tsx';
+import MovieDetailsPage from './services/movie-service/pages/MovieDetailsPage.tsx';
 import { Provider } from 'react-redux';
 import { store } from './app/store.ts';
 import { persistor } from './app/store.ts';
 import { PersistGate } from 'redux-persist/integration/react';
 import { AuthProvider } from "react-oidc-context";
-import ProtectedRoute from './components/ProtectedRoute.tsx';
-import DashboardPage from './pages/DashboardPage.tsx';
+import ProtectedRoute from './services/auth-service/components/ProtectedRoute.tsx';
+import DashboardPage from './services/user-service/dashboard/pages/DashboardPage.tsx';
 import { WebStorageStateStore } from 'oidc-client-ts';
 
 const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;

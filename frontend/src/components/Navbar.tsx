@@ -1,16 +1,16 @@
 import Logo from './ui/Logo'
-import SearchBar from './SearchBar';
+import SearchBar from '../services/search-service/components/SearchBar';
 import LanguageSelector from '../components/LanguageSelector';
 import { Link } from 'react-router-dom';
 import DarkModeToggle from './DarkModeToggle';
 import { useTranslation } from 'react-i18next';
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery } from '@mui/material';
-import { useAppDispatch } from '../app/hooks';
-import { setSearchState, setError, resetSearchBox } from '../features/search/searchSlice';
+import { useAppDispatch } from '../app/reduxHooks';
+import { setSearchState, setError, resetSearchBox } from '../redux/search/searchSlice';
 import { useAuth } from "react-oidc-context";
-import UserButton from './UserButton';
+import UserButton from '../services/user-service/profile/components/UserButton';
 import { memo, useCallback, useState } from 'react';
-import ProfilePopup from './ProfilePopup';
+import ProfilePopup from '../services/user-service/profile/pages/ProfilePopup';
 import ThemeSelector from './ThemeSelector';
 import { useCustomTheme, themePalettes } from '../context/CustomThemeProvider';
 import MenuIcon from '@mui/icons-material/Menu';

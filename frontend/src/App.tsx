@@ -4,9 +4,9 @@ import { CustomThemeProvider } from '../src/context/CustomThemeProvider.tsx'
 import Footer from './components/Footer.tsx'
 import { useEffect, useState } from "react";
 import { useAuth, hasAuthParams } from "react-oidc-context";
-import { useAppDispatch } from "./app/hooks.ts";
-import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSlice.ts";
-import { fetchOrAddUser, fetchUserCountry } from './features/auth/authSlice.ts';
+import { useAppDispatch } from "./app/reduxHooks.ts";
+import { fetchHomeListStates, fetchMyListState } from "./redux/movie/movieSlice.ts";
+import { fetchOrAddUser, fetchUserCountry } from './redux/auth/authSlice.ts';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'sonner';

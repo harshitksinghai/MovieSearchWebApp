@@ -1,8 +1,8 @@
-import MovieCard from './MovieCard';
+import MovieCard from '../services/movie-service/components/MovieCard';
 import { useTranslation } from 'react-i18next';
 import { Box, Skeleton, Typography } from "@mui/material";
-import { MovieDetailsItem } from '../types/movieTypes.ts';
-import { useAppSelector } from '../app/hooks.ts';
+import { MovieDetailsItem } from '../services/movie-service/types/movieTypes.ts';
+import { useAppSelector } from '../app/reduxHooks.ts';
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
 
 interface ShowSavedListProps {

@@ -26,10 +26,10 @@ interface StatsBoxProps {
 const StatsBox: React.FC<StatsBoxProps> = memo(({ title, primary, secondary, icon }) => {
     const { currentTheme, darkMode } = useCustomTheme();
     const getCurrentPalette = () => {
-      const palette = themePalettes[currentTheme];
-      return darkMode ? palette.dark : palette.light;
+        const palette = themePalettes[currentTheme];
+        return darkMode ? palette.dark : palette.light;
     };
-  
+
     const currentPalette = getCurrentPalette();
     return (
         <Paper
@@ -44,15 +44,15 @@ const StatsBox: React.FC<StatsBoxProps> = memo(({ title, primary, secondary, ico
         >
             <Stack flexDirection={"column"} sx={{ position: "relative" }}>
                 <Typography sx={{ fontWeight: "600", color: currentPalette.textPrimary }}>{title}</Typography>
-                <Typography sx={{ 
-                    fontSize: { xs: "24px", sm: "30px" }, 
-                    fontWeight: "800", 
-                    color: currentPalette.textPrimary 
+                <Typography sx={{
+                    fontSize: { xs: "24px", sm: "30px" },
+                    fontWeight: "800",
+                    color: currentPalette.textPrimary
                 }}>
                     {primary}
                 </Typography>
-                <Typography sx={{ 
-                    fontSize: { xs: "10px", sm: "12px" }, 
+                <Typography sx={{
+                    fontSize: { xs: "10px", sm: "12px" },
                     color: darkMode ? '#ededed' : '#525252',
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -75,74 +75,74 @@ const StatsBox: React.FC<StatsBoxProps> = memo(({ title, primary, secondary, ico
 });
 
 interface MediaItemProps {
-  item: {
-    imdbID: string;
-    Title: string;
-    Type: string;
-    year: string;
-  },
+    item: {
+        imdbID: string;
+        Title: string;
+        Type: string;
+        year: string;
+    },
 }
 
 // Use the interface in the component definition
 const MediaItem = ({ item }: MediaItemProps) => {
     const { currentTheme, darkMode } = useCustomTheme();
     const getCurrentPalette = () => {
-      const palette = themePalettes[currentTheme];
-      return darkMode ? palette.dark : palette.light;
+        const palette = themePalettes[currentTheme];
+        return darkMode ? palette.dark : palette.light;
     };
-  
+
     const currentPalette = getCurrentPalette();
 
     return (
-    <Link to={`/movie/${item.imdbID}`}>
-        <Stack
-            direction="row"
-            sx={{
-                height: 'auto',
-                p: '4px',
-                borderBottomWidth: '2px',
-                borderColor: currentPalette.background
-            }}
-        >
-            <Typography sx={{ 
-                maxWidth: '70%', 
-                fontWeight: '500',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                lineHeight: '1.4em',
-                maxHeight: '2.8em',
-                color: darkMode ? '#ededed' : '#525252'
-            }}>
-                {item.Title}
-            </Typography>
-            <Box sx={{
-                maxWidth: '30%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'end',
-                marginLeft: 'auto'
-            }}>
-                <Typography variant="body2" sx={{ color: darkMode ? '#ededed' : '#525252' }}>{item.Type.toUpperCase()}</Typography>
-                <Typography variant="body2" sx={{ color: darkMode ? '#ededed' : '#525252' }}>{item.year}</Typography>
-            </Box>
-        </Stack>
-    </Link>
+        <Link to={`/movie/${item.imdbID}`}>
+            <Stack
+                direction="row"
+                sx={{
+                    height: 'auto',
+                    p: '4px',
+                    borderBottomWidth: '2px',
+                    borderColor: currentPalette.background
+                }}
+            >
+                <Typography sx={{
+                    maxWidth: '70%',
+                    fontWeight: '500',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    lineHeight: '1.4em',
+                    maxHeight: '2.8em',
+                    color: darkMode ? '#ededed' : '#525252'
+                }}>
+                    {item.Title}
+                </Typography>
+                <Box sx={{
+                    maxWidth: '30%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'end',
+                    marginLeft: 'auto'
+                }}>
+                    <Typography variant="body2" sx={{ color: darkMode ? '#ededed' : '#525252' }}>{item.Type.toUpperCase()}</Typography>
+                    <Typography variant="body2" sx={{ color: darkMode ? '#ededed' : '#525252' }}>{item.year}</Typography>
+                </Box>
+            </Stack>
+        </Link>
     )
 };
 
 const DashboardPage = () => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const { currentTheme, darkMode } = useCustomTheme();
     const getCurrentPalette = () => {
-      const palette = themePalettes[currentTheme];
-      return darkMode ? palette.dark : palette.light;
+        const palette = themePalettes[currentTheme];
+        return darkMode ? palette.dark : palette.light;
     };
-  
+
     const currentPalette = getCurrentPalette();
 
     const statisticsSx = useMemo(() => ({
@@ -162,7 +162,7 @@ const DashboardPage = () => {
     const recentFavourites = useAppSelector(recentFavouritesFilter);
     const reWatches = useAppSelector(reWatchesFilter);
 
-    const userDetails = useAppSelector((State) => State.auth.userDetails);
+    const userDetails = useAppSelector((state) => state.auth.userDetails);
 
     const navigate = useNavigate();
 
@@ -189,7 +189,9 @@ const DashboardPage = () => {
                     textOverflow: 'ellipsis',
                     whiteSpace: { xs: 'normal', sm: 'nowrap' }
                 }}>
-                    {t('dashboard.hi') + userDetails.firstName + " " + userDetails.middleName + " " + userDetails.lastName}
+                    {userDetails?.firstName
+                        ? `${t('dashboard.hello')}${userDetails.firstName} ${userDetails.middleName ?? ''} ${userDetails.lastName ?? ''}`
+                        : t('dashboard.loadingGreeting')}
                 </Typography>
                 <Grid container spacing={{ xs: 1, sm: 2 }}>
                     {/* Stats Boxes - Responsive grid sizing */}
@@ -198,7 +200,7 @@ const DashboardPage = () => {
                             title={t('dashboard.totalTimeWatched')}
                             primary={`${totalTimeWatched.totalHours}hrs`}
                             secondary={`${t('dashboard.Movies')}: ${totalTimeWatched.totalMoviesHours}hrs, ${t('dashboard.Series')}: ${totalTimeWatched.totalSeriesHours}hrs`}
-                            icon={<TimelapseIcon sx={{color: currentPalette.textPrimary}} />}
+                            icon={<TimelapseIcon sx={{ color: currentPalette.textPrimary }} />}
                         />
                     </Grid>
                     <Grid size={{ xs: 6, sm: 6, md: 3 }}>
@@ -214,7 +216,7 @@ const DashboardPage = () => {
                             title={t('dashboard.theLast') + " 30 " + t('dashboard.days')}
                             primary={`${lastThirtyDaysTimeWatched.lastThirtyDaysHours}hrs`}
                             secondary={`${t('dashboard.Movies')}: ${lastThirtyDaysTimeWatched.lastThirtyDaysMoviesHours}hrs, ${t('dashboard.Series')}: ${lastThirtyDaysTimeWatched.lastThirtyDaysSeriesHours}hrs`}
-                            icon={<TimelapseIcon sx={{color: currentPalette.textPrimary}} />}
+                            icon={<TimelapseIcon sx={{ color: currentPalette.textPrimary }} />}
                         />
                     </Grid>
                     <Grid size={{ xs: 6, sm: 6, md: 3 }}>
@@ -227,7 +229,7 @@ const DashboardPage = () => {
                     </Grid>
 
                     {/* Bar Chart - Full width on mobile/tablet */}
-                    <Grid size={{ xs: 12,  md: 8 }}>
+                    <Grid size={{ xs: 12, md: 8 }}>
                         <Paper elevation={2} sx={{
                             ...statisticsSx,
                             minHeight: { xs: '350px', sm: '400px', md: '480px' }
@@ -253,16 +255,16 @@ const DashboardPage = () => {
                                         <Typography sx={{ color: darkMode ? '#ededed' : '#525252', fontSize: '15px' }}>
                                             {t('dashboard.youCurrentlyHave')} {totalWatchedCount.totalWatchedCount} {(recentFavourites.length === 1) ? t('dashboard.favourite') : t('dashboard.favourites')}
                                         </Typography>
-                                        <Stack direction={'column'} gap={1} sx={{pt: '8px', flexGrow: 1, overflow: 'auto', pb: '40px'}}>
+                                        <Stack direction={'column'} gap={1} sx={{ pt: '8px', flexGrow: 1, overflow: 'auto', pb: '40px' }}>
                                             {recentFavourites.map((item) => (
                                                 <MediaItem key={item.imdbID} item={item} />
                                             ))}
                                         </Stack>
                                         {totalWatchedCount.totalWatchedCount > recentFavourites.length && (
-                                            <Button 
-                                                onClick={() => navigate('/mylist')} 
-                                                variant="contained" 
-                                                sx={{position: "absolute", bottom: '8px', width: '92%', alignSelf: 'center'}}
+                                            <Button
+                                                onClick={() => navigate('/mylist')}
+                                                variant="contained"
+                                                sx={{ position: "absolute", bottom: '8px', width: '92%', alignSelf: 'center' }}
                                             >
                                                 {t('dashboard.viewMore')}
                                             </Button>
@@ -278,8 +280,8 @@ const DashboardPage = () => {
                                         width: '90%'
                                     }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{color: darkMode ? '#ededed' : '#525252'}}>{t('dashboard.noRecentFavourites')}</Typography>
-                                            <Typography sx={{color: darkMode ? '#ededed' : '#525252'}}>{t('dashboard.goTo')}
+                                            <Typography sx={{ color: darkMode ? '#ededed' : '#525252' }}>{t('dashboard.noRecentFavourites')}</Typography>
+                                            <Typography sx={{ color: darkMode ? '#ededed' : '#525252' }}>{t('dashboard.goTo')}
                                                 <Link
                                                     to={'/home'}
                                                     style={{
@@ -297,7 +299,7 @@ const DashboardPage = () => {
                             </Stack>
                         </Paper>
                     </Grid>
-                    
+
                     {/* Rating Pie Chart - Responsive sizing */}
                     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                         <Paper elevation={2} sx={{
@@ -308,7 +310,7 @@ const DashboardPage = () => {
                             <RatingPieChart chartData={ratingChartData} />
                         </Paper>
                     </Grid>
-                    
+
                     {/* Genre Bar Graph - Responsive sizing */}
                     <Grid size={{ xs: 12, md: 8, lg: 6 }}>
                         <Paper elevation={2} sx={{
@@ -319,7 +321,7 @@ const DashboardPage = () => {
                             <GenreBarGraph chartData={genreChartData} chartConfig={genreChartConfig} />
                         </Paper>
                     </Grid>
-                    
+
                     {/* Due a re-watch - Responsive sizing */}
                     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                         <Paper elevation={2} sx={{
@@ -335,18 +337,18 @@ const DashboardPage = () => {
                                 {reWatches.totalReWatches > 0 ? (
                                     <>
                                         <Typography sx={{ color: darkMode ? '#ededed' : '#525252', fontSize: '15px' }}>
-                                        {t('dashboard.youCurrentlyHave')} {reWatches.totalReWatches} {(reWatches.totalReWatches === 1) ? t('dashboard.reWatch') + " " + t('dashboard.due') : t('dashboard.reWatches') + " " + t('dashboard.due')}
+                                            {t('dashboard.youCurrentlyHave')} {reWatches.totalReWatches} {(reWatches.totalReWatches === 1) ? t('dashboard.reWatch') + " " + t('dashboard.due') : t('dashboard.reWatches') + " " + t('dashboard.due')}
                                         </Typography>
-                                        <Stack direction={'column'} gap={1} sx={{pt: '8px', flexGrow: 1, overflow: 'auto', pb: '40px'}}>
+                                        <Stack direction={'column'} gap={1} sx={{ pt: '8px', flexGrow: 1, overflow: 'auto', pb: '40px' }}>
                                             {reWatches.reWatches.map((item) => (
                                                 <MediaItem key={item.imdbID} item={item} />
                                             ))}
                                         </Stack>
                                         {reWatches.totalReWatches > reWatches.reWatches.length && (
-                                            <Button 
-                                                onClick={() => navigate('/watchlater')} 
-                                                variant="contained" 
-                                                sx={{position: "absolute", bottom: '8px', width: '92%', alignSelf: 'center'}}
+                                            <Button
+                                                onClick={() => navigate('/watchlater')}
+                                                variant="contained"
+                                                sx={{ position: "absolute", bottom: '8px', width: '92%', alignSelf: 'center' }}
                                             >
                                                 {t('dashboard.viewMore')}
                                             </Button>
@@ -362,8 +364,8 @@ const DashboardPage = () => {
                                         width: '90%'
                                     }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{color: darkMode ? '#ededed' : '#525252'}}>{t('dashboard.noReWatchDue')}</Typography>
-                                            <Typography sx={{color: darkMode ? '#ededed' : '#525252'}}>{t('dashboard.goTo')}
+                                            <Typography sx={{ color: darkMode ? '#ededed' : '#525252' }}>{t('dashboard.noReWatchDue')}</Typography>
+                                            <Typography sx={{ color: darkMode ? '#ededed' : '#525252' }}>{t('dashboard.goTo')}
                                                 <Link
                                                     to={'/watchlater'}
                                                     style={{

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth, hasAuthParams } from "react-oidc-context";
 import { useAppDispatch } from "./app/hooks.ts";
 import { fetchHomeListStates, fetchMyListState } from "./features/movie/movieSlice.ts";
-import { fetchOrAddUser } from './features/auth/authSlice.ts';
+import { fetchOrAddUser, fetchUserCountry } from './features/auth/authSlice.ts';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'sonner';
@@ -21,6 +21,10 @@ function App() {
 
   const [hasTriedSignin, setHasTriedSignin] = useState(false);
 
+  useEffect(() => {
+    dispatch(fetchUserCountry());
+  }, [])
+  
   useEffect(() => {
     const storageKey = `oidc.user:${AUTH_COGNITO_AUTHORITY}:${AUTH_COGNITO_CLIENT_ID}`;
     const storedUser = localStorage.getItem(storageKey);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -27,13 +27,16 @@ import placeholder from "../assets/placeholder1.jpg";
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
 import { useAuth } from 'react-oidc-context';
 import { toast } from 'sonner';
-import i18n from '@/i18n/config';
+import { formatCurrency } from '@/utils/countryUtils';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
   const [movieResponse, setMovieResponse] = useState<MovieDetailsItem | null>(null);
   const auth = useAuth();
   const { t } = useTranslation();
+
+  // const { country } = useUserCountry();
+  const country = useAppSelector((state) => state.auth.country);
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -128,29 +131,13 @@ const MovieDetails: React.FC = () => {
     }
   };
 
-  const formatBoxOffice = () => {
-    if(!movieResponse?.BoxOffice) return;
+  const formattedBoxOffice = useMemo(() => {
+    if (!movieResponse?.BoxOffice) return null;
+    const userCountry = country ? country : 'IN';
+    
     const numericValue = parseFloat(movieResponse.BoxOffice.replace(/[^0-9.-]+/g, ""));
-
-    const storedLanguage = localStorage.getItem('i18nextLng') || i18n.language;
-    console.log("language stored: ",storedLanguage)
-   
-    const languageCurrencyMap :any= {
-      'en': { locale: 'en-US', currency: 'USD' },
-      'es': { locale: 'es-ES', currency: 'EUR' },
-      'fr': { locale: 'fr-FR', currency: 'EUR' }
-    };
-   
-    const { locale, currency } = languageCurrencyMap[storedLanguage] ||
-      languageCurrencyMap['en'];
-   
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currency,
-      maximumFractionDigits: 2,
-    }).format(numericValue);
-};
-
+    return formatCurrency(numericValue, userCountry);
+  }, [movieResponse?.BoxOffice, country]);
 
 
   if (loading) {
@@ -319,11 +306,10 @@ const MovieDetails: React.FC = () => {
                   ))}
                 </Box>
 
-
               </Box>
               {movieResponse.BoxOffice && (
                 <>
-                  <Typography component="span">{t('movie.boxOffice')} {formatBoxOffice()}</Typography>
+                  <Typography component="span">{t('movie.boxOffice')} {formattedBoxOffice}</Typography>
                 </>
               )}
               {/* Action Buttons */}

@@ -5,11 +5,13 @@ import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 interface AuthState {
   userId: string | null;
+  country: string | null;
   userDetails: UserDetailsItem;
 }
 
 const initialState: AuthState = {
   userId: null,
+  country: null,
   userDetails: {
     firstName: null,
     middleName: null,
@@ -19,6 +21,20 @@ const initialState: AuthState = {
     updatedAt: null
   }
 };
+
+export const fetchUserCountry = createAsyncThunk(
+  'auth/fetchUserCountry',
+  async () => {
+
+      const fetchUrl = '/users/country';
+      
+      const response = await authAxios.get<{
+        success: boolean;
+        country: string;
+      }>(fetchUrl, {});
+    return {country: response.data.country}
+  }
+);
 
 export const fetchOrAddUser = createAsyncThunk(
   'auth/fetchOrAddUser',
@@ -64,6 +80,10 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUserCountry.fulfilled, (state, action) => {
+        state.country = action.payload.country;
+        console.log("authSlice => fetchUserCountry.fulfilled => country: ", state.country);
+      })
       .addCase(fetchOrAddUser.fulfilled, (state, action) => {
         state.userDetails = action.payload.userDetails; 
         state.userId = action.payload.userId;

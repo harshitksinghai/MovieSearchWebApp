@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import axios from "axios";
 import { Request, Response } from "express";
 import pool from "../config/db";
 import crypto from 'crypto';
@@ -18,6 +19,24 @@ export interface UserDetailsItem {
   updatedAt: string;
 }
 
+export const getUserCountry = asyncHandler(
+  async (_req: Request, res: Response) => {
+    try {
+      const response = await axios.get('https://ipapi.co/country/');
+      console.log("userController => getUserCountry => response.data: ", response.data);
+      res.json({
+        success: true,
+        country: response.data
+      });
+    } catch (error: any) {
+      console.error("userController => getUserCountry => error:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message || "Error fetching country data",
+      });
+    }
+  }
+);
 export const getUserDetails = asyncHandler(
   async (req: Request, res: Response) => {
     const { userId } = req.body;

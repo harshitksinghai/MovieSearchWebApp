@@ -118,7 +118,8 @@
         "love": "Love",
         "like": "Like",
         "dislike": "Dislike",
-        "hi": "Hi "
+        "hello": "Hello ",
+        "loadingGreeting": "Hello There"
     },
     "customTheme": {
         "theme": "Theme",

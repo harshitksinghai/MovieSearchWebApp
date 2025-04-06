@@ -18,21 +18,32 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { CountryCode, getCountryCallingCode } from 'libphonenumber-js/mobile';
 import PhoneNumInput, { getCountriesData, isValidPhoneNumber, parseFullPhoneNumber } from './PhoneNumInput';
+import { formatDateForDisplay, formatDateForStorage, formatDateForInput, parseUTCDate, getDateFormatByCountry } from '@/utils/dateUtils';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
 interface ProfilePopupProps {
     open: boolean;
     handleClose: () => void;
 }
 
+// Extended form item type to include additional fields for UI
+interface ExtendedUserFormItem extends UserFormItem {
+    countryCode: CountryCode;
+    phoneNumber: string;
+}
+
 const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
     const dispatch = useAppDispatch();
-    const { userId, userDetails } = useAppSelector((state) => state.auth);
+    const { userId, userDetails, country } = useAppSelector((state) => state.auth);
     console.log("ProfilePopup => userDetails redux store state: ", userDetails)
 
-    const { countryCode, phoneNumber } = userDetails.phone 
-                ? parseFullPhoneNumber(userDetails.phone)
-                : { countryCode: 'IN' as CountryCode, phoneNumber: '' };
+    const { countryCode, phoneNumber } = userDetails.phone
+        ? parseFullPhoneNumber(userDetails.phone)
+        : { countryCode: 'IN' as CountryCode, phoneNumber: '' };
 
     const { t } = useTranslation();
     const countries = getCountriesData();
@@ -45,6 +56,8 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
     const currentPalette = getCurrentPalette();
 
     const isAtLeastEightYearsOld = (dateString: string) => {
+        if (!dateString) return false;
+
         const today = new Date();
         const birthDate = new Date(dateString);
         const ageDifference = today.getFullYear() - birthDate.getFullYear();
@@ -57,33 +70,34 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
     const validationSchema = z.object({
         firstName: z.string().min(1, t('profile.firstNameRequired')),
-        middleName: z.string().optional().nullable(),
+        middleName: z.string().nullable().optional(),
         lastName: z.string().min(1, t('profile.lastNameRequired')),
         dateOfBirth: z.string()
             .min(1, t('profile.dobRequired'))
             .refine(
-                (value) => isAtLeastEightYearsOld(value), 
+                (value) => isAtLeastEightYearsOld(value),
                 { message: t('profile.dobAtleastEight') }
             ),
         countryCode: z.string().min(1, t('profile.countryCodeRequired')),
         phoneNumber: z.string()
-            .min(1, t('profile.phRequired'))
+            .min(1, t('profile.phRequired')),
+        displayDateOfBirth: z.string().optional()
     })
-    .refine(
-        (data) => isValidPhoneNumber(data.phoneNumber, data.countryCode as CountryCode),
-        {
-            message: t('profile.phNotValid'),
-            path: ['phoneNumber'] // This specifies which field the error is attached to
-        }
-    );
+        .refine(
+            (data) => isValidPhoneNumber(data.phoneNumber, data.countryCode as CountryCode),
+            {
+                message: t('profile.phNotValid'),
+                path: ['phoneNumber']
+            }
+        );
 
-    const initialValues: UserFormItem & { countryCode: CountryCode; phoneNumber: string }= {
+    const initialValues: ExtendedUserFormItem = {
         firstName: '',
-        middleName: '',
+        middleName: null,
         lastName: '',
         dateOfBirth: '',
-        phone: '', // Keep for compatibility with your existing state
-        countryCode: 'IN' as CountryCode, // Default to US
+        phone: '',
+        countryCode: 'IN' as CountryCode,
         phoneNumber: '',
     };
 
@@ -91,23 +105,24 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         initialValues: initialValues,
         validationSchema: toFormikValidationSchema(validationSchema),
         onSubmit: (values, actions) => {
-
             console.log({ values });
+
+            // Format date to UTC for storage
+            const utcDateOfBirth = formatDateForStorage(values.dateOfBirth);
+
             dispatch(updateCurrentUserDetails({
                 formDetails: {
                     firstName: values.firstName,
                     middleName: values.middleName,
                     lastName: values.lastName,
                     phone: `+${getCountryCallingCode(values.countryCode)}${values.phoneNumber}`,
-                    dateOfBirth: String(values.dateOfBirth)
+                    dateOfBirth: utcDateOfBirth
                 }
-            }))
-            // alert(JSON.stringify(values, null, 2));
+            }));
 
             actions.setSubmitting(false);
             handleClose();
-            toast.success(t('profile.toastSuccess'))
-
+            toast.success(t('profile.toastSuccess'));
         },
     });
 
@@ -118,26 +133,39 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
     useEffect(() => {
         if (userDetails && open) {
-            // Parse the existing phone number to extract country code and national number
-                
+            const localDateObj = parseUTCDate(userDetails.dateOfBirth);
+            const inputDate = formatDateForInput(localDateObj);
+
             formik.resetForm({
                 values: {
                     firstName: userDetails.firstName || '',
-                    middleName: userDetails.middleName || '',
+                    middleName: userDetails.middleName,
                     lastName: userDetails.lastName || '',
-                    dateOfBirth: userDetails.dateOfBirth ? new Date(userDetails.dateOfBirth).toISOString().split('T')[0] : '',
+                    dateOfBirth: inputDate,
                     phone: userDetails.phone || '',
                     countryCode: countryCode || 'IN' as CountryCode,
                     phoneNumber: phoneNumber || '',
                 }
             });
         }
-    }, [userDetails, open]);
+    }, [userDetails, open, country]);
 
     const handlePhoneChange = (value: { countryCode: CountryCode; phoneNumber: string }) => {
         formik.setFieldValue('countryCode', value.countryCode);
         formik.setFieldValue('phoneNumber', value.phoneNumber);
     };
+
+    const handleDOBChange = (value: { dateOfBirth: string }) => {
+        const newDate = value.dateOfBirth;
+        console.log("handleDOBchange => newDate: ", newDate)
+        formik.setFieldValue('dateOfBirth', newDate);
+
+        if (newDate) {
+            const localDateObj = new Date(newDate);
+            const displayDate = formatDateForDisplay(localDateObj, country);
+            console.log("handleDOBchange => displayDate: ", displayDate)
+        }
+    }
 
     return (
         <>
@@ -181,7 +209,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     label={t('profile.middleName')}
                                     size="small"
                                     placeholder={userDetails?.middleName || "Enter middle name"}
-                                    value={formik.values.middleName}
+                                    value={formik.values.middleName || ''}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.middleName && Boolean(formik.errors.middleName)}
@@ -212,7 +240,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
                             {/* Second row: Phone, DOB */}
                             <Grid size={6}>
-                            <PhoneNumInput
+                                <PhoneNumInput
                                     value={{
                                         countryCode: formik.values.countryCode,
                                         phoneNumber: formik.values.phoneNumber
@@ -220,10 +248,10 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     placeholder={userDetails?.phone || "Enter phone number"}
                                     onChange={handlePhoneChange}
                                     onBlur={formik.handleBlur}
-                                    error={(formik.touched.phoneNumber || formik.touched.countryCode) && 
-                                          (Boolean(formik.errors.phoneNumber) || Boolean(formik.errors.countryCode))}
-                                    helperText={(formik.touched.phoneNumber && formik.errors.phoneNumber) || 
-                                              (formik.touched.countryCode && formik.errors.countryCode)}
+                                    error={(formik.touched.phoneNumber || formik.touched.countryCode) &&
+                                        (Boolean(formik.errors.phoneNumber) || Boolean(formik.errors.countryCode))}
+                                    helperText={(formik.touched.phoneNumber && formik.errors.phoneNumber) ||
+                                        (formik.touched.countryCode && formik.errors.countryCode)}
                                     label={t('profile.phoneNo')}
                                     required={true}
                                     id="phoneNumber"
@@ -233,29 +261,34 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                 />
                             </Grid>
                             <Grid size={6}>
-                                <TextField
-                                    fullWidth
-                                    id="dateOfBirth"
-                                    name="dateOfBirth"
-                                    label={t('profile.dob') + "*"}
-                                    size="small"
-                                    type='date'
-                                    placeholder={userDetails?.dateOfBirth || "Enter date of birth"}
-                                    value={formik.values.dateOfBirth}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.dateOfBirth && Boolean(formik.errors.dateOfBirth)}
-                                    helperText={formik.touched.dateOfBirth && formik.errors.dateOfBirth}
-                                    InputLabelProps={{
-                                        style: { color: currentPalette.textPrimary },
-                                        shrink: true
-                                    }}
-                                    InputProps={{
-                                        inputProps: {
-                                            max: new Date().toISOString().split('T')[0],
-                                        }
-                                    }}
-                                />
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label={t('profile.dob') + "*"}
+                                        value={formik.values.dateOfBirth ? dayjs(formik.values.dateOfBirth) : null}
+                                        onChange={(newValue) => {
+                                            if (newValue) {
+                                                const dateString = newValue.format('YYYY-MM-DD');
+                                                handleDOBChange({ dateOfBirth: dateString });
+                                            }
+                                        }}
+                                        format={getDateFormatByCountry(country)}
+                                        slotProps={{
+                                            textField: {
+                                                fullWidth: true,
+                                                size: "small",
+                                                id: "dateOfBirth",
+                                                name: "dateOfBirth",
+                                                error: formik.touched.dateOfBirth && Boolean(formik.errors.dateOfBirth),
+                                                helperText: formik.touched.dateOfBirth && formik.errors.dateOfBirth,
+                                                InputLabelProps: {
+                                                    style: { color: currentPalette.textPrimary }
+                                                },
+                                                onBlur: formik.handleBlur
+                                            }
+                                        }}
+                                        maxDate={dayjs()}
+                                    />
+                                </LocalizationProvider>
                             </Grid>
 
                             {/* Third row: Email */}
@@ -280,26 +313,25 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                 />
                             </Grid>
                             <Grid size={12}>
-                                <Box
-                                sx={{display: 'flex', justifyContent: 'flex-end', gap: 2}}>
-                            <Button
-                                color="inherit"
-                                variant="outlined"
-                                sx={{px: '5%'}}
-                                onClick={handleDialogClose}
-                            >
-                                {t('profile.cancel')}
-                            </Button>
-                            <Button
-                                color="primary"
-                                variant="contained"
-                                sx={{px: '5%'}}
-                                type="submit"
-                                disabled={formik.isSubmitting || !formik.dirty}
-                            >
-                                {t('profile.update')}
-                            </Button>
-                            </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                                    <Button
+                                        color="inherit"
+                                        variant="outlined"
+                                        sx={{ px: '5%' }}
+                                        onClick={handleDialogClose}
+                                    >
+                                        {t('profile.cancel')}
+                                    </Button>
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        sx={{ px: '5%' }}
+                                        type="submit"
+                                        disabled={formik.isSubmitting || !formik.dirty}
+                                    >
+                                        {t('profile.update')}
+                                    </Button>
+                                </Box>
                             </Grid>
                         </Grid>
                     </form>

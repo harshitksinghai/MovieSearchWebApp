@@ -13,6 +13,7 @@ import {
   CountryCode,
   isSupportedCountry
 } from 'libphonenumber-js/mobile';
+import i18n from '@/i18n/config';
 
 // Interface for country data
 export interface CountryData {
@@ -45,8 +46,9 @@ export const getCountriesData = (): CountryData[] => {
 
 // Function to get country name from country code
 const getCountryName = (countryCode: string): string => {
+  const storedLanguage = localStorage.getItem('i18nextLng') || i18n.language;
   // Use Intl.DisplayNames for localized country names
-  const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+  const regionNames = new Intl.DisplayNames([storedLanguage], { type: 'region' });
   try {
     return regionNames.of(countryCode) || countryCode;
   } catch (e) {

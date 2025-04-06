@@ -16,22 +16,30 @@ const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;
 
 function App() {
   const auth = useAuth();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const [hasTriedSignin, setHasTriedSignin] = useState(false);
 
+  auth.events.addAccessTokenExpiring(() => {
+    console.log("Token is about to expire");
+  });
+
+  auth.events.addSilentRenewError((error) => {
+    console.error("Error during silent renew:", error);
+  });
+
   useEffect(() => {
     dispatch(fetchUserCountry());
   }, [])
-  
+
   useEffect(() => {
     const storageKey = `oidc.user:${AUTH_COGNITO_AUTHORITY}:${AUTH_COGNITO_CLIENT_ID}`;
     const storedUser = localStorage.getItem(storageKey);
 
     if (!hasAuthParams() &&
-        !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading &&
-        !hasTriedSignin && storedUser
+      !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading &&
+      !hasTriedSignin && storedUser
     ) {
       console.log("auto signin")
       auth.signinRedirect();
@@ -40,14 +48,14 @@ function App() {
   }, [auth, hasTriedSignin]);
 
   useEffect(() => {
-    console.log("auth.isLoading: ", auth.isLoading );
+    console.log("auth.isLoading: ", auth.isLoading);
     if (auth.isLoading) return;
     if (auth.isAuthenticated && auth.user?.profile.email) {
       dispatch(fetchOrAddUser(auth.user.profile.email));
       dispatch(fetchMyListState(auth.user.profile.email));
       dispatch(fetchHomeListStates());
     }
-    else{
+    else {
       dispatch(fetchHomeListStates());
     }
   }, [auth.isAuthenticated, auth.user, dispatch]);
@@ -84,7 +92,7 @@ function App() {
         <Toaster richColors position='bottom-right' />
         <Footer />
       </div>
-      </CustomThemeProvider>
+    </CustomThemeProvider>
   )
 }
 

@@ -144,7 +144,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
             )}
 
             {/* For mobile: show search icon */}
-            {isMobile && (
+            {isMobile && props.isSearchBar && (
               <IconButton
                 onClick={toggleMobileSearch}
                 sx={{

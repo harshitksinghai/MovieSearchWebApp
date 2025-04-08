@@ -1,147 +1,162 @@
 {
     "navbar": {
-        "appName": "MovieKeeper",
-        "searchPlaceholder": "Rechercher un titre...",
-        "typeAll": "Tous",
+      "appName": "MovieKeeper",
+      "searchPlaceholder": "Rechercher un titre...",
+      "typeAll": "Tout",
+      "typeMovies": "Films",
+      "typeSeries": "Séries",
+      "typeGames": "Jeux",
+      "Year": "Année",
+      "none": "Aucun",
+      "lightTooltip": "Passer au mode clair",
+      "darkTooltip": "Passer au mode sombre",
+      "fav": "Favoris",
+      "watchLater": "À regarder plus tard",
+      "signIn": "Se connecter",
+      "signOut": "Se déconnecter",
+      "appearance": "Apparence",
+      "language": "Langue"
+    },
+    "error": {
+      "titleError": "Le titre doit contenir au moins 3 caractères.",
+      "NoMoviesFound": "Aucun résultat trouvé !",
+      "fetchFailed": "Échec du chargement des films. Veuillez réessayer plus tard.",
+      "fillSearch": "Entrez un titre, une année ou un type pour rechercher",
+      "somethingWentWrong": "Quelque chose s'est mal passé.",
+      "movieNotFound": "Film introuvable !",
+      "ratingOptimisticFailed": "Impossible de mettre à jour la note, veuillez réessayer plus tard.",
+      "watchLaterOptimisticFailed": "Impossible d'ajouter à 'Regarder plus tard', veuillez réessayer plus tard"
+    },
+    "card": {
+      "dislikeTooltip": "Pas pour moi",
+      "likeTooltip": "J'aime bien",
+      "loveTooltip": "J'adore !",
+      "addWatchLaterTooltip": "Ajouter à 'Regarder plus tard'",
+      "removeWatchLaterTooltip": "Retirer de 'Regarder plus tard'",
+      "signInToRate": "Veuillez vous connecter pour noter",
+      "signInToAddToWatchLater": "Veuillez vous connecter pour ajouter à 'Regarder plus tard'"
+    },
+    "fav": {
+      "fav": "Favoris",
+      "loading": "Chargement de vos favoris...",
+      "empty": "Aucun élément trouvé dans votre liste.",
+      "filter": {
+        "typeAll": "Tout",
         "typeMovies": "Films",
         "typeSeries": "Séries",
         "typeGames": "Jeux",
         "Year": "Année",
         "none": "Aucun",
-        "lightTooltip": "Passer en mode clair",
-        "darkTooltip": "Passer en mode sombre",
-        "fav": "Favoris",
-        "watchLater": "Regarder plus tard",
-        "signIn": "Se connecter",
-        "signOut": "Se déconnecter"
-    },
-    "error": {
-        "titleError": "Le titre doit comporter au moins 3 caractères.",
-        "NoMoviesFound": "Aucun résultat trouvé !",
-        "fetchFailed": "Échec du chargement des films. Veuillez réessayer plus tard.",
-        "fillSearch": "Entrez un titre, une année ou un type pour rechercher",
-        "somethingWentWrong": "Une erreur est survenue.",
-        "movieNotFound": "Film introuvable !"
-    },
-    "card": {
-        "dislikeTooltip": "Pas pour moi",
-        "likeTooltip": "Ça me plaît",
-        "loveTooltip": "J'adore !",
-        "addWatchLaterTooltip": "Ajouter à regarder plus tard",
-        "removeWatchLaterTooltip": "Retirer de regarder plus tard"
-    },
-    "fav": {
-        "fav": "Favoris",
-        "loading": "Chargement de vos favoris...",
-        "empty": "Aucun élément trouvé dans votre liste.",
-        "filter": {
-            "typeAll": "Tous",
-            "typeMovies": "Films",
-            "typeSeries": "Séries",
-            "typeGames": "Jeux",
-            "Year": "Année",
-            "none": "Aucun",
-            "love": "Adoré",
-            "like": "Aimé",
-            "meh": "Pas aimé"
-        }
+        "love": "Amour",
+        "like": "J'aime",
+        "meh": "Je n'aime pas"
+      }
     },
     "watchLater": {
-        "watchLater": "Regarder plus tard"
+      "watchLater": "À regarder plus tard"
     },
     "market": {
-        "appName": "MovieKeeper",
-        "getStarted": "Commencer"
+      "appName": "MovieKeeper",
+      "getStarted": "Commencer"
     },
     "movie": {
-        "plot": "Intrigue",
-        "director": "Réalisateur",
-        "cast": "Distribution",
-        "language": "Langues",
-        "ratings": "Note"
+      "plot": "Intrigue",
+      "director": "Réalisateur",
+      "cast": "Casting",
+      "language": "Langues",
+      "ratings": "Évaluation",
+      "boxOffice": "Recettes au box-office :"
     },
     "footer": {
-        "message": "Tous droits réservés"
+      "message": " Tous droits réservés"
     },
     "common": {
-        "loading": "Chargement..."
+      "loading": "Chargement..."
     },
     "search": {
-        "noResults": "Aucun film trouvé.",
-        "tryAgain": "Essayez une recherche plus précise ou allez à",
-        "goHome": "Accueil"
+      "noResults": "Aucun film trouvé.",
+      "tryAgain": "Essayez une recherche plus précise ou allez à",
+      "goHome": "Accueil"
     },
     "carousel": {
-        "soon": "Carrousel de films bientôt disponible !!!"
+      "soon": "Carrousel de films bientôt disponible !!!"
     },
-    "backToolTip": "Retourner",
+    "backToolTip": "Retour",
     "homeList": {
-        "discover": "Découvrez les sensations mondiales",
-        "Trending": "Tendances",
-        "Thriller": "Thriller",
-        "Comedy": "Comédie",
-        "Romance": "Romance"
+      "discover": "Découvrez les Sensations Mondiales",
+      "Trending": "Tendances",
+      "Thriller": "Thriller",
+      "Comedy": "Comédie",
+      "Romance": "Romance"
     },
     "dashboard": {
-        "Movies": "Films",
-        "Series": "Séries",
-        "totalTimeWatched": "Temps total regardé",
-        "bestMemories": "Meilleurs souvenirs",
-        "contentRatings": "Évaluations de contenu",
-        "favouriteGenres": "Genres préférés",
-        "theLast": "Les derniers",
-        "days": "Jours",
-        "totalWatchedCount": "Total visionné",
-        "watchOverview": "Aperçu des visionnages",
-        "recentFavourites": "Favoris récents",
-        "dueAReWatch": "À revoir bientôt",
-        "noReWatchDue": "Pas de re-visionnage à faire",
-        "youCurrentlyHave": "Vous avez actuellement",
-        "favourite": "favori",
-        "favourites": "favoris",
-        "rewatch": "re-visionnage",
-        "reWatches": "re-visionnages",
-        "due": "à faire",
-        "noRecentFavourites": "Pas de favoris récents",
-        "goTo": "Aller à",
-        "home": "accueil",
-        "viewMore": "Voir plus",
-        "watchLater": "regarder plus tard",
-        "noDataAvailable": "Pas de données disponibles",
-        "love": "Adoré",
-        "like": "Aimé",
-        "dislike": "Pas aimé",
-        "hi": "Salut "
+      "Movies": "Films",
+      "Series": "Séries",
+      "totalTimeWatched": "Temps total regardé",
+      "bestMemories": "Meilleurs souvenirs",
+      "contentRatings": "Évaluations de contenu",
+      "favouriteGenres": "Genres préférés",
+      "theLast": "Les derniers",
+      "days": "jours",
+      "totalWatchedCount": "Nombre total de vues",
+      "watchOverview": "Aperçu des visionnages",
+      "recentFavourites": "Favoris récents",
+      "dueAReWatch": "À revoir",
+      "noReWatchDue": "Aucun re-visionnage prévu",
+      "youCurrentlyHave": "Vous avez actuellement",
+      "favourite": "favori",
+      "favourites": "favoris",
+      "rewatch": "re-visionnage",
+      "reWatches": "re-visionnages",
+      "due": "prévu",
+      "noRecentFavourites": "Aucun favori récent",
+      "goTo": "Aller à",
+      "home": "accueil",
+      "viewMore": "Voir plus",
+      "watchLater": "à regarder plus tard",
+      "noDataAvailable": "Aucune donnée disponible",
+      "love": "Amour",
+      "like": "J'aime",
+      "dislike": "Je n'aime pas",
+      "hello": "Bonjour ",
+      "loadingGreeting": "Bonjour à vous"
     },
     "customTheme": {
-        "theme": "Thème",
-        "Blue": "Bleu",
-        "White": "Blanc",
-        "Green": "Vert"
+      "theme": "Thème",
+      "Blue": "Bleu",
+      "White": "Blanc",
+      "Green": "Vert"
     },
     "userButton": {
-        "dashboard": "Tableau de bord",
-        "profile": "Profil",
-        "signOut": "Se déconnecter"
+      "dashboard": "Tableau de bord",
+      "profile": "Profil",
+      "signOut": "Se déconnecter"
     },
     "profile": {
-    "profile": "Profil",
-    "firstName": "Prénom",
-    "middleName": "Deuxième Prénom",
-    "lastName": "Nom de Famille",
-    "phoneNo": "N° de Téléphone",
-    "dob": "Date de Naissance",
-    "email": "E-mail",
-    "cancel": "Annuler",
-    "update": "Mettre à Jour",
-    "firstNameRequired": "Le prénom est requis",
-    "lastNameRequired": "Le nom de famille est requis",
-    "dobRequired": "La date de naissance est requise",
-    "dobAtleastEight": "Vous devez avoir au moins 8 ans",
-    "phRequired": "Le numéro de téléphone est requis",
-    "invalidPh": "Numéro de téléphone invalide",
-    "phTen": "Le numéro de téléphone doit comporter 10 chiffres"
+      "profile": "Profil",
+      "firstName": "Prénom",
+      "middleName": "Deuxième prénom",
+      "lastName": "Nom",
+      "phoneNo": "Numéro de téléphone",
+      "dob": "Date de naissance",
+      "email": "E-mail",
+      "cancel": "Annuler",
+      "update": "Mettre à jour",
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom est requis",
+      "dobRequired": "La date de naissance est requise",
+      "dobAtleastEight": "Vous devez avoir au moins 8 ans",
+      "phRequired": "Le numéro de téléphone est requis",
+      "invalidPh": "Numéro de téléphone invalide",
+      "phTen": "Le numéro de téléphone doit comporter 10 chiffres",
+      "toastSuccess": "Profil mis à jour avec succès.",
+      "phNotValid": "Le numéro de téléphone n'est pas valide",
+      "enterFirstName": "Entrez le prénom",
+      "enterMiddleName": "Entrez le deuxième prénom",
+      "enterLastName": "Entrez le nom",
+      "enterPhNo": "Entrez le numéro de téléphone"
     },
     "loading...": "Chargement...",
     "authError": "Erreur d'authentification : "
-}
+  }
+  

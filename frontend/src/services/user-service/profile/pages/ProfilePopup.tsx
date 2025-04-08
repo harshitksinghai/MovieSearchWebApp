@@ -299,6 +299,16 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                                         value={formik.values.countryCode}
                                                         onChange={handleCountryChange}
                                                         disableUnderline
+                                                        MenuProps={{
+                                                            PaperProps: {
+                                                                style: { maxHeight: 300 },
+                                                            },
+                                                            disableScrollLock: true,
+                                                            anchorOrigin: {
+                                                                vertical: 'bottom',
+                                                                horizontal: 'left',
+                                                            }
+                                                        }}
                                                         sx={{
                                                             '& .MuiSelect-select': {
                                                                 paddingRight: '14px',

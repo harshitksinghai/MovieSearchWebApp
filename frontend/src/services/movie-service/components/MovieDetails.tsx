@@ -31,9 +31,9 @@ import { formatCurrency } from '@/services/movie-service/utils/countryUtils';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
-  const [movieResponse, setMovieResponse] = useState<MovieDetailsItem | null>(null);
   const auth = useAuth();
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.search);
@@ -45,14 +45,12 @@ const MovieDetails: React.FC = () => {
     const palette = themePalettes[currentTheme];
     return darkMode ? palette.dark : palette.light;
   };
-
   const currentPalette = getCurrentPalette();
 
 
-  const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-
+  const [movieResponse, setMovieResponse] = useState<MovieDetailsItem | null>(null);
   const [ratingState, setRatingState] = useState<string>('none');
   const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(false);
 

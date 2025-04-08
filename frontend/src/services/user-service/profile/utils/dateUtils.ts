@@ -24,7 +24,6 @@ export const getDateFormatByCountry = (country: string | null): string => {
     let format = '';
     let separator = '';
     
-    // Determine separator from parts
     for (const part of parts) {
       if (part.type === 'literal') {
         separator = part.value;
@@ -32,10 +31,8 @@ export const getDateFormatByCountry = (country: string | null): string => {
       }
     }
     
-    // If no separator found, default to '/'
     if (!separator) separator = '/';
     
-    // Map the order of day, month, year
     const partOrder: string[] = [];
     for (const part of parts) {
       if (part.type === 'day') partOrder.push('DD');
@@ -43,13 +40,11 @@ export const getDateFormatByCountry = (country: string | null): string => {
       if (part.type === 'year') partOrder.push('YYYY');
     }
     
-    // Build format string
     format = partOrder.join(separator);
     console.log("getDateFormatByCountry: ", format)
     return format;
   } catch (error) {
-    // Fallback in case of error
-    console.log("getDateFormatByCountry => fallback: DD/MM/YYYY")
+    console.log("getDateFormatByCountry => error fallback: DD/MM/YYYY")
     return 'DD/MM/YYYY';
   }
 };

@@ -7,7 +7,6 @@ import {
     isSupportedCountry
   } from 'libphonenumber-js/mobile';
   
-  // Interface for country data
   export interface CountryData {
     code: CountryCode;
     name: string; 
@@ -15,14 +14,12 @@ import {
     flag: string;
   }
   
-  // Get all supported countries with metadata
   export const getCountriesData = (): CountryData[] => {
     const supportedCountries = getCountries();
     
     return supportedCountries
       .filter(country => isSupportedCountry(country))
       .map(country => {
-        // Use emoji flag based on country code
         const flag = getFlagEmoji(country);
         const dialCode = `+${getCountryCallingCode(country)}`;
         
@@ -36,10 +33,8 @@ import {
       .sort((a, b) => a.name.localeCompare(b.name));
   };
   
-  // Function to get country name from country code
   export const getCountryName = (countryCode: string): string => {
     try {
-      // Use Intl.DisplayNames for localized country names
       const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
       return regionNames.of(countryCode) || countryCode;
     } catch (e) {
@@ -47,7 +42,6 @@ import {
     }
   };
   
-  // Convert country code to emoji flag
   export const getFlagEmoji = (countryCode: string): string => {
     const codePoints = countryCode
       .toUpperCase()
@@ -57,21 +51,17 @@ import {
     return String.fromCodePoint(...codePoints);
   };
   
-  // Format phone number as user types
   export const formatPhoneNumberAsYouType = (phoneNumber: string, countryCode: CountryCode): string => {
     return new AsYouType(countryCode).input(phoneNumber);
   };
   export const unformatPhoneNumber = (phoneNumber: string): string => {
-    // Remove all non-digit characters except the leading + sign
     return phoneNumber.replace(/[^\d+]/g, '');
   };
   
-  // For validating phone numbers
   export const isValidPhoneNumber = (phoneNumber: string, countryCode: CountryCode): boolean => {
     if (!phoneNumber || !countryCode) return false;
     
     try {
-      // Special handling for Argentina - they require 9 at the beginning for mobile
       if (countryCode === 'AR') {
         if (!phoneNumber.startsWith('9')) {
           phoneNumber = '9' + phoneNumber;
@@ -86,7 +76,6 @@ import {
     }
   };
   
-  // Parse full phone number with country code
   export const parseFullPhoneNumber = (fullPhoneNumber: string): { 
     countryCode: CountryCode | null; 
     phoneNumber: string 

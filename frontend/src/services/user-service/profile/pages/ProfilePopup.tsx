@@ -17,12 +17,12 @@ import { useCustomTheme, themePalettes } from '@/context/CustomThemeProvider';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { CountryCode, getCountryCallingCode } from 'libphonenumber-js/mobile';
-import { 
-  getCountriesData, 
-  isValidPhoneNumber, 
-  parseFullPhoneNumber, 
-  formatPhoneNumberAsYouType, 
-  unformatPhoneNumber
+import {
+    getCountriesData,
+    isValidPhoneNumber,
+    parseFullPhoneNumber,
+    formatPhoneNumberAsYouType,
+    unformatPhoneNumber
 } from '../utils/phoneUtils';
 import { formatDateForStorage, formatDateForInput, parseUTCDate, getDateFormatByCountry } from '@/services/user-service/profile/utils/dateUtils';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -34,9 +34,7 @@ interface ProfilePopupProps {
     open: boolean;
     handleClose: () => void;
 }
-
-// Extended form item type to include additional fields for UI
-interface ExtendedUserFormItem extends Omit<UserFormItem, "country">{
+interface ExtendedUserFormItem extends Omit<UserFormItem, "country"> {
     countryCode: CountryCode;
     phoneNumber: string;
 }
@@ -44,7 +42,7 @@ interface ExtendedUserFormItem extends Omit<UserFormItem, "country">{
 const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
     const dispatch = useAppDispatch();
     const { userId, userDetails, countryFromIP } = useAppSelector((state) => state.auth);
-    
+
     const countryCode = userDetails.country ?? countryFromIP ?? 'IN';
     const phoneNumber = userDetails.phone ? parseFullPhoneNumber(userDetails.phone).phoneNumber : "";
 
@@ -75,7 +73,6 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         return ageDifference > 8 || (ageDifference === 8 && hasBirthdayOccurred);
     };
 
-    // Modified validation schema with individual phone validation rules
     const validationSchema = z.object({
         firstName: z.string().min(1, t('profile.firstNameRequired')),
         middleName: z.string().nullable().optional(),
@@ -110,14 +107,11 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         initialValues: initialValues,
         validationSchema: toFormikValidationSchema(validationSchema),
         onSubmit: (values, actions) => {
-            // First validate phone number
             if (!isValidPhoneNumber(values.phoneNumber, values.countryCode)) {
                 formik.setFieldError('phoneNumber', t('profile.phNotValid'));
                 actions.setSubmitting(false);
                 return;
             }
-
-            // Format date to UTC for storage
             const utcDateOfBirth = formatDateForStorage(values.dateOfBirth);
 
             dispatch(updateCurrentUserDetails({
@@ -144,7 +138,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
     const handlePhoneFocus = () => {
         setPhoneInputFocused(true);
-      };
+    };
 
     useEffect(() => {
         if (userDetails && open) {
@@ -166,26 +160,21 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         }
     }, [userDetails, open, countryFromIP]);
 
-    // Handle country code change
     const handleCountryChange = (e: any) => {
         const newCountryCode = e.target.value as CountryCode;
         setFormCountryCode(newCountryCode);
-    console.log("formCountryCode: ", newCountryCode);
+        console.log("formCountryCode: ", newCountryCode);
 
         formik.setFieldValue('countryCode', newCountryCode);
-        
-        // Validate phone number with new country code
+
         setTimeout(() => {
             if (formik.values.phoneNumber) {
-                // Always use unformatted value for validation
                 const unformattedPhone = unformatPhoneNumber(formik.values.phoneNumber);
                 validatePhoneNumber(unformattedPhone, newCountryCode);
             }
         }, 0);
     };
 
-
-    // Handle phone number blur
     const handlePhoneBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         setPhoneInputFocused(false);
         formik.handleBlur(e);
@@ -194,16 +183,14 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         validatePhoneNumber(unformatPhoneNumber(e.target.value), formik.values.countryCode);
     };
 
-    // Separate validation function for phone number
     const validatePhoneNumber = (phoneNumber: string, countryCode: CountryCode) => {
         if (!phoneNumber) return;
-        
+
         const isValid = isValidPhoneNumber(phoneNumber, countryCode);
         console.log("isValid: ", isValid)
         if (!isValid) {
             formik.setFieldError('phoneNumber', t('profile.phNotValid'));
         } else {
-            // Clear the error if it's valid
             formik.setFieldError('phoneNumber', undefined);
         }
     };
@@ -211,11 +198,6 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
     const handleDOBChange = (value: { dateOfBirth: string }) => {
         const newDate = value.dateOfBirth;
         formik.setFieldValue('dateOfBirth', newDate);
-
-        if (newDate) {
-            //const localDateObj = new Date(newDate);
-            // const displayDate = formatDateForDisplay(localDateObj, countryCode);
-        }
     };
 
     return (

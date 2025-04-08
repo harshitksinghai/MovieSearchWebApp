@@ -1,5 +1,5 @@
 import express from "express";
-import { fetchOrAddUser, getUserCountry, updateUserDetails } from "../controllers/userController";
+import { fetchOrAddUser, updateUserDetails } from "../controllers/userController";
 import { updateProfileRateLimiter } from "../middlewares/rateLimiter";
 import { verifyToken } from "../middlewares/authToken";
 import { decryptRequest } from "../middlewares/dataInTransitEncryption";
@@ -187,8 +187,5 @@ router.post('/details', verifyToken, decryptRequest, encryptResponseForRoute ,fe
  *         description: Internal server error
  */
 router.post('/updateDetails', verifyToken, updateProfileRateLimiter, decryptRequest, encryptResponseForRoute, updateUserDetails);
-
-router.get('/country', getUserCountry);
-
 
 export default router;

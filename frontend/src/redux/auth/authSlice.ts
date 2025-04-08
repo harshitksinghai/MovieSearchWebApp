@@ -3,6 +3,8 @@ import { UserDetailsItem, UserFormItem } from "@/services/user-service/profile/t
 import { authAxios } from "@/app/axiosConfig";
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
+const IP_COUNTRY_API_KEY = import.meta.env.VITE_IP_COUNTRY_API_KEY;
+
 interface AuthState {
   userId: string | null;
   countryFromIP: string | null;
@@ -26,14 +28,8 @@ const initialState: AuthState = {
 export const fetchUserCountry = createAsyncThunk(
   'auth/fetchUserCountry',
   async () => {
-
-      const fetchUrl = '/users/country';
-      
-      const response = await authAxios.get<{
-        success: boolean;
-        country: string;
-      }>(fetchUrl, {});
-    return {country: response.data.country}
+      const response = await authAxios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${IP_COUNTRY_API_KEY}`, {});
+    return {country: response.data.country_code2}
   }
 );
 

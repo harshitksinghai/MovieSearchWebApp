@@ -12,32 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchOrAddUser = exports.addUserIdInDB = exports.updateUserDetails = exports.getUserDetails = exports.getUserCountry = void 0;
+exports.fetchOrAddUser = exports.addUserIdInDB = exports.updateUserDetails = exports.getUserDetails = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const axios_1 = __importDefault(require("axios"));
 const db_1 = __importDefault(require("../config/db"));
 const crypto_1 = __importDefault(require("crypto"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const SECRET_KEY = process.env.SECRET_KEY;
 const SALT = process.env.SECRET_SALT;
-exports.getUserCountry = (0, express_async_handler_1.default)((_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const response = yield axios_1.default.get('https://ipapi.co/country/');
-        console.log("userController => getUserCountry => response.data: ", response.data);
-        res.json({
-            success: true,
-            country: response.data
-        });
-    }
-    catch (error) {
-        console.error("userController => getUserCountry => error:", error);
-        res.status(500).json({
-            success: false,
-            error: error.message || "Error fetching country data",
-        });
-    }
-}));
 exports.getUserDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.body;
     if (!userId) {

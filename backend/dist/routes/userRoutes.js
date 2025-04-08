@@ -187,5 +187,4 @@ router.post('/details', authToken_1.verifyToken, dataInTransitEncryption_1.decry
  *         description: Internal server error
  */
 router.post('/updateDetails', authToken_1.verifyToken, rateLimiter_1.updateProfileRateLimiter, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, userController_1.updateUserDetails);
-router.get('/country', userController_1.getUserCountry);
 exports.default = router;

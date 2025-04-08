@@ -137,7 +137,7 @@
         "firstName": "First Name",
         "middleName": "Middle Name",
         "lastName": "Last Name",
-        "phoneNo": "Phone No.",
+        "phoneNo": "Phone Number",
         "dob": "Date Of Birth",
         "email": "Email",
         "cancel": "Cancel",
@@ -150,7 +150,11 @@
         "invalidPh": "Invalid phone number",
         "phTen": "Phone number must be 10 digits long",
         "toastSuccess": "Profile updated successfully.",
-        "phNotValid": "Phone number is not valid"
+        "phNotValid": "Phone number is not valid",
+        "enterFirstName": "Enter First Name",
+        "enterMiddleName": "Enter Middle Name",
+        "enterLastName": "Enter Last Name",
+        "enterPhNo": "Enter Phone Number"
     },
     "loading...": "Loading...",
     "authError": "Authentication error: "

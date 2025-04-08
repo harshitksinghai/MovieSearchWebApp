@@ -67,12 +67,12 @@ export const initMovieListTable = async (): Promise<void> => {
 //     "middleName" bytea,
 //     "lastName" bytea,
 //     "dateOfBirth" bytea,
+//     "country" bytea,
 //     "phone" bytea,
 //     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
 //     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
 //     CONSTRAINT user_unique UNIQUE ("userId")
 // );
-
 
 //movieList_YN100
 // CREATE TABLE IF NOT EXISTS public."movieList_YN100"

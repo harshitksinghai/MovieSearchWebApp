@@ -35,8 +35,10 @@ const MovieDetails: React.FC = () => {
   const auth = useAuth();
   const { t } = useTranslation();
 
-  // const { country } = useUserCountry();
-  const country = useAppSelector((state) => state.auth.country);
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.search);
+  const myListState = useAppSelector((state) => state.movie.myListState);
+  const { userDetails, countryFromIP } = useAppSelector((state) => state.auth);
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -45,9 +47,7 @@ const MovieDetails: React.FC = () => {
   };
 
   const currentPalette = getCurrentPalette();
-  const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.search);
-  const myListState = useAppSelector((state) => state.movie.myListState);
+
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -133,11 +133,11 @@ const MovieDetails: React.FC = () => {
 
   const formattedBoxOffice = useMemo(() => {
     if (!movieResponse?.BoxOffice) return null;
-    const userCountry = country ? country : 'IN';
+    const userCountry: string = userDetails.country ?? countryFromIP ?? 'IN';
     
     const numericValue = parseFloat(movieResponse.BoxOffice.replace(/[^0-9.-]+/g, ""));
     return formatCurrency(numericValue, userCountry);
-  }, [movieResponse?.BoxOffice, country]);
+  }, [movieResponse?.BoxOffice, countryFromIP, userDetails.country]);
 
 
   if (loading) {

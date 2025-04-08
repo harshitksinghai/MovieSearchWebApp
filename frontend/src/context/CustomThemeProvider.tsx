@@ -28,7 +28,6 @@ export const themePalettes = {
       textSecondary: '#f5f5f5',
       accent: '237, 237, 237',
       chartColors: ['#F1E9D2', ' #EAE9E0', '#E6E8FA', '#fbf5df', '#EEDC82', '#ffe599']
-
     }
   },
   Blue: {
@@ -46,7 +45,7 @@ export const themePalettes = {
       primary: '#1065c0',
       secondary: '#1a8ae5',
       background: '#0a1929',
-      paper: '#02a43',
+      paper: '#0a1929',
       textPrimary: '#ffffff',
       textSecondary: '#99c2ff',
       accent: '102, 163, 255',

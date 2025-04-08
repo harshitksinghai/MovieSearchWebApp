@@ -41,10 +41,6 @@ const SearchResults: React.FC = () => {
       width: '90%', 
       justifySelf: 'center', 
       alignItems: 'center', 
-      // '@media (min-width: 2000px)': {
-      //   width: '60%',
-      //   pt: '3rem',
-      // },
       }}> 
       {loading ? (
         <Box sx={{

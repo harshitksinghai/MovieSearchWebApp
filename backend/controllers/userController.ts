@@ -58,6 +58,7 @@ export const getUserDetails = asyncHandler(
             pgp_sym_decrypt("middleName"::bytea, $2) AS "middleName",
             pgp_sym_decrypt("lastName"::bytea, $2) AS "lastName",
             pgp_sym_decrypt("dateOfBirth"::bytea, $2) AS "dateOfBirth",
+            pgp_sym_decrypt("country"::bytea, $2) AS "country",
             pgp_sym_decrypt("phone"::bytea, $2) AS "phone",
             "updatedAt"
          FROM "users_YN100"
@@ -95,26 +96,28 @@ export const updateUserDetails = asyncHandler(
 
     try {
 
-      const { firstName, middleName, lastName, dateOfBirth, phone } = formDetails;
+      const { firstName, middleName, lastName, dateOfBirth, country, phone } = formDetails;
 
       const updatedAt = new Date().toISOString();
 
       const updateQuery = `
     UPDATE "users_YN100"
     SET 
-        "firstName" = pgp_sym_encrypt($1, $8), 
-        "middleName" = pgp_sym_encrypt($2, $8), 
-        "lastName" = pgp_sym_encrypt($3, $8), 
-        "dateOfBirth" = pgp_sym_encrypt($4, $8), 
-        "phone" = pgp_sym_encrypt($5, $8), 
-        "updatedAt" = $6
-    WHERE "userId" = $7
+        "firstName" = pgp_sym_encrypt($1, $9), 
+        "middleName" = pgp_sym_encrypt($2, $9), 
+        "lastName" = pgp_sym_encrypt($3, $9), 
+        "dateOfBirth" = pgp_sym_encrypt($4, $9), 
+        "country" = pgp_sym_encrypt($5, $9),
+        "phone" = pgp_sym_encrypt($6, $9), 
+        "updatedAt" = $7
+    WHERE "userId" = $8
     RETURNING 
-        pgp_sym_decrypt("firstName"::bytea, $8) AS "firstName",
-        pgp_sym_decrypt("middleName"::bytea, $8) AS "middleName",
-        pgp_sym_decrypt("lastName"::bytea, $8) AS "lastName",
-        pgp_sym_decrypt("dateOfBirth"::bytea, $8) AS "dateOfBirth",
-        pgp_sym_decrypt("phone"::bytea, $8) AS "phone",
+        pgp_sym_decrypt("firstName"::bytea, $9) AS "firstName",
+        pgp_sym_decrypt("middleName"::bytea, $9) AS "middleName",
+        pgp_sym_decrypt("lastName"::bytea, $9) AS "lastName",
+        pgp_sym_decrypt("dateOfBirth"::bytea, $9) AS "dateOfBirth",
+        pgp_sym_decrypt("country"::bytea, $9) AS "country",
+        pgp_sym_decrypt("phone"::bytea, $9) AS "phone",
         "updatedAt"
   `;
     
@@ -123,6 +126,7 @@ export const updateUserDetails = asyncHandler(
     middleName,
     lastName,
     dateOfBirth,
+    country,
     phone,
     updatedAt,
     hashedUserId, 
@@ -209,6 +213,7 @@ export const fetchOrAddUser = asyncHandler(
           pgp_sym_decrypt("middleName"::bytea, $2) AS "middleName",
           pgp_sym_decrypt("lastName"::bytea, $2) AS "lastName",
           pgp_sym_decrypt("dateOfBirth"::bytea, $2) AS "dateOfBirth",
+          pgp_sym_decrypt("country"::bytea, $2) AS "country",
           pgp_sym_decrypt("phone"::bytea, $2) AS "phone",
           "updatedAt"
         FROM "users_YN100"

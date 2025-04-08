@@ -5,19 +5,20 @@ import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 interface AuthState {
   userId: string | null;
-  country: string | null;
+  countryFromIP: string | null;
   userDetails: UserDetailsItem;
 }
 
 const initialState: AuthState = {
   userId: null,
-  country: null,
+  countryFromIP: null,
   userDetails: {
     firstName: null,
     middleName: null,
     lastName: null,
     dateOfBirth: null,
     phone: null,
+    country: null,
     updatedAt: null
   }
 };
@@ -81,8 +82,8 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserCountry.fulfilled, (state, action) => {
-        state.country = action.payload.country;
-        console.log("authSlice => fetchUserCountry.fulfilled => country: ", state.country);
+        state.countryFromIP = action.payload.country;
+        console.log("authSlice => fetchUserCountry.fulfilled => country: ", state.countryFromIP);
       })
       .addCase(fetchOrAddUser.fulfilled, (state, action) => {
         state.userDetails = action.payload.userDetails; 

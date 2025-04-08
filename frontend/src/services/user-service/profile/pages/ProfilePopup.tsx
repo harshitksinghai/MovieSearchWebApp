@@ -6,19 +6,25 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useFormik } from 'formik';
 import Grid from '@mui/material/Grid2';
-import { Box } from '@mui/material';
+import { Box, FormControl, InputAdornment, MenuItem, Select } from '@mui/material';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { z } from 'zod';
 import { UserFormItem } from '@/services/user-service/profile/types/profileTypes';
 import { useAppDispatch, useAppSelector } from '@/app/reduxHooks';
 import { updateCurrentUserDetails } from '@/redux/auth/authSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCustomTheme, themePalettes } from '@/context/CustomThemeProvider';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { CountryCode, getCountryCallingCode } from 'libphonenumber-js/mobile';
-import PhoneNumInput, { getCountriesData, isValidPhoneNumber, parseFullPhoneNumber } from '../components/PhoneNumInput';
-import { formatDateForDisplay, formatDateForStorage, formatDateForInput, parseUTCDate, getDateFormatByCountry } from '@/services/user-service/profile/utils/dateUtils';
+import { 
+  getCountriesData, 
+  isValidPhoneNumber, 
+  parseFullPhoneNumber, 
+  formatPhoneNumberAsYouType, 
+  unformatPhoneNumber
+} from '../utils/phoneUtils';
+import { formatDateForStorage, formatDateForInput, parseUTCDate, getDateFormatByCountry } from '@/services/user-service/profile/utils/dateUtils';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -30,21 +36,22 @@ interface ProfilePopupProps {
 }
 
 // Extended form item type to include additional fields for UI
-interface ExtendedUserFormItem extends UserFormItem {
+interface ExtendedUserFormItem extends Omit<UserFormItem, "country">{
     countryCode: CountryCode;
     phoneNumber: string;
 }
 
 const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
-
     const dispatch = useAppDispatch();
-    const { userId, userDetails, country } = useAppSelector((state) => state.auth);
-    console.log("ProfilePopup => userDetails redux store state: ", userDetails)
+    const { userId, userDetails, countryFromIP } = useAppSelector((state) => state.auth);
+    
+    const countryCode = userDetails.country ?? countryFromIP ?? 'IN';
+    const phoneNumber = userDetails.phone ? parseFullPhoneNumber(userDetails.phone).phoneNumber : "";
 
-    const { countryCode, phoneNumber } = userDetails.phone
-        ? parseFullPhoneNumber(userDetails.phone)
-        : { countryCode: 'IN' as CountryCode, phoneNumber: '' };
+    const [formCountryCode, setFormCountryCode] = useState<CountryCode>(countryCode as CountryCode);
+    const [phoneInputFocused, setPhoneInputFocused] = useState(false);
 
+    console.log("formCountryCode: ", formCountryCode);
     const { t } = useTranslation();
     const countries = getCountriesData();
 
@@ -68,6 +75,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         return ageDifference > 8 || (ageDifference === 8 && hasBirthdayOccurred);
     };
 
+    // Modified validation schema with individual phone validation rules
     const validationSchema = z.object({
         firstName: z.string().min(1, t('profile.firstNameRequired')),
         middleName: z.string().nullable().optional(),
@@ -80,16 +88,13 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
             ),
         countryCode: z.string().min(1, t('profile.countryCodeRequired')),
         phoneNumber: z.string()
-            .min(1, t('profile.phRequired')),
+            .min(1, t('profile.phRequired'))
+            .refine(
+                (value) => isValidPhoneNumber(value, formCountryCode),
+                { message: t('profile.phNotValid') }
+            ),
         displayDateOfBirth: z.string().optional()
-    })
-        .refine(
-            (data) => isValidPhoneNumber(data.phoneNumber, data.countryCode as CountryCode),
-            {
-                message: t('profile.phNotValid'),
-                path: ['phoneNumber']
-            }
-        );
+    });
 
     const initialValues: ExtendedUserFormItem = {
         firstName: '',
@@ -97,7 +102,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         lastName: '',
         dateOfBirth: '',
         phone: '',
-        countryCode: 'IN' as CountryCode,
+        countryCode: countryFromIP as CountryCode,
         phoneNumber: '',
     };
 
@@ -105,7 +110,12 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         initialValues: initialValues,
         validationSchema: toFormikValidationSchema(validationSchema),
         onSubmit: (values, actions) => {
-            console.log({ values });
+            // First validate phone number
+            if (!isValidPhoneNumber(values.phoneNumber, values.countryCode)) {
+                formik.setFieldError('phoneNumber', t('profile.phNotValid'));
+                actions.setSubmitting(false);
+                return;
+            }
 
             // Format date to UTC for storage
             const utcDateOfBirth = formatDateForStorage(values.dateOfBirth);
@@ -115,7 +125,8 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                     firstName: values.firstName,
                     middleName: values.middleName,
                     lastName: values.lastName,
-                    phone: `+${getCountryCallingCode(values.countryCode)}${values.phoneNumber}`,
+                    country: values.countryCode,
+                    phone: `+${getCountryCallingCode(values.countryCode)}${unformatPhoneNumber(values.phoneNumber)}`,
                     dateOfBirth: utcDateOfBirth
                 }
             }));
@@ -131,10 +142,15 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         handleClose();
     };
 
+    const handlePhoneFocus = () => {
+        setPhoneInputFocused(true);
+      };
+
     useEffect(() => {
         if (userDetails && open) {
             const localDateObj = parseUTCDate(userDetails.dateOfBirth);
             const inputDate = formatDateForInput(localDateObj);
+            setFormCountryCode(countryCode as CountryCode);
 
             formik.resetForm({
                 values: {
@@ -143,29 +159,64 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                     lastName: userDetails.lastName || '',
                     dateOfBirth: inputDate,
                     phone: userDetails.phone || '',
-                    countryCode: countryCode || 'IN' as CountryCode,
+                    countryCode: countryCode as CountryCode || countryFromIP as CountryCode,
                     phoneNumber: phoneNumber || '',
                 }
             });
         }
-    }, [userDetails, open, country]);
+    }, [userDetails, open, countryFromIP]);
 
-    const handlePhoneChange = (value: { countryCode: CountryCode; phoneNumber: string }) => {
-        formik.setFieldValue('countryCode', value.countryCode);
-        formik.setFieldValue('phoneNumber', value.phoneNumber);
+    // Handle country code change
+    const handleCountryChange = (e: any) => {
+        const newCountryCode = e.target.value as CountryCode;
+        setFormCountryCode(newCountryCode);
+    console.log("formCountryCode: ", newCountryCode);
+
+        formik.setFieldValue('countryCode', newCountryCode);
+        
+        // Validate phone number with new country code
+        setTimeout(() => {
+            if (formik.values.phoneNumber) {
+                // Always use unformatted value for validation
+                const unformattedPhone = unformatPhoneNumber(formik.values.phoneNumber);
+                validatePhoneNumber(unformattedPhone, newCountryCode);
+            }
+        }, 0);
+    };
+
+
+    // Handle phone number blur
+    const handlePhoneBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        setPhoneInputFocused(false);
+        formik.handleBlur(e);
+        const formattedNumber = formatPhoneNumberAsYouType(formik.values.phoneNumber, formik.values.countryCode);
+        formik.setFieldValue('phoneNumber', formattedNumber);
+        validatePhoneNumber(unformatPhoneNumber(e.target.value), formik.values.countryCode);
+    };
+
+    // Separate validation function for phone number
+    const validatePhoneNumber = (phoneNumber: string, countryCode: CountryCode) => {
+        if (!phoneNumber) return;
+        
+        const isValid = isValidPhoneNumber(phoneNumber, countryCode);
+        console.log("isValid: ", isValid)
+        if (!isValid) {
+            formik.setFieldError('phoneNumber', t('profile.phNotValid'));
+        } else {
+            // Clear the error if it's valid
+            formik.setFieldError('phoneNumber', undefined);
+        }
     };
 
     const handleDOBChange = (value: { dateOfBirth: string }) => {
         const newDate = value.dateOfBirth;
-        console.log("handleDOBchange => newDate: ", newDate)
         formik.setFieldValue('dateOfBirth', newDate);
 
         if (newDate) {
-            const localDateObj = new Date(newDate);
-            const displayDate = formatDateForDisplay(localDateObj, country);
-            console.log("handleDOBchange => displayDate: ", displayDate)
+            //const localDateObj = new Date(newDate);
+            // const displayDate = formatDateForDisplay(localDateObj, countryCode);
         }
-    }
+    };
 
     return (
         <>
@@ -190,7 +241,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     name="firstName"
                                     label={t('profile.firstName') + "*"}
                                     size="small"
-                                    placeholder={userDetails.firstName || "Enter first name"}
+                                    placeholder={userDetails.firstName || t('profile.enterFirstName')}
                                     value={formik.values.firstName}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -208,7 +259,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     name="middleName"
                                     label={t('profile.middleName')}
                                     size="small"
-                                    placeholder={userDetails?.middleName || "Enter middle name"}
+                                    placeholder={userDetails?.middleName || t('profile.enterMiddleName')}
                                     value={formik.values.middleName || ''}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -226,7 +277,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                     name="lastName"
                                     label={t('profile.lastName') + "*"}
                                     size="small"
-                                    placeholder={userDetails?.lastName || "Enter last name"}
+                                    placeholder={userDetails?.lastName || t('profile.enterLastName')}
                                     value={formik.values.lastName}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -240,24 +291,67 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
 
                             {/* Second row: Phone, DOB */}
                             <Grid size={6}>
-                                <PhoneNumInput
-                                    value={{
-                                        countryCode: formik.values.countryCode,
-                                        phoneNumber: formik.values.phoneNumber
-                                    }}
-                                    placeholder={userDetails?.phone || "Enter phone number"}
-                                    onChange={handlePhoneChange}
-                                    onBlur={formik.handleBlur}
-                                    error={(formik.touched.phoneNumber || formik.touched.countryCode) &&
-                                        (Boolean(formik.errors.phoneNumber) || Boolean(formik.errors.countryCode))}
-                                    helperText={(formik.touched.phoneNumber && formik.errors.phoneNumber) ||
-                                        (formik.touched.countryCode && formik.errors.countryCode)}
-                                    label={t('profile.phoneNo')}
-                                    required={true}
+                                {/* Integrated Phone Input Field */}
+                                <TextField
+                                    fullWidth
                                     id="phoneNumber"
                                     name="phoneNumber"
-                                    countries={countries}
-                                    currentPalette={currentPalette}
+                                    label={t('profile.phoneNo') + "*"}
+                                    size="small"
+                                    placeholder={userDetails?.phone || t('profile.enterPhNo')}
+                                    value={formatPhoneNumberAsYouType(formik.values.phoneNumber, formik.values.countryCode)}
+                                    onChange={formik.handleChange}
+                                    onBlur={handlePhoneBlur}
+                                    onFocus={handlePhoneFocus}
+                                    error={(formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber))}
+                                    helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
+                                    InputLabelProps={{
+                                        style: { color: currentPalette.textPrimary },
+                                        shrink: Boolean(userDetails?.phone || formik.values.phoneNumber || phoneInputFocused)
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <FormControl variant="standard" size="small" sx={{ minWidth: 50 }}>
+                                                    <Select
+                                                        value={formik.values.countryCode}
+                                                        onChange={handleCountryChange}
+                                                        disableUnderline
+                                                        sx={{
+                                                            '& .MuiSelect-select': {
+                                                                paddingRight: '14px',
+                                                                paddingLeft: '4px',
+                                                            }
+                                                        }}
+                                                        renderValue={(selected) => {
+                                                            const country = countries.find(c => c.code === selected);
+                                                            return (
+                                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                    <span style={{ marginRight: 8 }}>{country?.flag}</span>
+                                                                    <span>{country?.dialCode}</span>
+                                                                </Box>
+                                                            );
+                                                        }}
+                                                    >
+                                                        {countries.map((country) => (
+                                                            <MenuItem key={country.code} value={country.code}>
+                                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                                                    <span style={{ marginRight: 8 }}>{country.flag}</span>
+                                                                    <span>{country.name}</span>
+                                                                    <span style={{ marginLeft: 8 }}>({country.dialCode})</span>
+                                                                </Box>
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        '& .MuiInputLabel-root:not(.MuiInputLabel-shrink)': {
+                                            transform: 'translate(80%, 8px) scale(1)'
+                                        }
+                                    }}
                                 />
                             </Grid>
                             <Grid size={6}>
@@ -271,7 +365,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
                                                 handleDOBChange({ dateOfBirth: dateString });
                                             }
                                         }}
-                                        format={getDateFormatByCountry(country)}
+                                        format={getDateFormatByCountry(countryCode)}
                                         slotProps={{
                                             textField: {
                                                 fullWidth: true,

@@ -49,6 +49,7 @@ export const getDateFormatByCountry = (country: string | null): string => {
     return format;
   } catch (error) {
     // Fallback in case of error
+    console.log("getDateFormatByCountry => fallback: DD/MM/YYYY")
     return 'DD/MM/YYYY';
   }
 };

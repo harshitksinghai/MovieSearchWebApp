@@ -78,6 +78,7 @@ exports.initMovieListTable = initMovieListTable;
 //     "middleName" bytea,
 //     "lastName" bytea,
 //     "dateOfBirth" bytea,
+//     "country" bytea,
 //     "phone" bytea,
 //     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
 //     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),

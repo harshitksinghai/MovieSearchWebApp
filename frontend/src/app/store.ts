@@ -4,7 +4,7 @@ import movieReducer from '../redux/movie/movieSlice';
 import filterReducer from '../redux/filter/filterSlice';
 import searchReducer from '../redux/search/searchSlice';
 
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 

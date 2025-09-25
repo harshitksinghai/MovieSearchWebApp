@@ -4,9 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import movieRoutes from "./routes/movieRoutes";
-import userRoutes from "./routes/userRoutes";
+import movieRoutes from "./movie/routes/movieRoutes";
+import userRoutes from "./user/routes/userRoutes";
 import path from "path";
+import authRoutes from "./auth/routes/authRoutes";
 
 dotenv.config();
 const app: Express = express();
@@ -76,6 +77,7 @@ app.use("/swagger", swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use("/api/movies", movieRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

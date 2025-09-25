@@ -1,47 +1,29 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = void 0;
-const aws_jwt_verify_1 = require("aws-jwt-verify");
-const verifier = aws_jwt_verify_1.CognitoJwtVerifier.create({
-    userPoolId: process.env.AUTH_COGNITO_USER_POOL_ID,
-    tokenUse: 'access',
-    clientId: process.env.AUTH_COGNITO_CLIENT_ID
-});
-const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-    if (!token) {
-        res.status(401).json({ success: false, error: 'No token provided' });
+const jwtUtils_1 = require("../auth/utils/jwtUtils");
+const cookieUtils_1 = require("../auth/utils/cookieUtils");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const JWT_COOKIE_NAME = process.env.JWT_COOKIE_NAME;
+const verifyToken = (req, res, next) => {
+    const token = cookieUtils_1.cookieUtils.getCookie(req, JWT_COOKIE_NAME);
+    if (!token || !jwtUtils_1.jwtUtils.validateToken(token)) {
+        res.status(401).json({ status: false, message: "Unauthorized: Invalid or missing token" });
         return;
     }
     try {
-        const payload = yield verifier.verify(token);
-        console.log("await verifier.verify(token) payload: ", payload);
+        const email = jwtUtils_1.jwtUtils.getUsernameFromToken(token);
+        const role = jwtUtils_1.jwtUtils.getRoleFromToken(token);
+        req.user = { email, role };
         next();
     }
-    catch (error) {
-        console.error('Token verification error:', error);
-        // Handle specific verification errors
-        if (error.name === 'TokenExpiredError') {
-            res.status(401).json({
-                success: false,
-                error: 'Token has expired'
-            });
-            return;
-        }
-        res.status(401).json({
-            success: false,
-            error: 'Invalid or unauthorized token'
-        });
+    catch (err) {
+        console.error("JWT decode error:", err);
+        res.status(401).json({ status: false, message: "Unauthorized: Token verification failed" });
     }
-});
+};
 exports.verifyToken = verifyToken;

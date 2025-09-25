@@ -2,7 +2,7 @@ import { createAsyncThunk, createSelector, createSlice, PayloadAction } from "@r
 import axios from "axios";
 import { MovieDetailsItem, SearchApiItem } from "@/services/movie-service/types/movieTypes";
 import { RootState } from "../../app/store";
-import { publicAxios } from "@/app/axiosConfig";
+import publicApi from "../../app/api/axiosPublic";
 
 interface SearchState {
     searchResults: SearchApiItem[];
@@ -44,7 +44,7 @@ export const fetchSearchResults = createAsyncThunk(
                 type,
                 page,
             };
-            const response = await publicAxios.post(omdbApiUrl, requestBody);
+            const response = await publicApi.post(omdbApiUrl, requestBody);
             console.log("searchSlice => fetchSearchResults asyncThunk response: ", response.data)
             return response.data;
         }
@@ -81,7 +81,7 @@ export const fetchMovieByImdbId = createAsyncThunk(
     try {
       const url = '/movies/imdbid';
       const requestBody = { imdbID };
-      const response = await publicAxios.post(url, requestBody);
+      const response = await publicApi.post(url, requestBody);
       const apiData = response.data.movie;
 
       return {

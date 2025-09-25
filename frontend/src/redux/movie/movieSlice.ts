@@ -5,7 +5,9 @@ import {
 import { RootState } from "../../app/store";
 import { comedyTitles, romanceTitles, thrillerTitles, trendingTitles } from "@/services/movie-service/utils/movieTitles.ts";
 import { logout } from "../auth/authSlice.ts";
-import { authAxios, publicAxios } from "@/app/axiosConfig.ts";
+import publicApi  from "@/app/api/axiosPublic.ts";
+import secureApiLocal  from "@/app/api/axiosSecureLocal.ts";
+
 
 interface MovieState {
   myListState: MovieDetailsItem[];
@@ -39,7 +41,7 @@ export const fetchMyListState = createAsyncThunk(
     }
     
     // Single API call to get movie list with details
-    const response = await authAxios.post<{
+    const response = await secureApiLocal.post<{
       success: boolean;
       movieList: MovieDetailsItem[];
     }>('/movies/getlistwithdetails', { userId });
@@ -70,7 +72,7 @@ export const fetchHomeListStates = createAsyncThunk(
           try {
             const omdbApiUrl = '/movies/title';
             const requestBody = { title };
-            const response = await publicAxios.post(omdbApiUrl, requestBody);
+            const response = await publicApi.post(omdbApiUrl, requestBody);
             const apiData = response.data.movie;
             return {
               addToWatchedList: null,
@@ -186,7 +188,7 @@ export const updateRating = createAsyncThunk(
       Type,
       userId,
     };
-    const response = await authAxios.post(url, requestBody);
+    const response = await secureApiLocal.post(url, requestBody);
 
     let result: MovieDetailsItem = response.data.movie;
 
@@ -196,7 +198,7 @@ export const updateRating = createAsyncThunk(
 
     if (!movieExists) {
       const omdbApiUrl = '/movies/imdbid';
-      const omdbResponse = await publicAxios.post(omdbApiUrl, { imdbID });
+      const omdbResponse = await publicApi.post(omdbApiUrl, { imdbID });
       const apiData = omdbResponse.data.movie;
 
       result = {
@@ -250,7 +252,7 @@ export const addToWatchLater = createAsyncThunk(
       Type,
       userId,
     };
-    const response = await authAxios.post(url, requestBody);
+    const response = await secureApiLocal.post(url, requestBody);
 
     let result: MovieDetailsItem = response.data.movie;
 
@@ -260,7 +262,7 @@ export const addToWatchLater = createAsyncThunk(
 
     if (!movieExists) {
       const omdbApiUrl = '/movies/imdbid';
-      const omdbResponse = await publicAxios.post(omdbApiUrl, { imdbID });
+      const omdbResponse = await publicApi.post(omdbApiUrl, { imdbID });
       const apiData = omdbResponse.data.movie;
 
       // Return combined data
@@ -306,7 +308,7 @@ export const removeFromWatchedList = createAsyncThunk(
       imdbID,
       userId,
     };
-    const response = await authAxios.post(url, requestBody);
+    const response = await secureApiLocal.post(url, requestBody);
 
     console.log(
       "movieSlice => removeFromWatchedList asyncThunk Response:",
@@ -327,7 +329,7 @@ export const removeFromWatchLater = createAsyncThunk(
       imdbID,
       userId,
     };
-    const response = await authAxios.post(url, requestBody);
+    const response = await secureApiLocal.post(url, requestBody);
     console.log(
       "movieSlice => removeFromWatchLater asyncThunk Response: ",
       response.data.success

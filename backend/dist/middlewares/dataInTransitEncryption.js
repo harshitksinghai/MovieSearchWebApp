@@ -114,6 +114,7 @@ const decryptRequest = (req, res, next) => {
             const encryptedAesKey = req.headers['x-encrypted-key'];
             const aesKey = (0, exports.decryptAESKey)(encryptedAesKey);
             req.body = (0, exports.decryptData)(encryptedData, aesKey);
+            console.log("Success: decrypt Request: req.body: ", req.body);
         }
         next();
     }

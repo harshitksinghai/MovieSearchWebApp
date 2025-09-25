@@ -1,7 +1,7 @@
 import { RootState } from "@/app/store";
 import { UserDetailsItem, UserFormItem } from "@/services/user-service/profile/types/profileTypes";
-import { authAxios } from "@/app/axiosConfig";
-import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
+import secureApiLocal from "@/app/api/axiosSecureLocal";
+import { createSlice, createAsyncThunk, createAction, PayloadAction } from "@reduxjs/toolkit";
 
 const IP_COUNTRY_API_KEY = import.meta.env.VITE_IP_COUNTRY_API_KEY;
 
@@ -28,7 +28,7 @@ const initialState: AuthState = {
 export const fetchUserCountry = createAsyncThunk(
   'auth/fetchUserCountry',
   async () => {
-      const response = await authAxios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${IP_COUNTRY_API_KEY}`, {});
+      const response = await secureApiLocal.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${IP_COUNTRY_API_KEY}`, {});
     return {country: response.data.country_code2}
   }
 );
@@ -40,7 +40,7 @@ export const fetchOrAddUser = createAsyncThunk(
 
       const dbFetchUrl = '/users/details';
       
-      const dbResponse = await authAxios.post<{
+      const dbResponse = await secureApiLocal.post<{
         success: boolean;
         userDetails: UserDetailsItem;
       }>(dbFetchUrl, { userId });
@@ -64,7 +64,7 @@ export const updateCurrentUserDetails = createAsyncThunk(
       };
       console.log("authSlice => updateCurrentUserDetails asyncThunk => requestBody ", requestBody);
 
-      const response = await authAxios.post(url, requestBody);
+      const response = await secureApiLocal.post(url, requestBody);
       return response.data.userDetails;
     }
 )
@@ -74,7 +74,11 @@ export const logout = createAction('auth/logout');
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    setUserId: (state, action: PayloadAction<string | null>) => {
+      state.userId = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserCountry.fulfilled, (state, action) => {
@@ -96,5 +100,5 @@ const authSlice = createSlice({
   }
 });
 
-export const {} = authSlice.actions;
+export const { setUserId } = authSlice.actions;
 export default authSlice.reducer;

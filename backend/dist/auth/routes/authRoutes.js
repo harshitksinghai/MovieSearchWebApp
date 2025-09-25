@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dataInTransitEncryption_1 = require("../../middlewares/dataInTransitEncryption");
+const encryptResponseForRoute_1 = require("../../middlewares/encryptResponseForRoute");
+const authController_1 = require("../controllers/authController");
+const authToken_1 = require("../../middlewares/authToken");
+const router = express_1.default.Router();
+router.post('/verify-email', dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.verifyEmail);
+router.post('/send-otp', dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.sendOtp);
+router.post('/verify-otp', dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.verifyOtp);
+router.get('/clear-expired-otps', authController_1.verifyOtp);
+router.post('/register', dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.register);
+router.post('/login', dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.login);
+router.post('/change-password-and-login', dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.changePasswordAndLogin);
+router.get('/check-authentication', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.checkAuthentication);
+router.post('/logout', authToken_1.verifyToken, dataInTransitEncryption_1.decryptRequest, encryptResponseForRoute_1.encryptResponseForRoute, authController_1.logout);
+exports.default = router;

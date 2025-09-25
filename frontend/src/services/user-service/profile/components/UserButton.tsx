@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   FormControl, 
   Select, 
@@ -9,16 +9,11 @@ import {
 } from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from "react-oidc-context";
 import { logout } from "@/redux/auth/authSlice";
 import { useAppDispatch } from "@/app/reduxHooks";
 import { themePalettes, useCustomTheme } from "@/context/CustomThemeProvider";
-
-
-const AUTH_COGNITO_DOMAIN = import.meta.env.VITE_AUTH_COGNITO_DOMAIN;
-const AUTH_COGNITO_CLIENT_ID = import.meta.env.VITE_AUTH_COGNITO_CLIENT_ID;
-const AUTH_COGNITO_AUTHORITY = import.meta.env.VITE_AUTH_COGNITO_AUTHORITY;
-
+import { authApi } from "@/services/auth-service/api/authApi";
+import { toast } from "sonner";
 
 interface UserButtonProps {
   openProfilePopup: () => void;
@@ -26,8 +21,8 @@ interface UserButtonProps {
 
 const UserButton: React.FC<UserButtonProps> = ({ openProfilePopup }) => {
   const { t } = useTranslation();
-  const auth = useAuth();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
     const { currentTheme, darkMode } = useCustomTheme();
     const getCurrentPalette = () => {
@@ -37,17 +32,15 @@ const UserButton: React.FC<UserButtonProps> = ({ openProfilePopup }) => {
   
     const currentPalette = getCurrentPalette();
 
-  const signOutRedirect = () => {
-    const storageKey = `oidc.user:${AUTH_COGNITO_AUTHORITY}:${AUTH_COGNITO_CLIENT_ID}`;
-    localStorage.removeItem(storageKey);
-
-    dispatch(logout());
-    auth.removeUser();
-
-    const clientId = AUTH_COGNITO_CLIENT_ID;
-    const logoutUri = window.location.origin;
-    const cognitoDomain = AUTH_COGNITO_DOMAIN;
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+  const signOutRedirect = async () => {
+    try{
+      await authApi.logout();
+      dispatch(logout());
+      navigate("/");
+    } catch (error) {
+      console.log("Unable to logout user.");
+      toast.error(t('auth.logoutError'))
+    }
   };
 
   return (

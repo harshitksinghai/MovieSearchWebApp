@@ -127,6 +127,7 @@ export const decryptRequest = (req: any, res: any, next: any) => {
       const aesKey = decryptAESKey(encryptedAesKey);
       
       req.body = decryptData(encryptedData, aesKey);
+      console.log("Success: decrypt Request: req.body: ", req.body);
     }
     
     next();
@@ -158,3 +159,4 @@ export const encryptResponse = (data: any): {
     throw error;
   }
 };
+

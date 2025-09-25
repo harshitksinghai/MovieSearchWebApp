@@ -74,6 +74,64 @@ export const initMovieListTable = async (): Promise<void> => {
 //     CONSTRAINT user_unique UNIQUE ("userId")
 // );
 
+//users_YN100
+// CREATE TABLE IF NOT EXISTS public."users_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" bytea NOT NULL,
+//     "firstName" bytea,
+//     "middleName" bytea,
+//     "lastName" bytea,
+//     "dateOfBirth" bytea,
+//     "country" bytea,
+//     "phone" bytea,
+//     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     CONSTRAINT user_unique UNIQUE ("userId")
+// );
+
+//users_YN100
+// CREATE TABLE IF NOT EXISTS public."users_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" bytea NOT NULL,
+//     "password" bytea NOT null,
+//     "firstName" bytea,
+//     "middleName" bytea,
+//     "lastName" bytea,
+//     "dateOfBirth" bytea,
+//     "country" bytea,
+//     "phone" bytea,
+//     "role" bytea,
+//     "googleId" bytea,
+//     "refreshToken" bytea,
+//     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     CONSTRAINT user_unique UNIQUE ("userId")
+// );
+
+//users_YN100
+// CREATE TABLE IF NOT EXISTS public."users_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" VARCHAR(64) NOT NULL,
+//     "password" bytea NOT null,
+//     "firstName" bytea,
+//     "middleName" bytea,
+//     "lastName" bytea,
+//     "dateOfBirth" bytea,
+//     "country" bytea,
+//     "phone" bytea,
+//     "role" bytea,
+//     "googleId" bytea,
+//     "refreshToken" bytea,
+//     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     CONSTRAINT user_unique UNIQUE ("userId")
+// );
+
+
+
 //movieList_YN100
 // CREATE TABLE IF NOT EXISTS public."movieList_YN100"
 // (
@@ -91,9 +149,148 @@ export const initMovieListTable = async (): Promise<void> => {
 //         ON DELETE CASCADE
 // );
 
+//movieList_YN100
+// CREATE TABLE IF NOT EXISTS public."movieList_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "imdbID" character varying(20) COLLATE pg_catalog."default" NOT NULL,
+//     "addToWatchedList" character varying(30) COLLATE pg_catalog."default",
+//     "addToWatchLater" character varying(30) COLLATE pg_catalog."default",
+//     "ratingState" character varying(30) COLLATE pg_catalog."default",
+//     "Type" character varying(30) COLLATE pg_catalog."default",
+//     "userId" bytea NOT NULL,
+//     CONSTRAINT user_movie_unique UNIQUE ("userId", "imdbID"),
+//     CONSTRAINT fk_user FOREIGN KEY ("userId")
+//         REFERENCES public."users_YN100" ("userId") MATCH SIMPLE
+//         ON UPDATE NO ACTION
+//         ON DELETE CASCADE
+// );
+
+//movieList_YN100
+// CREATE TABLE IF NOT EXISTS public."movieList_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "imdbID" character varying(20) COLLATE pg_catalog."default" NOT NULL,
+//     "addToWatchedList" character varying(30) COLLATE pg_catalog."default",
+//     "addToWatchLater" character varying(30) COLLATE pg_catalog."default",
+//     "ratingState" character varying(30) COLLATE pg_catalog."default",
+//     "Type" character varying(30) COLLATE pg_catalog."default",
+//     "userId" VARCHAR(64) NOT NULL,
+//     CONSTRAINT user_movie_unique UNIQUE ("userId", "imdbID"),
+//     CONSTRAINT fk_user FOREIGN KEY ("userId")
+//         REFERENCES public."users_YN100" ("userId") MATCH SIMPLE
+//         ON UPDATE NO ACTION
+//         ON DELETE CASCADE
+// );
+
+
+//otpVerification_YN100
+// CREATE TABLE IF NOT EXISTS public."otpVerification_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" bytea NOT NULL,
+//     "otp" VARCHAR(10) NOT NULL,
+//     "expirationTime" timestamp without time zone NOT NULL,
+//     CONSTRAINT otp_user_fk FOREIGN KEY ("userId") REFERENCES public."users_YN100"("userId")
+// );
+
+//otpVerification_YN100
+// CREATE TABLE IF NOT EXISTS public."otpVerification_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" VARCHAR(64) NOT NULL,
+//     "otp" VARCHAR(10) NOT NULL,
+//     "expirationTime" timestamp without time zone NOT NULL,
+//     CONSTRAINT otp_user_fk FOREIGN KEY ("userId") REFERENCES public."users_YN100"("userId")
+// );
+
+//otpVerification_YN100
+// CREATE TABLE IF NOT EXISTS public."otpVerification_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" VARCHAR(64) NOT NULL,
+//     "otp" VARCHAR(10) NOT NULL,
+//     "expirationTime" timestamp without time zone NOT NULL
+// );
+
+
+//refreshToken_YN100
+// CREATE TABLE IF NOT EXISTS public."refreshToken_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" bytea NOT NULL,
+//     "token" bytea NOT NULL,
+//     "expirationTime" timestamp without time zone NOT NULL,
+//     CONSTRAINT refresh_token_user_fk FOREIGN KEY ("userId") REFERENCES public."users_YN100"("userId")
+// );
+
+//refreshToken_YN100
+// CREATE TABLE IF NOT EXISTS public."refreshToken_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" VARCHAR(64) NOT NULL,
+//     "token" bytea NOT NULL,
+//     "expirationTime" timestamp without time zone NOT NULL,
+//     CONSTRAINT refresh_token_user_fk FOREIGN KEY ("userId") REFERENCES public."users_YN100"("userId")
+// );
+
 
 
 //pgcrypto extension
 // SELECT * FROM pg_available_extensions WHERE name = 'pgcrypto';
 // CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+
+
+//find_user_by_decrypted_id_YN100
+// CREATE OR REPLACE FUNCTION "find_user_by_decrypted_id_YN100"(
+//   encrypted_field bytea, 
+//   original_id text, 
+//   secret_key text
+// )
+// RETURNS boolean AS $$
+// BEGIN
+//   RETURN pgp_sym_decrypt(encrypted_field, secret_key) = original_id;
+// END;
+// $$ LANGUAGE plpgsql SECURITY DEFINER;
  
+
+
+
+
+
+
+
+
+//users_YN100
+// CREATE TABLE IF NOT EXISTS public."users_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "userId" character varying(64) NOT NULL,
+//     "firstName" bytea,
+//     "middleName" bytea,
+//     "lastName" bytea,
+//     "dateOfBirth" bytea,
+//     "country" bytea,
+//     "phone" bytea,
+//     "createdAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),
+//     CONSTRAINT user_unique UNIQUE ("userId")
+// );
+
+//movieList_YN100
+// CREATE TABLE IF NOT EXISTS public."movieList_YN100"
+// (
+//     id SERIAL PRIMARY KEY,
+//     "imdbID" character varying(20) COLLATE pg_catalog."default" NOT NULL,
+//     "addToWatchedList" character varying(30) COLLATE pg_catalog."default",
+//     "addToWatchLater" character varying(30) COLLATE pg_catalog."default",
+//     "ratingState" character varying(30) COLLATE pg_catalog."default",
+//     "Type" character varying(30) COLLATE pg_catalog."default",
+//     "userId" character varying(64) NOT NULL,
+//     CONSTRAINT user_movie_unique UNIQUE ("userId", "imdbID"),
+//     CONSTRAINT fk_user FOREIGN KEY ("userId")
+//         REFERENCES public."users_YN100" ("userId") MATCH SIMPLE
+//         ON UPDATE NO ACTION
+//         ON DELETE CASCADE
+// );

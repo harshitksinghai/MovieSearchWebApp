@@ -99,7 +99,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ open, handleClose }) => {
         lastName: '',
         dateOfBirth: '',
         phone: '',
-        countryCode: countryFromIP as CountryCode,
+        countryCode: countryFromIP as CountryCode ?? 'IN' as CountryCode,
         phoneNumber: '',
     };
 

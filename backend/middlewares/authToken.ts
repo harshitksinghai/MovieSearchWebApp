@@ -1,43 +1,40 @@
-import { Request, Response, NextFunction } from 'express';
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import { Request, Response, NextFunction } from "express";
+import { jwtUtils } from "../auth/utils/jwtUtils";
+import { cookieUtils } from "../auth/utils/cookieUtils";
+import dotenv from "dotenv";
 
-const verifier = CognitoJwtVerifier.create({
-    userPoolId: process.env.AUTH_COGNITO_USER_POOL_ID!,
-    tokenUse: 'access',
-    clientId: process.env.AUTH_COGNITO_CLIENT_ID!
-  });
-  
-  export const verifyToken = async (
-    req: Request, 
-    res: Response, 
-    next: NextFunction
-  ): Promise<void> => {
-    const token = req.headers.authorization?.split(' ')[1];
-  
-    if (!token) {
-      res.status(401).json({ success: false, error: 'No token provided' });
-      return;
-    }
-  
-    try {
-      const payload = await verifier.verify(token);
-        console.log("await verifier.verify(token) payload: ", payload)
-      next();
-    } catch (error: any) {
-      console.error('Token verification error:', error);
-      
-      // Handle specific verification errors
-      if (error.name === 'TokenExpiredError') {
-        res.status(401).json({
-          success: false,
-          error: 'Token has expired'
-        });
-        return;
-      }
-  
-      res.status(401).json({
-        success: false,
-        error: 'Invalid or unauthorized token'
-      });
-    }
+dotenv.config();
+
+const JWT_COOKIE_NAME = process.env.JWT_COOKIE_NAME!;
+
+interface AuthenticatedRequest extends Request {
+  user?: {
+    email: string;
+    role: string;
   };
+}
+
+export const verifyToken = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  const token = cookieUtils.getCookie(req, JWT_COOKIE_NAME);
+
+  if (!token || !jwtUtils.validateToken(token)) {
+    res.status(401).json({ status: false, message: "Unauthorized: Invalid or missing token" });
+    return;
+  }
+
+  try {
+    const email = jwtUtils.getUsernameFromToken(token);
+    const role = jwtUtils.getRoleFromToken(token);
+
+    req.user = { email, role };
+
+    next();
+  } catch (err) {
+    console.error("JWT decode error:", err);
+    res.status(401).json({ status: false, message: "Unauthorized: Token verification failed" });
+  }
+};

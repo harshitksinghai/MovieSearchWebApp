@@ -1,10 +1,10 @@
-import { useAuth } from "react-oidc-context";
+import { useAppSelector } from "@/app/reduxHooks";
 import { Navigate, Outlet } from "react-router-dom";
 
 
 const ProtectedRoute = () => {
-  const auth = useAuth();
-  return auth.isAuthenticated ? <Outlet /> : <Navigate to='/' replace />
+  const userId = useAppSelector((state) => state.auth.userId);
+  return userId ? <Outlet /> : <Navigate to='/' replace />
 };
 
 export default ProtectedRoute;

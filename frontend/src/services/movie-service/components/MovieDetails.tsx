@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LaunchIcon from '@mui/icons-material/Launch';
 import BackButton from '@/components/BackButton';
@@ -25,20 +25,19 @@ import { MdOutlineWatchLater, MdWatchLater } from 'react-icons/md';
 import ReactionButton from '@/services/movie-service/components/ReactionButton';
 import placeholder from "@/assets/placeholder1.jpg";
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider';
-import { useAuth } from 'react-oidc-context';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/services/movie-service/utils/countryUtils';
 
 const MovieDetails: React.FC = () => {
   const { imdbID } = useParams<{ imdbID: string }>();
-  const auth = useAuth();
   const { t } = useTranslation();
   const theme = useTheme();
+  const navigate = useNavigate()
 
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.search);
   const myListState = useAppSelector((state) => state.movie.myListState);
-  const { userDetails, countryFromIP } = useAppSelector((state) => state.auth);
+  const { userDetails, countryFromIP, userId } = useAppSelector((state) => state.auth);
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -68,11 +67,11 @@ const MovieDetails: React.FC = () => {
 
   const handleRating = (rating: string) => {
     if (!movieResponse) return;
-    if (!auth.isAuthenticated) {
+    if (!userId) {
       toast(t('card.signInToRate'), {
         action: {
           label: 'Sign In',
-          onClick: () => auth.signinRedirect()
+          onClick: () => navigate("/login")
         },
       });
       return;
@@ -102,11 +101,11 @@ const MovieDetails: React.FC = () => {
 
   const handleAddToWatchLater = () => {
     if (!movieResponse) return;
-    if (!auth.isAuthenticated) {
+    if (!userId) {
       toast(t('card.signInToAddToWatchLater'), {
         action: {
           label: 'Sign In',
-          onClick: () => auth.signinRedirect()
+          onClick: () => navigate("/login")
         },
       });
       return;
@@ -341,7 +340,6 @@ const MovieDetails: React.FC = () => {
                 >
                   IMDb
                 </Button>
-                {/* {auth.isAuthenticated && ( */}
                 <>
                   {/* Rating Container */}
                   <Paper
@@ -402,7 +400,6 @@ const MovieDetails: React.FC = () => {
                     </Stack>
                   </Paper>
                 </>
-                {/* )} */}
               </Stack>
 
               {/* Plot Section */}

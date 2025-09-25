@@ -1,13 +1,12 @@
 import Logo from './ui/Logo'
 import SearchBar from '../services/search-service/components/SearchBar';
 import LanguageSelector from '../components/LanguageSelector';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DarkModeToggle from './DarkModeToggle';
 import { useTranslation } from 'react-i18next';
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery } from '@mui/material';
-import { useAppDispatch } from '../app/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../app/reduxHooks';
 import { setSearchState, setError, resetSearchBox } from '../redux/search/searchSlice';
-import { useAuth } from "react-oidc-context";
 import UserButton from '../services/user-service/profile/components/UserButton';
 import { memo, useCallback, useState } from 'react';
 import ProfilePopup from '../services/user-service/profile/pages/ProfilePopup';
@@ -24,8 +23,9 @@ interface NavBarProps {
 const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const auth = useAuth();
-  const isMobile = useMediaQuery('(max-width:1300px)');
+  const userId = useAppSelector((state) => state.auth.userId);
+  const navigate = useNavigate();  
+ const isMobile = useMediaQuery('(max-width:1300px)');
 
   const { currentTheme, darkMode } = useCustomTheme();
   const getCurrentPalette = () => {
@@ -98,11 +98,11 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
               </IconButton>
             )}
 
-            <Link to={auth.isAuthenticated ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+            <Link to={userId ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
               <Logo />
             </Link>
 
-            {!isMobile && auth.isAuthenticated && (
+            {!isMobile && userId && (
               <>
                 <Link to="/mylist" onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
                   <Typography
@@ -166,9 +166,9 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
 
             {/* Authentication buttons */}
             {
-              !auth.isAuthenticated && (
+              !userId && (
                 <Button
-                  onClick={() => auth.signinRedirect()}
+                  onClick={() => navigate("/login")}
                   sx={{
                     fontSize: '1rem',
                     fontWeight: 600,
@@ -191,7 +191,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
                 </Button>
               )}
 
-            {auth.isAuthenticated && (
+            {userId && (
               <UserButton openProfilePopup={handleProfilePopupOpen} />
             )
             }
@@ -236,7 +236,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
             padding: '0 1rem 1rem',
             borderBottom: `1px solid rgba(${currentPalette.accent}, 0.1)`
           }}>
-            <Link to={auth.isAuthenticated ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
+            <Link to={userId ? "/home" : "/"} onClick={handleNavLinkClick} style={{ textDecoration: 'none' }}>
               <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
                 {t('navbar.appName')}
               </Typography>
@@ -248,7 +248,7 @@ const Navbar: React.FC<NavBarProps> = (props: { isSearchBar: boolean }) => {
           </Box>
 
           <List>
-            {auth.isAuthenticated && (
+            {userId && (
               <>
                 <ListItem component={Link} to="/mylist" onClick={handleNavLinkClick}>
                   <ListItemText primary={t('navbar.fav')} />

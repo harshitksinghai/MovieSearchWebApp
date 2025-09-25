@@ -4,10 +4,9 @@ import placeholder from "@/assets/placeholder1.jpg";
 import { FaRegThumbsUp, FaThumbsUp, FaRegThumbsDown, FaThumbsDown, FaRegHeart, FaHeart } from "react-icons/fa6";
 import { MdOutlineWatchLater, MdWatchLater } from "react-icons/md";
 import { useTranslation } from 'react-i18next';
-import { useAuth } from "react-oidc-context";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MovieDetailsItem, SearchApiItem } from '@/services/movie-service/types/movieTypes.ts';
-import { useAppDispatch } from '@/app/reduxHooks.ts';
+import { useAppDispatch, useAppSelector } from '@/app/reduxHooks.ts';
 import { addToWatchLater, removeFromWatchedList, removeFromWatchLater, updateRating } from '@/redux/movie/movieSlice.ts';
 import ReactionButton from '@/services/movie-service/components/ReactionButton.tsx';
 import { themePalettes, useCustomTheme } from '@/context/CustomThemeProvider.tsx';
@@ -19,8 +18,11 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
-  const auth = useAuth();
+  const userId = useAppSelector((state) => state.auth.userId);
+
   const [ratingState, setRatingState] = useState<string>(movie.ratingState);
   const [isAddedToWatchLater, setIsAddedToWatchLater] = useState<boolean>(movie.addToWatchLater ? true : false);
 
@@ -38,11 +40,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   }, [movie.ratingState, movie.addToWatchLater]);
 
   const handleRating = (rating: string) => {
-    if(!auth.isAuthenticated){
+    if(!userId){
       toast(t('card.signInToRate'), {
         action: {
           label: 'Sign In',
-          onClick: () => auth.signinRedirect()
+          onClick: () => navigate("/login")
         },
       });
       return;
@@ -74,11 +76,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   };
 
   const handleAddToWatchLater = () => {
-    if(!auth.isAuthenticated){
+    if(!userId){
       toast(t('card.signInToAddToWatchLater'), {
         action: {
           label: 'Sign In',
-          onClick: () => auth.signinRedirect()
+          onClick: () => navigate("/login")
         },
       });
       return;
@@ -189,7 +191,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     transition: 'opacity 0.3s ease',
   }}
 >
-{/* {auth.isAuthenticated && ( */}
   <>
         <Box
           className="rating-container"
@@ -292,7 +293,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           inactiveIcon={<MdOutlineWatchLater size={18} />}
         />
         </>
-        {/* )} */}
         <Box
           className="movie-info"
           sx={{
